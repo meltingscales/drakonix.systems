@@ -1,0 +1,56 @@
+[package]
+name = "rust-blog"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Web framework
+axum = "0.7"
+tokio = { version = "1", features = ["full"] }
+tower = "0.5"
+tower-http = { version = "0.6", features = ["fs", "compression-gzip", "trace"] }
+
+# Templating
+tera = "1"
+
+# Markdown processing
+pulldown-cmark = { version = "0.11", default-features = false, features = ["html"] }
+html-escape = "0.2"
+
+# Frontmatter & serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_yaml = "0.9"
+toml = "0.8"
+
+# Syntax highlighting
+syntect = "5"
+
+# RSS feed generation
+rss = "2"
+
+# Date/time handling
+chrono = { version = "0.4", features = ["serde"] }
+
+# Error handling
+anyhow = "1"
+thiserror = "1"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# File watching (for dev mode)
+notify = "6"
+
+# Regex for parsing
+regex = "1"
+
+# Async utilities
+futures = "0.3"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
