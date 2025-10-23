@@ -3,10 +3,12 @@ title: "About This Site"
 date: 2025-01-01
 ---
 
-This is just a Hugo site.
-
-Please see this repo's README for more info!
+This used to be just a Hugo site that was free to host.
 
 <https://github.com/meltingscales/meltingscales.github.io/>
 
-Please fork/copy this site! I'd love to see what you do with it. 
+Then, I decided I wanted to have more control over rendering and themes. So, I wrote a template engine in Rust!
+
+It deploys to GCP and probably costs $1 to $2 per month.
+
+<https://github.com/meltingscales/meltingscales.github.io-rust/>
