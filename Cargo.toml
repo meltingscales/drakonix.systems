@@ -49,6 +49,9 @@ regex = "1"
 # Async utilities
 futures = "0.3"
 
+# UUID generation for timers
+uuid = { version = "1", features = ["v4", "serde"] }
+
 [profile.release]
 opt-level = 3
 lto = true

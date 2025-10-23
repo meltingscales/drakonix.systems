@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="egg-timer-container">
+    <h1>Egg Timer</h1>
+    <p>A simple kitchen timer for your cooking needs.</p>
+
+    <div class="timer-display">
+        <div id="time-display">00:00</div>
+    </div>
+
+    <div class="timer-controls">
+        <div class="time-input">
+            <label for="minutes">Minutes:</label>
+            <input type="number" id="minutes" min="0" max="99" value="3" />
+
+            <label for="seconds">Seconds:</label>
+            <input type="number" id="seconds" min="0" max="59" value="0" />
+        </div>
+
+        <div class="button-group">
+            <button id="start-btn" class="btn btn-primary">Start</button>
+            <button id="pause-btn" class="btn btn-secondary" disabled>Pause</button>
+            <button id="reset-btn" class="btn btn-secondary">Reset</button>
+        </div>
+    </div>
+
+    <div id="timer-status"></div>
+</div>
+
+<style>
+.egg-timer-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+}
+
+.timer-display {
+    background: #f5f5f5;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    padding: 3rem;
+    margin: 2rem 0;
+}
+
+#time-display {
+    font-family: 'Courier New', monospace;
+    font-size: 4rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.time-input {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    margin: 2rem 0;
+}
+
+.time-input label {
+    font-weight: 600;
+}
+
+.time-input input {
+    width: 80px;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.button-group {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin: 1rem 0;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-primary {
+    background: #007bff;
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #0056b3;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: #545b62;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#timer-status {
+    margin-top: 2rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    min-height: 1.5rem;
+}
+
+#timer-status.complete {
+    color: #28a745;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+</style>
+
+<script>
+let timerState = {
+    totalSeconds: 0,
+    remainingSeconds: 0,
+    isRunning: false,
+    isPaused: false,
+    timerId: null,
+    serverTimerId: null
+};
+
+const timeDisplay = document.getElementById('time-display');
+const minutesInput = document.getElementById('minutes');
+const secondsInput = document.getElementById('seconds');
+const startBtn = document.getElementById('start-btn');
+const pauseBtn = document.getElementById('pause-btn');
+const resetBtn = document.getElementById('reset-btn');
+const statusDiv = document.getElementById('timer-status');
+
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+}
+
+function updateDisplay() {
+    timeDisplay.textContent = formatTime(timerState.remainingSeconds);
+}
+
+function playSound() {
+    // Create a simple beep sound using Web Audio API
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    oscillator.frequency.value = 800;
+    oscillator.type = 'sine';
+
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.5);
+}
+
+async function startTimer() {
+    if (!timerState.isPaused) {
+        const minutes = parseInt(minutesInput.value) || 0;
+        const seconds = parseInt(secondsInput.value) || 0;
+        timerState.totalSeconds = minutes * 60 + seconds;
+        timerState.remainingSeconds = timerState.totalSeconds;
+
+        if (timerState.totalSeconds === 0) {
+            statusDiv.textContent = 'Please set a time greater than 0';
+            statusDiv.className = '';
+            return;
+        }
+
+        // Start timer on server
+        try {
+            const response = await fetch('/api/timer/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ duration_seconds: timerState.totalSeconds })
+            });
+            const data = await response.json();
+            timerState.serverTimerId = data.timer_id;
+        } catch (error) {
+            console.error('Failed to start server timer:', error);
+        }
+    }
+
+    timerState.isRunning = true;
+    timerState.isPaused = false;
+    statusDiv.textContent = 'Timer running...';
+    statusDiv.className = '';
+
+    startBtn.disabled = true;
+    pauseBtn.disabled = false;
+    minutesInput.disabled = true;
+    secondsInput.disabled = true;
+
+    timerState.timerId = setInterval(() => {
+        timerState.remainingSeconds--;
+        updateDisplay();
+
+        if (timerState.remainingSeconds <= 0) {
+            stopTimer();
+            statusDiv.textContent = 'Time\'s up!';
+            statusDiv.className = 'complete';
+            playSound();
+
+            // Notification
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification('Egg Timer', { body: 'Time\'s up!' });
+            }
+        }
+    }, 1000);
+}
+
+function pauseTimer() {
+    if (timerState.timerId) {
+        clearInterval(timerState.timerId);
+        timerState.timerId = null;
+    }
+
+    timerState.isRunning = false;
+    timerState.isPaused = true;
+    statusDiv.textContent = 'Timer paused';
+    statusDiv.className = '';
+
+    startBtn.disabled = false;
+    pauseBtn.disabled = true;
+}
+
+async function stopTimer() {
+    if (timerState.timerId) {
+        clearInterval(timerState.timerId);
+        timerState.timerId = null;
+    }
+
+    // Cancel server timer if exists
+    if (timerState.serverTimerId) {
+        try {
+            await fetch(`/api/timer/${timerState.serverTimerId}/cancel`, {
+                method: 'POST'
+            });
+        } catch (error) {
+            console.error('Failed to cancel server timer:', error);
+        }
+        timerState.serverTimerId = null;
+    }
+
+    timerState.isRunning = false;
+    timerState.isPaused = false;
+}
+
+function resetTimer() {
+    stopTimer();
+
+    timerState.remainingSeconds = 0;
+    updateDisplay();
+    statusDiv.textContent = '';
+    statusDiv.className = '';
+
+    startBtn.disabled = false;
+    pauseBtn.disabled = true;
+    minutesInput.disabled = false;
+    secondsInput.disabled = false;
+}
+
+// Event listeners
+startBtn.addEventListener('click', startTimer);
+pauseBtn.addEventListener('click', pauseTimer);
+resetBtn.addEventListener('click', resetTimer);
+
+// Request notification permission
+if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+}
+
+// Initialize display
+updateDisplay();
+</script>
+{% endblock %}

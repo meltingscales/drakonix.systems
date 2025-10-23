@@ -60,6 +60,48 @@ header nav .logo {
     font-size: 1.25rem;
 }
 
+/* Dropdown menu */
+header nav .dropdown {
+    position: relative;
+}
+
+header nav .dropdown-toggle {
+    cursor: pointer;
+    user-select: none;
+}
+
+header nav .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    min-width: 200px;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0;
+    z-index: 1000;
+}
+
+header nav .dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+header nav .dropdown-menu li {
+    padding: 0;
+}
+
+header nav .dropdown-menu a {
+    display: block;
+    padding: 0.5rem 1rem;
+}
+
+header nav .dropdown-menu a:hover {
+    background: #f5f5f5;
+}
+
 main {
     max-width: 800px;
     margin: 2rem auto;

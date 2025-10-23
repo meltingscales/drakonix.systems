@@ -1,5 +1,6 @@
 use crate::markdown::MarkdownProcessor;
 use crate::models::SearchEntry;
+use crate::timer::{StartTimerRequest, StartTimerResponse, TimerStatusResponse};
 use crate::{rss, AppState};
 use axum::{
     extract::{Path, State},
@@ -180,4 +181,62 @@ impl IntoResponse for AppError {
 
         (status, message).into_response()
     }
+}
+
+/// Egg timer page handler
+pub async fn egg_timer_page(State(state): State<Arc<AppState>>) -> Result<Html<String>, AppError> {
+    let context = Context::new();
+
+    let html = state
+        .tera
+        .render("egg_timer.html", &context)
+        .map_err(|e| AppError::TemplateError(e.to_string()))?;
+
+    Ok(Html(html))
+}
+
+/// API endpoint to start a timer
+pub async fn start_timer(
+    State(state): State<Arc<AppState>>,
+    Json(request): Json<StartTimerRequest>,
+) -> Result<Json<StartTimerResponse>, AppError> {
+    // Rate limiting: max 60 seconds per timer to prevent abuse
+    if request.duration_seconds > 3600 {
+        return Err(AppError::InternalError(anyhow::anyhow!(
+            "Timer duration cannot exceed 1 hour"
+        )));
+    }
+
+    let timer_id = state.timer_manager.start_timer(request.duration_seconds).await;
+
+    Ok(Json(StartTimerResponse {
+        timer_id,
+        duration_seconds: request.duration_seconds,
+    }))
+}
+
+/// API endpoint to cancel a timer
+pub async fn cancel_timer(
+    State(state): State<Arc<AppState>>,
+    Path(timer_id): Path<String>,
+) -> Result<Json<TimerStatusResponse>, AppError> {
+    let was_active = state.timer_manager.cancel_timer(&timer_id).await;
+
+    Ok(Json(TimerStatusResponse {
+        timer_id,
+        is_active: !was_active,
+    }))
+}
+
+/// API endpoint to check timer status
+pub async fn timer_status(
+    State(state): State<Arc<AppState>>,
+    Path(timer_id): Path<String>,
+) -> Result<Json<TimerStatusResponse>, AppError> {
+    let is_active = state.timer_manager.is_timer_active(&timer_id).await;
+
+    Ok(Json(TimerStatusResponse {
+        timer_id,
+        is_active,
+    }))
 }

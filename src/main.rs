@@ -2,8 +2,9 @@ mod handlers;
 mod markdown;
 mod models;
 mod rss;
+mod timer;
 
-use axum::{routing::get, Router};
+use axum::{routing::{get, post}, Router};
 use std::net::SocketAddr;
 use tower_http::{compression::CompressionLayer, services::ServeDir, trace::TraceLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -58,7 +59,12 @@ async fn main() -> anyhow::Result<()> {
         },
     );
 
-    let state = std::sync::Arc::new(AppState { tera });
+    let timer_manager = timer::TimerManager::new();
+
+    let state = std::sync::Arc::new(AppState {
+        tera,
+        timer_manager,
+    });
 
     // Build the application router
     let app = Router::new()
@@ -69,6 +75,11 @@ async fn main() -> anyhow::Result<()> {
         .route("/tags/:tag", get(handlers::tag_detail))
         .route("/rss.xml", get(handlers::rss_feed))
         .route("/search.json", get(handlers::search_index))
+        // Egg timer service
+        .route("/services/egg-timer", get(handlers::egg_timer_page))
+        .route("/api/timer/start", post(handlers::start_timer))
+        .route("/api/timer/:timer_id/cancel", post(handlers::cancel_timer))
+        .route("/api/timer/:timer_id/status", get(handlers::timer_status))
         // Serve static files (CSS, JS, images)
         .nest_service("/static", ServeDir::new("static"))
         .layer(CompressionLayer::new())
@@ -94,4 +105,5 @@ async fn main() -> anyhow::Result<()> {
 #[derive(Clone)]
 pub struct AppState {
     pub tera: tera::Tera,
+    pub timer_manager: timer::TimerManager,
 }
