@@ -177,6 +177,10 @@ gcp-domain-delete domain=DOMAIN_NAME:
 watch:
     cargo watch -x run
 
+# Monitor honeypot streams in real-time with TUI (requires local server running)
+monitor-honeypot:
+    cargo run --bin honeypot_monitor
+
 # Create a new blog post
 new-post title:
     #!/usr/bin/env bash
