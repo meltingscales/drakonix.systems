@@ -236,3 +236,64 @@ footer {
 #search-results li:hover {
     background: #f5f5f5;
 }
+
+/* Table of Contents */
+.toc {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin: 2rem 0;
+    max-width: 800px;
+}
+
+.toc summary {
+    font-weight: 600;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    user-select: none;
+    list-style-position: inside;
+}
+
+.toc summary:hover {
+    background: #e9ecef;
+    border-radius: 0.25rem;
+}
+
+.toc nav {
+    margin-top: 1rem;
+}
+
+.toc ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.toc ul ul {
+    padding-left: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.toc li {
+    margin: 0.5rem 0;
+}
+
+.toc a {
+    color: #0066cc;
+    text-decoration: none;
+    display: block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.2s;
+}
+
+.toc a:hover {
+    background: #e9ecef;
+    text-decoration: underline;
+}
+
+/* Add some spacing to headings when navigating via TOC */
+:target {
+    scroll-margin-top: 2rem;
+}

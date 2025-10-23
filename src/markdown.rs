@@ -162,7 +162,7 @@ impl MarkdownProcessor {
             return String::new();
         }
 
-        let mut html = String::from("<nav class=\"toc\">\n<h2>Table of Contents</h2>\n<ul>\n");
+        let mut html = String::from("<details class=\"toc\" open>\n<summary>Table of Contents</summary>\n<nav>\n<ul>\n");
         let mut current_level = 0u8;
 
         for entry in toc_entries {
@@ -199,7 +199,7 @@ impl MarkdownProcessor {
             current_level -= 1;
         }
 
-        html.push_str("</ul>\n</nav>\n");
+        html.push_str("</ul>\n</nav>\n</details>\n");
         html
     }
 
