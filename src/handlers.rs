@@ -295,6 +295,18 @@ pub async fn ffmpeg_converter_page(
 }
 
 /// API endpoint to convert MP4 to MP3
+#[utoipa::path(
+    post,
+    path = "/api/convert/upload",
+    tag = "Converter",
+    request_body(content = String, description = "Multipart form data with 'file' (MP4 video) and optional 'bitrate' field (128, 192, or 320)", content_type = "multipart/form-data"),
+    responses(
+        (status = 200, description = "Conversion initiated successfully", body = ConvertResponse),
+        (status = 400, description = "Bad request - invalid file or parameters"),
+        (status = 413, description = "File too large (max 100MB)"),
+        (status = 500, description = "Internal server error")
+    )
+)]
 pub async fn convert_mp4_to_mp3(
     State(state): State<Arc<AppState>>,
     mut multipart: Multipart,
@@ -350,6 +362,19 @@ pub async fn convert_mp4_to_mp3(
 }
 
 /// API endpoint to download converted MP3 file
+#[utoipa::path(
+    get,
+    path = "/api/convert/download/{file_id}",
+    tag = "Converter",
+    params(
+        ("file_id" = String, Path, description = "Unique file identifier returned from the upload endpoint")
+    ),
+    responses(
+        (status = 200, description = "Successfully returns the converted MP3 file", content_type = "audio/mpeg"),
+        (status = 404, description = "File not found or expired"),
+        (status = 500, description = "Internal server error")
+    )
+)]
 pub async fn download_converted_file(
     State(state): State<Arc<AppState>>,
     Path(file_id): Path<String>,

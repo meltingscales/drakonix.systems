@@ -22,6 +22,8 @@ use utoipa_swagger_ui::SwaggerUi;
         handlers::start_timer,
         handlers::cancel_timer,
         handlers::timer_status,
+        handlers::convert_mp4_to_mp3,
+        handlers::download_converted_file,
     ),
     components(
         schemas(
