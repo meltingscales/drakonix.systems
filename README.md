@@ -73,6 +73,32 @@ just docker-run
 just docker-run 3000
 ```
 
+#### Docker Build Optimization
+
+The Dockerfile uses a multi-stage build with dependency caching to speed up builds:
+
+1. **Dependency Cache Layer**: Builds dependencies first with dummy source files
+2. **Source Build Layer**: Rebuilds only when source code changes
+
+**Cache Management**:
+
+To clear Docker build cache when needed:
+```bash
+# Clear all build cache
+docker builder prune -a
+
+# Clear cache for specific image
+docker build --no-cache -t your-image-name .
+
+# Remove all unused images and containers
+docker system prune -a
+```
+
+**When to clear cache**:
+- After updating Cargo.toml dependencies
+- When builds are failing with stale artifacts
+- To free up disk space
+
 ### Google Cloud Run
 
 ```bash

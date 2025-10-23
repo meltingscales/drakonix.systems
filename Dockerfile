@@ -11,11 +11,16 @@ RUN apt-get update && \
 # Copy manifests
 COPY Cargo.toml Cargo.lock ./
 
-# Create a dummy main.rs to cache dependencies
+# Create a dummy build to cache dependencies
+# This creates stub files for all modules so cargo can compile dependencies
 RUN mkdir src && \
     echo "fn main() {}" > src/main.rs && \
+    echo "pub fn placeholder() {}" > src/handlers.rs && \
+    echo "pub fn placeholder() {}" > src/markdown.rs && \
+    echo "pub fn placeholder() {}" > src/models.rs && \
+    echo "pub fn placeholder() {}" > src/rss.rs && \
     cargo build --release && \
-    rm -rf src
+    rm -rf src target/release/rust-blog* target/release/deps/rust_blog*
 
 # Copy source code
 COPY src ./src
@@ -23,7 +28,8 @@ COPY templates ./templates
 COPY static ./static
 
 # Build the actual application
-RUN cargo build --release
+# Touch source files to ensure they're rebuilt even if deps are cached
+RUN touch src/main.rs && cargo build --release
 
 # Runtime stage
 FROM debian:bookworm-slim
