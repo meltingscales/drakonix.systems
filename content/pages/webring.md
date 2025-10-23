@@ -41,5 +41,6 @@ corporate slop, algoslop, and AI slop. Replace doomscrolling with this.
 
 <ul>
     <li><a href="//news.ycombinator.com">Hacker News (YCombinator)</a></li>
-    <li><a href="////www.wheresyoured.at/">www.wheresyoured.at</a></li>
+    <li><a href="//www.wheresyoured.at/">www.wheresyoured.at</a></li>
+    <li><a href="//deadstack.net/recent/">deadstack.net</a></li>
 </ul>
