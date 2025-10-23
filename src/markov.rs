@@ -34,36 +34,47 @@ impl MarkovGenerator {
     pub fn new() -> Self {
         let mut chain = HashMap::new();
 
-        // Seed corpus - mix of technical jargon, Lorem ipsum, and random words
-        let corpus = vec![
-            "The quick brown fox jumps over the lazy dog",
-            "Lorem ipsum dolor sit amet consectetur adipiscing elit",
-            "Artificial intelligence machine learning neural networks deep learning",
-            "Blockchain cryptocurrency decentralized distributed ledger technology",
-            "Cloud computing microservices containerization orchestration",
-            "Quantum computing superposition entanglement qubits algorithms",
-            "Software engineering design patterns architecture refactoring",
-            "Database normalization indexing optimization query performance",
-            "Security encryption authentication authorization cryptography",
-            "Network protocol TCP IP HTTP REST API endpoint",
-            "Frontend backend fullstack development deployment pipeline",
-            "Agile scrum kanban sprint retrospective standup planning",
-            "Data science analytics visualization insights predictive modeling",
-            "Mobile responsive progressive web application native hybrid",
-            "Version control git repository commit branch merge pull request",
-            "Testing unit integration end-to-end continuous integration delivery",
-            "Infrastructure as code terraform ansible kubernetes docker",
-            "Monitoring logging metrics observability tracing debugging",
-            "Performance optimization caching scalability load balancing",
-            "User experience interface design accessibility usability",
+        // Load word list from embedded file
+        let wordlist = include_str!("../static/wordlist.txt");
+        let words: Vec<&str> = wordlist.lines().collect();
+
+        // Build a more sophisticated markov chain using the dictionary
+        // Create random phrases by connecting dictionary words
+        let mut rng = rand::thread_rng();
+
+        // Generate 1000 random "sentences" from the dictionary to build the chain
+        for _ in 0..1000 {
+            let sentence_len = rng.gen_range(5..15);
+            let mut sentence_words = Vec::new();
+
+            for _ in 0..sentence_len {
+                if let Some(&word) = words.get(rng.gen_range(0..words.len())) {
+                    sentence_words.push(word);
+                }
+            }
+
+            // Build bigram chains from this random sentence
+            for i in 0..sentence_words.len().saturating_sub(1) {
+                let key = sentence_words[i].to_lowercase();
+                let next = sentence_words[i + 1].to_string();
+                chain.entry(key).or_insert_with(Vec::new).push(next);
+            }
+        }
+
+        // Add some common technical jargon to make it look more "real"
+        let tech_corpus = vec![
+            "API endpoint database query optimization",
+            "cloud infrastructure deployment pipeline",
+            "machine learning neural network algorithm",
+            "security authentication encryption protocol",
+            "microservices containerization orchestration",
         ];
 
-        // Build bigram markov chain
-        for text in corpus {
-            let words: Vec<&str> = text.split_whitespace().collect();
-            for i in 0..words.len().saturating_sub(1) {
-                let key = words[i].to_lowercase();
-                let next = words[i + 1].to_string();
+        for text in tech_corpus {
+            let phrase_words: Vec<&str> = text.split_whitespace().collect();
+            for i in 0..phrase_words.len().saturating_sub(1) {
+                let key = phrase_words[i].to_lowercase();
+                let next = phrase_words[i + 1].to_string();
                 chain.entry(key).or_insert_with(Vec::new).push(next);
             }
         }
@@ -71,7 +82,7 @@ impl MarkovGenerator {
         MarkovGenerator { chain }
     }
 
-    /// Generate a stream of markov babble text
+    /// Generate a stream of markov babble text with occasional API links to waste threads
     pub fn generate(&self, seed: &str, word_count: usize) -> String {
         let mut rng = rand::thread_rng();
         let mut result = Vec::new();
@@ -90,6 +101,19 @@ impl MarkovGenerator {
         result.push(current.clone());
 
         for _ in 0..word_count {
+            // 1/500 chance to insert a fake API endpoint link instead of a word
+            // This wastes scraper threads by making them follow more honeypot links
+            if rng.gen_bool(1.0 / 500.0) {
+                let api_slug = generate_honeypot_slug();
+                let api_link = format!("/api/markov-babble/{}/gen", api_slug);
+                result.push(api_link);
+
+                // Reset to a random word after the link
+                let keys: Vec<_> = self.chain.keys().collect();
+                current = keys[rng.gen_range(0..keys.len())].clone();
+                continue;
+            }
+
             if let Some(nexts) = self.chain.get(&current) {
                 if nexts.is_empty() {
                     // Dead end, pick random word

@@ -17,8 +17,8 @@
     </head>
     <body>
         <header>
-            <nav>
-                <a href="/" class="logo">/home/henrypost/</a>
+            <nav aria-label="Main navigation">
+                <a href="/" class="logo" aria-label="Home - Henry Post">/home/henrypost/</a>
                 <ul>
                     <li><a href="/pages/about-me">~/about-me</a></li>
                     <li><a href="/pages/about-site">~/about-site</a></li>
@@ -27,19 +27,21 @@
                     <li><a href="/pages/webring">~/webring</a></li>
                     <li><a href="/pages/tools">~/tools</a></li>
                     <li class="dropdown">
-                        <span class="dropdown-toggle">~/services ▾</span>
-                        <ul class="dropdown-menu">
-                            <li><a href="/services/egg-timer">./egg-timer</a></li>
-                            <li><a href="/services/ffmpeg-mp4-to-mp3">./ffmpeg-mp4-to-mp3</a></li>
-                            <li><a href="/swagger-ui/">./api-docs</a></li>
+                        <span class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false" tabindex="0">~/services ▾</span>
+                        <ul class="dropdown-menu" role="menu">
+                            <li role="none"><a href="/services/egg-timer" role="menuitem">./egg-timer</a></li>
+                            <li role="none"><a href="/services/ffmpeg-mp4-to-mp3" role="menuitem">./ffmpeg-mp4-to-mp3</a></li>
+                            <li role="none"><a href="/swagger-ui/" role="menuitem">./api-docs</a></li>
                         </ul>
                     </li>
-                    <li><a href="/rss.xml">~/rss</a></li>
+                    <li><a href="/rss.xml" aria-label="RSS Feed">~/rss</a></li>
                     <li>
+                        <label for="search" class="visually-hidden">Search</label>
                         <input
                             type="search"
                             id="search"
                             placeholder="Search..."
+                            aria-label="Search site content"
                         />
                     </li>
                 </ul>

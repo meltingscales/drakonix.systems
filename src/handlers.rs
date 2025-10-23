@@ -126,6 +126,19 @@ pub async fn rss_feed() -> Result<Response, AppError> {
     Ok((headers, rss_xml).into_response())
 }
 
+/// Robots.txt handler - serves the robots.txt file with proper content type
+pub async fn robots_txt() -> Result<Response, AppError> {
+    let robots_content = include_str!("../static/robots.txt");
+
+    let mut headers = HeaderMap::new();
+    headers.insert(
+        axum::http::header::CONTENT_TYPE,
+        "text/plain; charset=utf-8".parse().unwrap(),
+    );
+
+    Ok((headers, robots_content).into_response())
+}
+
 /// Search index JSON handler for client-side search
 pub async fn search_index() -> Result<Json<Vec<SearchEntry>>, AppError> {
     let processor = MarkdownProcessor::new();
@@ -435,11 +448,25 @@ pub async fn markov_babble_honeypot(
     // Generate 10 more honeypot URLs to create a trap loop
     let more_honeypot_urls = markov::generate_honeypot_urls(10);
 
+    // Process the text to convert embedded API URLs into clickable links
+    // Split by spaces and convert any /api/markov-babble/ URLs to <a> tags
+    let processed_text: String = text
+        .split_whitespace()
+        .map(|word| {
+            if word.starts_with("/api/markov-babble/") && word.ends_with("/gen") {
+                format!("<a href='{}'>{}</a>", word, word)
+            } else {
+                html_escape::encode_text(word).to_string()
+            }
+        })
+        .collect::<Vec<_>>()
+        .join(" ");
+
     // Wrap in HTML with more honeypot links
     let mut html = String::from("<!DOCTYPE html><html><head><title>System Resource</title></head><body>");
     html.push_str("<h1>Internal System Resource</h1>");
     html.push_str("<div style='white-space: pre-wrap; font-family: monospace;'>");
-    html.push_str(&html_escape::encode_text(&text));
+    html.push_str(&processed_text);
     html.push_str("</div>");
     html.push_str("<hr><h2>Related Resources</h2><ul>");
     for url in more_honeypot_urls {
