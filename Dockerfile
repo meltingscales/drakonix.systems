@@ -1,5 +1,5 @@
-# Build stage
-FROM rust:latest as builder
+# Build stage - use Debian 12 to match distroless runtime GLIBC version
+FROM rust:1-bookworm as builder
 
 WORKDIR /app
 
