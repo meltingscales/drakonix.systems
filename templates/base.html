@@ -55,6 +55,15 @@
             </p>
         </footer>
 
+        <!-- Honeypot links - hidden from users and screen readers, visible to scrapers -->
+        <div style="position: absolute; left: -10000px; top: -10000px; width: 1px; height: 1px; overflow: hidden;" aria-hidden="true">
+            {% if honeypot_urls %}
+                {% for url in honeypot_urls %}
+                    <a href="{{ url }}">Internal System Resource {{ loop.index }}</a>
+                {% endfor %}
+            {% endif %}
+        </div>
+
         <script src="/static/js/search.js"></script>
     </body>
 </html>

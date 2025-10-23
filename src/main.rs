@@ -1,5 +1,6 @@
 mod converter;
 mod handlers;
+mod markov;
 mod markdown;
 mod models;
 mod rss;
@@ -99,10 +100,13 @@ async fn main() -> anyhow::Result<()> {
     let converter_manager = converter::ConverterManager::new()
         .map_err(|e| anyhow::anyhow!("Failed to initialize converter: {}", e))?;
 
+    let markov_generator = markov::MarkovGenerator::new();
+
     let state = std::sync::Arc::new(AppState {
         tera,
         timer_manager,
         converter_manager,
+        markov_generator,
     });
 
     // Build the application router
@@ -127,6 +131,8 @@ async fn main() -> anyhow::Result<()> {
                 .layer(DefaultBodyLimit::max(100 * 1024 * 1024)) // 100MB limit
         )
         .route("/api/convert/download/:file_id", get(handlers::download_converted_file))
+        // Honeypot endpoint - slow markov babble to trap scrapers
+        .route("/api/markov-babble/:slug/gen", get(handlers::markov_babble_honeypot))
         // Swagger UI for API documentation
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         // Serve static files (CSS, JS, images)
@@ -156,4 +162,5 @@ pub struct AppState {
     pub tera: tera::Tera,
     pub timer_manager: timer::TimerManager,
     pub converter_manager: converter::ConverterManager,
+    pub markov_generator: markov::MarkovGenerator,
 }

@@ -1,5 +1,6 @@
 use crate::converter::ConvertResponse;
 use crate::markdown::MarkdownProcessor;
+use crate::markov;
 use crate::models::SearchEntry;
 use crate::timer::{StartTimerRequest, StartTimerResponse, TimerStatusResponse};
 use crate::{rss, AppState};
@@ -15,6 +16,12 @@ use tera::Context;
 use tokio::fs::File;
 use tokio_util::io::ReaderStream;
 
+/// Add honeypot URLs to template context
+fn add_honeypot_urls(context: &mut Context) {
+    let urls = markov::generate_honeypot_urls(10);
+    context.insert("honeypot_urls", &urls);
+}
+
 /// Home page handler - shows recent posts
 pub async fn index(State(state): State<Arc<AppState>>) -> Result<Html<String>, AppError> {
     let processor = MarkdownProcessor::new();
@@ -23,6 +30,7 @@ pub async fn index(State(state): State<Arc<AppState>>) -> Result<Html<String>, A
     let mut context = Context::new();
     context.insert("posts", &posts);
     context.insert("title", "Home");
+    add_honeypot_urls(&mut context);
 
     let html = state.tera.render("index.html", &context).map_err(|e| {
         tracing::error!("Tera render error: {:?}", e);
@@ -40,6 +48,7 @@ pub async fn posts_list(State(state): State<Arc<AppState>>) -> Result<Html<Strin
     let mut context = Context::new();
     context.insert("posts", &posts);
     context.insert("title", "All Posts");
+    add_honeypot_urls(&mut context);
 
     let html = state
         .tera
@@ -65,6 +74,7 @@ pub async fn post_detail(
     let mut context = Context::new();
     context.insert("post", &post);
     context.insert("title", &post.title);
+    add_honeypot_urls(&mut context);
 
     let html = state
         .tera
@@ -90,6 +100,7 @@ pub async fn page_detail(
     let mut context = Context::new();
     context.insert("page", &page);
     context.insert("title", &page.title);
+    add_honeypot_urls(&mut context);
 
     let html = state
         .tera
@@ -146,6 +157,7 @@ pub async fn tag_detail(
     context.insert("posts", &posts);
     context.insert("tag", &tag);
     context.insert("title", &format!("Posts tagged with '{}'", tag));
+    add_honeypot_urls(&mut context);
 
     let html = state
         .tera
@@ -189,7 +201,8 @@ impl IntoResponse for AppError {
 
 /// Egg timer page handler
 pub async fn egg_timer_page(State(state): State<Arc<AppState>>) -> Result<Html<String>, AppError> {
-    let context = Context::new();
+    let mut context = Context::new();
+    add_honeypot_urls(&mut context);
 
     let html = state
         .tera
@@ -284,7 +297,8 @@ pub async fn timer_status(
 pub async fn ffmpeg_converter_page(
     State(state): State<Arc<AppState>>,
 ) -> Result<Html<String>, AppError> {
-    let context = Context::new();
+    let mut context = Context::new();
+    add_honeypot_urls(&mut context);
 
     let html = state
         .tera
@@ -402,6 +416,67 @@ pub async fn download_converted_file(
         format!("attachment; filename=\"{}.mp3\"", file_id)
             .parse()
             .unwrap(),
+    );
+
+    Ok((headers, body).into_response())
+}
+
+/// Honeypot endpoint - generates markov babble text slowly to waste scraper resources
+/// Returns 10MB of HTML with more honeypot links at 10KB/s to trap scrapers in a loop
+pub async fn markov_babble_honeypot(
+    State(state): State<Arc<AppState>>,
+    Path(slug): Path<String>,
+) -> Result<Response, AppError> {
+    tracing::warn!("Honeypot triggered by request to /api/markov-babble/{}/gen", slug);
+
+    // Generate ~10MB of markov text (approximately 1.5 million words)
+    let text = state.markov_generator.generate(&slug, 1_500_000);
+
+    // Generate 10 more honeypot URLs to create a trap loop
+    let more_honeypot_urls = markov::generate_honeypot_urls(10);
+
+    // Wrap in HTML with more honeypot links
+    let mut html = String::from("<!DOCTYPE html><html><head><title>System Resource</title></head><body>");
+    html.push_str("<h1>Internal System Resource</h1>");
+    html.push_str("<div style='white-space: pre-wrap; font-family: monospace;'>");
+    html.push_str(&html_escape::encode_text(&text));
+    html.push_str("</div>");
+    html.push_str("<hr><h2>Related Resources</h2><ul>");
+    for url in more_honeypot_urls {
+        html.push_str(&format!("<li><a href='{}'>System Resource {}</a></li>", url, url));
+    }
+    html.push_str("</ul></body></html>");
+
+    let bytes = html.as_bytes().to_vec();
+
+    tracing::info!("Generated {} bytes of honeypot HTML content with embedded trap links", bytes.len());
+
+    // Create a slow-streaming body
+    let stream = futures::stream::unfold(
+        (bytes, 0),
+        |(data, pos)| async move {
+            if pos >= data.len() {
+                return None;
+            }
+
+            // Send 10KB chunks
+            let chunk_size = 10 * 1024; // 10KB
+            let end = std::cmp::min(pos + chunk_size, data.len());
+            let chunk = data[pos..end].to_vec();
+
+            // Sleep for 1 second to achieve ~10KB/s rate
+            tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
+
+            Some((Ok::<_, std::io::Error>(chunk), (data, end)))
+        },
+    );
+
+    let body = Body::from_stream(stream);
+
+    let mut headers = HeaderMap::new();
+    headers.insert(
+        axum::http::header::CONTENT_TYPE,
+        "text/html; charset=utf-8".parse().unwrap(),
     );
 
     Ok((headers, body).into_response())

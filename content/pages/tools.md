@@ -74,6 +74,11 @@ You can pull these from ollama and self-host. I plan on running my own benchmark
 - hf.co/mlabonne/gemma-3-27b-it-abliterated-GGUF:Q4_K_M
   - TODO: Test.
 
+### Anti AI/Anti Slop
+
+- https://zadzmo.org/code/nepenthes/
+  - Markov chain babble generator. Waste the time/CPU of scrapers.
+
 ## Infra
 
 - docker: containerization platform

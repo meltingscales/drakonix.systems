@@ -53,6 +53,9 @@ futures = "0.3"
 # UUID generation for timers
 uuid = { version = "1", features = ["v4", "serde"] }
 
+# Random number generation for markov chains
+rand = "0.8"
+
 # OpenAPI / Swagger documentation
 utoipa = { version = "5", features = ["axum_extras"] }
 utoipa-swagger-ui = { version = "8", features = ["axum"] }

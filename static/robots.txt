@@ -1,0 +1,14 @@
+# robots.txt - Because we believe in the honor system... right?
+# (If you're reading this, you're probably not a bot. Or you're a very sophisticated bot.)
+
+User-agent: *
+Allow: /
+Disallow: /api/markov-babble/
+
+# Fun fact: If you ignore this robots.txt and scrape us anyway,
+# we've prepared some very special content just for you.
+# It's 10MB of AI-generated technical babble served at a glacial 10KB/s.
+# We hope you enjoy your stay in our tarpit! 🍯
+
+# Pro tip: The links in "Disallow" are not an invitation.
+# They're definitely not a honeypot. Definitely not.

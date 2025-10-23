@@ -1556,6 +1556,7 @@ dependencies = [
  "html-escape",
  "notify",
  "pulldown-cmark",
+ "rand",
  "regex",
  "rss",
  "serde",
