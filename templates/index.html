@@ -1,32 +1,26 @@
-{% extends "base.html" %}
-
-{% block content %}
-<section class="hero">
-    <h1>Welcome to Rust Blog</h1>
-    <p>A blazingly fast blog powered by Rust</p>
-</section>
+{% extends "base.html" %} {% block content %}
 
 <section class="recent-posts">
     <h2>Recent Posts</h2>
     {% if posts %}
-        <div class="posts-grid">
-            {% for post in posts | slice(end=10) %}
-            <article class="post-card">
-                <h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
-                <time datetime="{{ post.date }}">{{ post.date }}</time>
-                {% if post.tags %}
-                <div class="tags">
-                    {% for tag in post.tags %}
-                    <span class="tag">{{ tag }}</span>
-                    {% endfor %}
-                </div>
-                {% endif %}
-            </article>
-            {% endfor %}
-        </div>
-        <a href="/posts" class="view-all">View All Posts →</a>
+    <div class="posts-grid">
+        {% for post in posts | slice(end=10) %}
+        <article class="post-card">
+            <h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
+            <time datetime="{{ post.date }}">{{ post.date }}</time>
+            {% if post.tags %}
+            <div class="tags">
+                {% for tag in post.tags %}
+                <span class="tag">{{ tag }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </article>
+        {% endfor %}
+    </div>
+    <a href="/posts" class="view-all">View All Posts →</a>
     {% else %}
-        <p>No posts yet. Create your first post in <code>content/posts/</code></p>
+    <p>No posts yet. Create your first post in <code>content/posts/</code></p>
     {% endif %}
 </section>
 {% endblock %}
