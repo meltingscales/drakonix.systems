@@ -4,6 +4,7 @@ use std::sync::Arc;
 use std::time::Duration;
 use tokio::sync::RwLock;
 use tokio::time::sleep;
+use utoipa::ToSchema;
 use uuid::Uuid;
 
 #[derive(Clone)]
@@ -15,20 +16,25 @@ struct TimerHandle {
     cancel_tx: tokio::sync::mpsc::Sender<()>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct StartTimerRequest {
+    /// Duration in seconds (max 3600 = 1 hour)
     pub duration_seconds: u64,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, ToSchema)]
 pub struct StartTimerResponse {
+    /// Unique timer identifier
     pub timer_id: String,
+    /// Timer duration in seconds
     pub duration_seconds: u64,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, ToSchema)]
 pub struct TimerStatusResponse {
+    /// Timer identifier
     pub timer_id: String,
+    /// Whether the timer is still active
     pub is_active: bool,
 }
 

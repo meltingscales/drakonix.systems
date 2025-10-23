@@ -1,15 +1,19 @@
+use crate::converter::ConvertResponse;
 use crate::markdown::MarkdownProcessor;
 use crate::models::SearchEntry;
 use crate::timer::{StartTimerRequest, StartTimerResponse, TimerStatusResponse};
 use crate::{rss, AppState};
 use axum::{
-    extract::{Path, State},
+    body::Body,
+    extract::{Multipart, Path, State},
     http::{HeaderMap, StatusCode},
     response::{Html, IntoResponse, Response},
     Json,
 };
 use std::sync::Arc;
 use tera::Context;
+use tokio::fs::File;
+use tokio_util::io::ReaderStream;
 
 /// Home page handler - shows recent posts
 pub async fn index(State(state): State<Arc<AppState>>) -> Result<Html<String>, AppError> {
@@ -195,7 +199,17 @@ pub async fn egg_timer_page(State(state): State<Arc<AppState>>) -> Result<Html<S
     Ok(Html(html))
 }
 
-/// API endpoint to start a timer
+/// Start a new timer
+#[utoipa::path(
+    post,
+    path = "/api/timer/start",
+    request_body = StartTimerRequest,
+    responses(
+        (status = 200, description = "Timer started successfully", body = StartTimerResponse),
+        (status = 500, description = "Internal server error")
+    ),
+    tag = "Timer"
+)]
 pub async fn start_timer(
     State(state): State<Arc<AppState>>,
     Json(request): Json<StartTimerRequest>,
@@ -215,7 +229,19 @@ pub async fn start_timer(
     }))
 }
 
-/// API endpoint to cancel a timer
+/// Cancel a running timer
+#[utoipa::path(
+    post,
+    path = "/api/timer/{timer_id}/cancel",
+    params(
+        ("timer_id" = String, Path, description = "Timer unique identifier")
+    ),
+    responses(
+        (status = 200, description = "Timer cancelled", body = TimerStatusResponse),
+        (status = 500, description = "Internal server error")
+    ),
+    tag = "Timer"
+)]
 pub async fn cancel_timer(
     State(state): State<Arc<AppState>>,
     Path(timer_id): Path<String>,
@@ -228,7 +254,20 @@ pub async fn cancel_timer(
     }))
 }
 
-/// API endpoint to check timer status
+/// Check timer status
+#[utoipa::path(
+    get,
+    path = "/api/timer/{timer_id}/status",
+    params(
+        ("timer_id" = String, Path, description = "Timer unique identifier")
+    ),
+    responses(
+        (status = 200, description = "Timer status retrieved", body = TimerStatusResponse),
+        (status = 404, description = "Timer not found"),
+        (status = 500, description = "Internal server error")
+    ),
+    tag = "Timer"
+)]
 pub async fn timer_status(
     State(state): State<Arc<AppState>>,
     Path(timer_id): Path<String>,
@@ -239,4 +278,106 @@ pub async fn timer_status(
         timer_id,
         is_active,
     }))
+}
+
+/// FFmpeg converter page handler
+pub async fn ffmpeg_converter_page(
+    State(state): State<Arc<AppState>>,
+) -> Result<Html<String>, AppError> {
+    let context = Context::new();
+
+    let html = state
+        .tera
+        .render("ffmpeg_converter.html", &context)
+        .map_err(|e| AppError::TemplateError(e.to_string()))?;
+
+    Ok(Html(html))
+}
+
+/// API endpoint to convert MP4 to MP3
+pub async fn convert_mp4_to_mp3(
+    State(state): State<Arc<AppState>>,
+    mut multipart: Multipart,
+) -> Result<Json<ConvertResponse>, AppError> {
+    let mut file_data: Option<Vec<u8>> = None;
+    let mut bitrate = "192".to_string();
+
+    // Parse multipart form
+    while let Some(field) = multipart
+        .next_field()
+        .await
+        .map_err(|e| AppError::InternalError(anyhow::anyhow!("Multipart error: {}", e)))?
+    {
+        let name = field.name().unwrap_or("").to_string();
+
+        match name.as_str() {
+            "file" => {
+                let data = field
+                    .bytes()
+                    .await
+                    .map_err(|e| AppError::InternalError(anyhow::anyhow!("File read error: {}", e)))?;
+
+                // Limit file size to 100MB
+                if data.len() > 100 * 1024 * 1024 {
+                    return Err(AppError::InternalError(anyhow::anyhow!(
+                        "File too large (max 100MB)"
+                    )));
+                }
+
+                file_data = Some(data.to_vec());
+            }
+            "bitrate" => {
+                let value = field
+                    .text()
+                    .await
+                    .map_err(|e| AppError::InternalError(anyhow::anyhow!("Bitrate read error: {}", e)))?;
+                bitrate = value;
+            }
+            _ => {}
+        }
+    }
+
+    let file_data = file_data.ok_or_else(|| AppError::InternalError(anyhow::anyhow!("No file provided")))?;
+
+    // Convert the file
+    let file_id = state
+        .converter_manager
+        .convert_mp4_to_mp3(file_data, &bitrate)
+        .await
+        .map_err(|e| AppError::InternalError(anyhow::anyhow!("Conversion error: {}", e)))?;
+
+    Ok(Json(ConvertResponse { file_id }))
+}
+
+/// API endpoint to download converted MP3 file
+pub async fn download_converted_file(
+    State(state): State<Arc<AppState>>,
+    Path(file_id): Path<String>,
+) -> Result<Response, AppError> {
+    let file_path = state
+        .converter_manager
+        .get_conversion_file(&file_id)
+        .await
+        .ok_or_else(|| AppError::NotFound)?;
+
+    let file = File::open(&file_path)
+        .await
+        .map_err(|e| AppError::InternalError(anyhow::anyhow!("File open error: {}", e)))?;
+
+    let stream = ReaderStream::new(file);
+    let body = Body::from_stream(stream);
+
+    let mut headers = HeaderMap::new();
+    headers.insert(
+        axum::http::header::CONTENT_TYPE,
+        "audio/mpeg".parse().unwrap(),
+    );
+    headers.insert(
+        axum::http::header::CONTENT_DISPOSITION,
+        format!("attachment; filename=\"{}.mp3\"", file_id)
+            .parse()
+            .unwrap(),
+    );
+
+    Ok((headers, body).into_response())
 }

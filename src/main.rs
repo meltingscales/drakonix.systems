@@ -1,13 +1,47 @@
+mod converter;
 mod handlers;
 mod markdown;
 mod models;
 mod rss;
 mod timer;
 
-use axum::{routing::{get, post}, Router};
+use axum::{
+    extract::DefaultBodyLimit,
+    routing::{get, post},
+    Router,
+};
 use std::net::SocketAddr;
 use tower_http::{compression::CompressionLayer, services::ServeDir, trace::TraceLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+use utoipa::OpenApi;
+use utoipa_swagger_ui::SwaggerUi;
+
+#[derive(OpenApi)]
+#[openapi(
+    paths(
+        handlers::start_timer,
+        handlers::cancel_timer,
+        handlers::timer_status,
+    ),
+    components(
+        schemas(
+            timer::StartTimerRequest,
+            timer::StartTimerResponse,
+            timer::TimerStatusResponse,
+            converter::ConvertResponse,
+        )
+    ),
+    tags(
+        (name = "Timer", description = "Kitchen timer API endpoints"),
+        (name = "Converter", description = "Media conversion API endpoints")
+    ),
+    info(
+        title = "Rust Blog Services API",
+        version = "0.1.0",
+        description = "API documentation for blog services including timers and media conversion",
+    )
+)]
+struct ApiDoc;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -60,10 +94,13 @@ async fn main() -> anyhow::Result<()> {
     );
 
     let timer_manager = timer::TimerManager::new();
+    let converter_manager = converter::ConverterManager::new()
+        .map_err(|e| anyhow::anyhow!("Failed to initialize converter: {}", e))?;
 
     let state = std::sync::Arc::new(AppState {
         tera,
         timer_manager,
+        converter_manager,
     });
 
     // Build the application router
@@ -80,6 +117,16 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/timer/start", post(handlers::start_timer))
         .route("/api/timer/:timer_id/cancel", post(handlers::cancel_timer))
         .route("/api/timer/:timer_id/status", get(handlers::timer_status))
+        // FFmpeg converter service
+        .route("/services/ffmpeg-mp4-to-mp3", get(handlers::ffmpeg_converter_page))
+        .route(
+            "/api/convert/mp4-to-mp3",
+            post(handlers::convert_mp4_to_mp3)
+                .layer(DefaultBodyLimit::max(100 * 1024 * 1024)) // 100MB limit
+        )
+        .route("/api/convert/download/:file_id", get(handlers::download_converted_file))
+        // Swagger UI for API documentation
+        .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         // Serve static files (CSS, JS, images)
         .nest_service("/static", ServeDir::new("static"))
         .layer(CompressionLayer::new())
@@ -106,4 +153,5 @@ async fn main() -> anyhow::Result<()> {
 pub struct AppState {
     pub tera: tera::Tera,
     pub timer_manager: timer::TimerManager,
+    pub converter_manager: converter::ConverterManager,
 }

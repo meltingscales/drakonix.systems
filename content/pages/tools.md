@@ -61,6 +61,19 @@ Only Linux, except for a Windows computer I use for piano playing.
 The basic pattern to locally host is just to run `ollama` on a powerful PC, set up a VPN with `tailscale`, and then
 just connect to the ollama endpoint with your less powerful computer via a coding agent like `aider` or a frontend like `openwebui`.
 
+### Local AI models
+
+You can pull these from ollama and self-host. I plan on running my own benchmarks on each.
+
+- llama3.2:3b
+  - TODO: Test.
+- yuiseki/devstral-small-2507:24b
+  - TODO: Test.
+- hf.co/bartowski/Qwen2.5-Coder-14B-Instruct-abliterated-GGUF:Q4_K_S
+  - TODO: Test.
+- hf.co/mlabonne/gemma-3-27b-it-abliterated-GGUF:Q4_K_M
+  - TODO: Test.
+
 ## Infra
 
 - docker: containerization platform
