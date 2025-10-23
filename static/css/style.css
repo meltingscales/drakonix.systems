@@ -43,7 +43,7 @@ header nav {
     margin: 0 auto;
 }
 
-header nav ul {
+header nav > ul {
     display: flex;
     gap: 2rem;
     list-style: none;
@@ -63,39 +63,51 @@ header nav .logo {
 /* Dropdown menu */
 header nav .dropdown {
     position: relative;
+    display: flex;
+    align-items: center;
+    /* Add padding to bottom to bridge the gap for easier hovering */
+    padding-bottom: 0.5rem;
 }
 
 header nav .dropdown-toggle {
     cursor: pointer;
     user-select: none;
+    display: block;
+    /* Remove extra padding to compensate */
+    padding-bottom: 0;
 }
 
 header nav .dropdown-menu {
     display: none;
     position: absolute;
-    top: 100%;
+    top: calc(100% - 0.5rem);
     left: 0;
     background: white;
     border: 1px solid #ddd;
     border-radius: 3px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     min-width: 200px;
-    margin-top: 0.5rem;
+    margin-top: 0;
     padding: 0.5rem 0;
     z-index: 1000;
+    list-style: none;
+    flex-direction: column;
+    gap: 0;
 }
 
 header nav .dropdown:hover .dropdown-menu {
-    display: block;
+    display: flex;
 }
 
 header nav .dropdown-menu li {
     padding: 0;
+    margin: 0;
 }
 
 header nav .dropdown-menu a {
     display: block;
     padding: 0.5rem 1rem;
+    white-space: nowrap;
 }
 
 header nav .dropdown-menu a:hover {
