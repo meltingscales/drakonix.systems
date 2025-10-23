@@ -1,37 +1,52 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{{ title | default(value="Rust Blog") }}{% endblock %}</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-    <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/rss.xml">
-</head>
-<body>
-    <header>
-        <nav>
-            <a href="/" class="logo">/home/henrypost/</a>
-            <ul>
-                <li><a href="/pages/about-me">~/about-me</a></li>
-                <li><a href="/pages/about-site">~/about-site</a></li>
-                <li><a href="/pages/resume">~/resume</a></li>
-                <li><a href="/pages/projects">~/projects</a></li>
-                <li><a href="/pages/webring">~/webring</a></li>
-                <li><a href="/pages/tools">~/tools</a></li>
-                <li><a href="/rss.xml">~/rss</a></li>
-                <li><input type="search" id="search" placeholder="Search..."></li>
-            </ul>
-        </nav>
-    </header>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            {% block title %}{{ title | default(value="Rust Blog") }}{% endblock
+            %}
+        </title>
+        <link rel="stylesheet" href="/static/css/style.css" />
+        <link
+            rel="alternate"
+            type="application/rss+xml"
+            title="RSS Feed"
+            href="/rss.xml"
+        />
+    </head>
+    <body>
+        <header>
+            <nav>
+                <a href="/" class="logo">/home/henrypost/</a>
+                <ul>
+                    <li><a href="/pages/about-me">~/about-me</a></li>
+                    <li><a href="/pages/about-site">~/about-site</a></li>
+                    <li><a href="/pages/resume">~/resume</a></li>
+                    <li><a href="/pages/projects">~/projects</a></li>
+                    <li><a href="/pages/webring">~/webring</a></li>
+                    <li><a href="/pages/tools">~/tools</a></li>
+                    <li><a href="/rss.xml">~/rss</a></li>
+                    <li>
+                        <input
+                            type="search"
+                            id="search"
+                            placeholder="Search..."
+                        />
+                    </li>
+                </ul>
+            </nav>
+        </header>
 
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+        <main>{% block content %}{% endblock %}</main>
 
-    <footer>
-        <p>&copy; 2025 Rust Blog. <a href="/rss.xml">RSS Feed</a></p>
-    </footer>
+        <footer>
+            <p>
+                &copy; 2026 Henry Post/meltingscales.
+                <a href="/rss.xml">RSS Feed</a>
+            </p>
+        </footer>
 
-    <script src="/static/js/search.js"></script>
-</body>
+        <script src="/static/js/search.js"></script>
+    </body>
 </html>
