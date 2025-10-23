@@ -1,12 +1,19 @@
 use crate::models::{Page, Post};
 use anyhow::{Context, Result};
-use pulldown_cmark::{html, CodeBlockKind, Event, Options, Parser, Tag, TagEnd};
+use pulldown_cmark::{html, CodeBlockKind, Event, HeadingLevel, Options, Parser, Tag, TagEnd};
 use regex::Regex;
 use std::fs;
 use std::path::{Path, PathBuf};
 use syntect::highlighting::ThemeSet;
 use syntect::html::highlighted_html_for_string;
 use syntect::parsing::SyntaxSet;
+
+#[derive(Debug, Clone)]
+struct TocEntry {
+    level: u8,
+    text: String,
+    id: String,
+}
 
 enum FrontmatterFormat {
     Yaml,
@@ -86,6 +93,194 @@ impl MarkdownProcessor {
         })
     }
 
+    /// Generate a slug from text for use as an ID
+    fn generate_id(text: &str) -> String {
+        text.to_lowercase()
+            .chars()
+            .map(|c| if c.is_alphanumeric() || c == ' ' { c } else { ' ' })
+            .collect::<String>()
+            .split_whitespace()
+            .collect::<Vec<_>>()
+            .join("-")
+    }
+
+    /// Extract table of contents from markdown
+    fn extract_toc(&self, markdown: &str) -> Vec<TocEntry> {
+        let mut options = Options::empty();
+        options.insert(Options::ENABLE_STRIKETHROUGH);
+        options.insert(Options::ENABLE_TABLES);
+        options.insert(Options::ENABLE_FOOTNOTES);
+        options.insert(Options::ENABLE_TASKLISTS);
+
+        let parser = Parser::new_ext(markdown, options);
+        let mut toc_entries = Vec::new();
+        let mut current_heading_level: Option<HeadingLevel> = None;
+        let mut current_heading_text = String::new();
+
+        for event in parser {
+            match event {
+                Event::Start(Tag::Heading { level, .. }) => {
+                    current_heading_level = Some(level);
+                    current_heading_text.clear();
+                }
+                Event::End(TagEnd::Heading(_)) => {
+                    if let Some(level) = current_heading_level {
+                        let level_num = match level {
+                            HeadingLevel::H1 => 1,
+                            HeadingLevel::H2 => 2,
+                            HeadingLevel::H3 => 3,
+                            HeadingLevel::H4 => 4,
+                            HeadingLevel::H5 => 5,
+                            HeadingLevel::H6 => 6,
+                        };
+
+                        let id = Self::generate_id(&current_heading_text);
+                        toc_entries.push(TocEntry {
+                            level: level_num,
+                            text: current_heading_text.clone(),
+                            id,
+                        });
+                    }
+                    current_heading_level = None;
+                }
+                Event::Text(text) if current_heading_level.is_some() => {
+                    current_heading_text.push_str(&text);
+                }
+                Event::Code(code) if current_heading_level.is_some() => {
+                    current_heading_text.push_str(&code);
+                }
+                _ => {}
+            }
+        }
+
+        toc_entries
+    }
+
+    /// Generate HTML for table of contents
+    fn generate_toc_html(&self, toc_entries: &[TocEntry]) -> String {
+        if toc_entries.is_empty() {
+            return String::new();
+        }
+
+        let mut html = String::from("<nav class=\"toc\">\n<h2>Table of Contents</h2>\n<ul>\n");
+        let mut current_level = 0u8;
+
+        for entry in toc_entries {
+            // Open nested lists as needed
+            while current_level < entry.level {
+                if current_level > 0 {
+                    html.push_str("<ul>\n");
+                }
+                current_level += 1;
+            }
+
+            // Close nested lists as needed
+            while current_level > entry.level {
+                html.push_str("</ul>\n</li>\n");
+                current_level -= 1;
+            }
+
+            html.push_str(&format!(
+                "<li><a href=\"#{}\">{}</a>",
+                html_escape::encode_text(&entry.id),
+                html_escape::encode_text(&entry.text)
+            ));
+
+            // Only close <li> if next entry is same level or lower
+            // We'll handle this at the end or when level changes
+        }
+
+        // Close all remaining open lists
+        while current_level > 0 {
+            html.push_str("</li>\n");
+            if current_level > 1 {
+                html.push_str("</ul>\n");
+            }
+            current_level -= 1;
+        }
+
+        html.push_str("</ul>\n</nav>\n");
+        html
+    }
+
+    /// Parse markdown with syntax highlighting and add IDs to headings for TOC
+    pub fn parse_with_heading_ids(&self, markdown: &str) -> String {
+        let mut options = Options::empty();
+        options.insert(Options::ENABLE_STRIKETHROUGH);
+        options.insert(Options::ENABLE_TABLES);
+        options.insert(Options::ENABLE_FOOTNOTES);
+        options.insert(Options::ENABLE_TASKLISTS);
+
+        let parser = Parser::new_ext(markdown, options);
+        let mut in_code_block = false;
+        let mut code_block_lang = String::new();
+        let mut code_block_content = String::new();
+        let mut current_heading_level: Option<HeadingLevel> = None;
+        let mut current_heading_text = String::new();
+
+        let events: Vec<Event> = parser
+            .into_iter()
+            .flat_map(|event| match event {
+                Event::Start(Tag::CodeBlock(CodeBlockKind::Fenced(lang))) => {
+                    in_code_block = true;
+                    code_block_lang = lang.to_string();
+                    code_block_content.clear();
+                    vec![]
+                }
+                Event::End(TagEnd::CodeBlock) if in_code_block => {
+                    in_code_block = false;
+                    let highlighted = self.highlight_code(&code_block_content, &code_block_lang);
+                    vec![Event::Html(highlighted.into())]
+                }
+                Event::Text(text) if in_code_block => {
+                    code_block_content.push_str(&text);
+                    vec![]
+                }
+                Event::Start(Tag::Heading { level, .. }) => {
+                    current_heading_level = Some(level);
+                    current_heading_text.clear();
+                    vec![]
+                }
+                Event::End(TagEnd::Heading(level)) => {
+                    let id = Self::generate_id(&current_heading_text);
+                    let level_tag = match level {
+                        HeadingLevel::H1 => "h1",
+                        HeadingLevel::H2 => "h2",
+                        HeadingLevel::H3 => "h3",
+                        HeadingLevel::H4 => "h4",
+                        HeadingLevel::H5 => "h5",
+                        HeadingLevel::H6 => "h6",
+                    };
+
+                    current_heading_level = None;
+                    vec![Event::Html(
+                        format!(
+                            "<{} id=\"{}\">{}</{}>",
+                            level_tag,
+                            html_escape::encode_text(&id),
+                            html_escape::encode_text(&current_heading_text),
+                            level_tag
+                        )
+                        .into(),
+                    )]
+                }
+                Event::Text(text) if current_heading_level.is_some() => {
+                    current_heading_text.push_str(&text);
+                    vec![]
+                }
+                Event::Code(code) if current_heading_level.is_some() => {
+                    current_heading_text.push_str(&code);
+                    vec![]
+                }
+                _ => vec![event],
+            })
+            .collect();
+
+        let mut html_output = String::new();
+        html::push_html(&mut html_output, events.into_iter());
+        html_output
+    }
+
     /// Load and parse a blog post from a markdown file
     pub fn load_post(&self, path: &Path) -> Result<Post> {
         let content = fs::read_to_string(path)
@@ -108,7 +303,16 @@ impl MarkdownProcessor {
         };
 
         post.content = body.to_string();
-        post.html = self.parse(&body);
+
+        // Generate TOC if requested
+        if post.toc {
+            let toc_entries = self.extract_toc(&body);
+            post.toc_html = self.generate_toc_html(&toc_entries);
+            post.html = self.parse_with_heading_ids(&body);
+        } else {
+            post.html = self.parse(&body);
+        }
+
         post.slug = self.extract_slug(path)?;
         post.url = format!("/posts/{}", post.slug);
         post.file_path = path.to_path_buf();
@@ -131,7 +335,16 @@ impl MarkdownProcessor {
         };
 
         page.content = body.to_string();
-        page.html = self.parse(&body);
+
+        // Generate TOC if requested
+        if page.toc {
+            let toc_entries = self.extract_toc(&body);
+            page.toc_html = self.generate_toc_html(&toc_entries);
+            page.html = self.parse_with_heading_ids(&body);
+        } else {
+            page.html = self.parse(&body);
+        }
+
         page.slug = self.extract_slug(path)?;
         page.url = format!("/pages/{}", page.slug);
         page.file_path = path.to_path_buf();

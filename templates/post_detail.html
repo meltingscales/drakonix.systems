@@ -18,6 +18,10 @@
         </div>
     </header>
 
+    {% if post.toc and post.toc_html %}
+    {{ post.toc_html | safe }}
+    {% endif %}
+
     <div class="post-content">
         {{ post.html | safe }}
     </div>

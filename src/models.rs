@@ -47,6 +47,10 @@ pub struct Post {
     pub draft: bool,
     #[serde(default)]
     pub tags: Vec<String>,
+    #[serde(default)]
+    pub toc: bool,
+    #[serde(skip_deserializing, default)]
+    pub toc_html: String,
     #[serde(skip_deserializing)]
     pub file_path: PathBuf,
     // Optional Hugo fields
@@ -97,6 +101,10 @@ pub struct Page {
     pub content: String,
     #[serde(skip_deserializing, default)]
     pub html: String,
+    #[serde(default)]
+    pub toc: bool,
+    #[serde(skip_deserializing, default)]
+    pub toc_html: String,
     #[serde(skip_deserializing)]
     pub file_path: PathBuf,
 }

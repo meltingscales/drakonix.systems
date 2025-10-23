@@ -1,6 +1,7 @@
 ---
 title: "Projects"
 date: 2025-01-01
+toc: true
 ---
 
 ## 2012 (beginning of highschool)
