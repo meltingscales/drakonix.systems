@@ -52,7 +52,11 @@ pub struct Post {
     // Optional Hugo fields
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub author: Option<String>,
-    #[serde(rename = "authorTwitter", default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename = "authorTwitter",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
     pub author_twitter: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cover: Option<String>,
@@ -60,11 +64,23 @@ pub struct Post {
     pub keywords: Option<Vec<String>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
-    #[serde(rename = "showFullContent", default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename = "showFullContent",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
     pub show_full_content: Option<bool>,
-    #[serde(rename = "readingTime", default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename = "readingTime",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
     pub reading_time: Option<bool>,
-    #[serde(rename = "hideComments", default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename = "hideComments",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
     pub hide_comments: Option<bool>,
 }
 

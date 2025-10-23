@@ -1,5 +1,5 @@
 # Build stage
-FROM rust:1.83-slim as builder
+FROM rust:latest as builder
 
 WORKDIR /app
 
@@ -42,11 +42,8 @@ COPY --from=builder /app/target/release/rust-blog /app/rust-blog
 COPY templates /app/templates
 COPY static /app/static
 
-# Create content directory (will be populated at runtime)
-RUN mkdir -p /app/content/posts /app/content/pages
-
-# Copy example content if exists
-COPY content /app/content 2>/dev/null || true
+# Copy example content
+COPY content /app/content
 
 # Set environment variables
 ENV RUST_LOG=info

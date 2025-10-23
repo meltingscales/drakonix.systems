@@ -3,6 +3,8 @@ target/
 .gitignore
 *.md
 !README.md
+!content/**/*.md
+!content/**/*.markdown
 .env
 .env.*
 trivy-report.*

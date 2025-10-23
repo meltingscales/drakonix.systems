@@ -95,7 +95,7 @@ docker-clean:
 # ==============
 
 # Set these variables for your GCP project
-GCP_PROJECT := env_var_or_default("GCP_PROJECT", "your-gcp-project-id")
+GCP_PROJECT := env_var_or_default("GCP_PROJECT", "personal-site-meltingscales")
 GCP_REGION := env_var_or_default("GCP_REGION", "us-central1")
 SERVICE_NAME := "rust-blog"
 DOMAIN_NAME := env_var_or_default("DOMAIN_NAME", "blog.example.com")

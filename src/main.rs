@@ -3,16 +3,9 @@ mod markdown;
 mod models;
 mod rss;
 
-use axum::{
-    routing::get,
-    Router,
-};
+use axum::{routing::get, Router};
 use std::net::SocketAddr;
-use tower_http::{
-    compression::CompressionLayer,
-    services::ServeDir,
-    trace::TraceLayer,
-};
+use tower_http::{compression::CompressionLayer, services::ServeDir, trace::TraceLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]
@@ -26,27 +19,44 @@ async fn main() -> anyhow::Result<()> {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
+    tracing::info!("Starting application initialization...");
+
     // Initialize template engine
-    let mut tera = tera::Tera::new("templates/**/*.html")?;
+    tracing::info!("Loading templates from templates/**/*.html");
+    let mut tera = match tera::Tera::new("templates/**/*.html") {
+        Ok(t) => {
+            tracing::info!("Successfully loaded {} templates", t.get_template_names().count());
+            t
+        }
+        Err(e) => {
+            tracing::error!("Failed to load templates: {}", e);
+            return Err(e.into());
+        }
+    };
 
     // Register custom date filter
-    tera.register_filter("date", |value: &tera::Value, args: &std::collections::HashMap<String, tera::Value>| {
-        use chrono::{DateTime, Utc};
+    tera.register_filter(
+        "date",
+        |value: &tera::Value, args: &std::collections::HashMap<String, tera::Value>| {
+            use chrono::{DateTime, Utc};
 
-        // Parse the date string
-        let date_str = value.as_str().ok_or_else(|| tera::Error::msg("Date value must be a string"))?;
-        let dt = DateTime::parse_from_rfc3339(date_str)
-            .map_err(|e| tera::Error::msg(format!("Invalid date format: {}", e)))?
-            .with_timezone(&Utc);
+            // Parse the date string
+            let date_str = value
+                .as_str()
+                .ok_or_else(|| tera::Error::msg("Date value must be a string"))?;
+            let dt = DateTime::parse_from_rfc3339(date_str)
+                .map_err(|e| tera::Error::msg(format!("Invalid date format: {}", e)))?
+                .with_timezone(&Utc);
 
-        // Get format argument
-        let format = args
-            .get("format")
-            .and_then(|v| v.as_str())
-            .unwrap_or("%Y-%m-%d");
+            // Get format argument
+            let format = args
+                .get("format")
+                .and_then(|v| v.as_str())
+                .unwrap_or("%Y-%m-%d");
 
-        Ok(tera::to_value(dt.format(format).to_string())?)
-    });
+            Ok(tera::to_value(dt.format(format).to_string())?)
+        },
+    );
 
     let state = std::sync::Arc::new(AppState { tera });
 

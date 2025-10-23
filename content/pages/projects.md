@@ -321,10 +321,10 @@ All in all, it was a fun engagement and I could probably easily automate it sinc
 
 I volunteer at a wonderful animal shelter called "Community Animal Rescue Effort" (C.A.R.E.) in Skokie.
 
-https://www.carenorthshore.org/
+[C.A.R.E. Northshore](https://www.carenorthshore.org/)
 
 Their staff needed a more efficient way to stitch data together, so I made them a website. It's pretty secure, fast, and simple.
 
-https://care-shelter-donation-aggregation-163012697625.us-central1.run.app/about
+[CARE Shelter Donation Aggregation](https://care-shelter-donation-aggregation-163012697625.us-central1.run.app/about)
 
-https://github.com/meltingscales/CAREShelterDonationDataAggregation
+[Source code](https://github.com/meltingscales/CAREShelterDonationDataAggregation)

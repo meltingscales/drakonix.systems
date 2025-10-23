@@ -81,8 +81,9 @@ impl MarkdownProcessor {
 
         let theme = &self.theme_set.themes["base16-ocean.dark"];
 
-        highlighted_html_for_string(code, &self.syntax_set, syntax, theme)
-            .unwrap_or_else(|_| format!("<pre><code>{}</code></pre>", html_escape::encode_text(code)))
+        highlighted_html_for_string(code, &self.syntax_set, syntax, theme).unwrap_or_else(|_| {
+            format!("<pre><code>{}</code></pre>", html_escape::encode_text(code))
+        })
     }
 
     /// Load and parse a blog post from a markdown file
@@ -92,10 +93,18 @@ impl MarkdownProcessor {
 
         let (frontmatter, body, format) = self.split_frontmatter(&content)?;
         let mut post: Post = match format {
-            FrontmatterFormat::Yaml => serde_yaml::from_str(&frontmatter)
-                .with_context(|| format!("Failed to parse YAML frontmatter. Content:\n{}", frontmatter))?,
-            FrontmatterFormat::Toml => toml::from_str(&frontmatter)
-                .with_context(|| format!("Failed to parse TOML frontmatter. Content:\n{}", frontmatter))?,
+            FrontmatterFormat::Yaml => serde_yaml::from_str(&frontmatter).with_context(|| {
+                format!(
+                    "Failed to parse YAML frontmatter. Content:\n{}",
+                    frontmatter
+                )
+            })?,
+            FrontmatterFormat::Toml => toml::from_str(&frontmatter).with_context(|| {
+                format!(
+                    "Failed to parse TOML frontmatter. Content:\n{}",
+                    frontmatter
+                )
+            })?,
         };
 
         post.content = body.to_string();
@@ -116,8 +125,9 @@ impl MarkdownProcessor {
         let mut page: Page = match format {
             FrontmatterFormat::Yaml => serde_yaml::from_str(&frontmatter)
                 .with_context(|| "Failed to parse YAML frontmatter")?,
-            FrontmatterFormat::Toml => toml::from_str(&frontmatter)
-                .with_context(|| "Failed to parse TOML frontmatter")?,
+            FrontmatterFormat::Toml => {
+                toml::from_str(&frontmatter).with_context(|| "Failed to parse TOML frontmatter")?
+            }
         };
 
         page.content = body.to_string();
@@ -130,13 +140,20 @@ impl MarkdownProcessor {
     }
 
     /// Split frontmatter from markdown content (supports both YAML and TOML)
-    fn split_frontmatter<'a>(&self, content: &'a str) -> Result<(String, String, FrontmatterFormat)> {
+    fn split_frontmatter<'a>(
+        &self,
+        content: &'a str,
+    ) -> Result<(String, String, FrontmatterFormat)> {
         // Try YAML format first (---)
         let yaml_re = Regex::new(r"(?s)^---\s*\n(.*?)\n---\s*\n(.*)$").unwrap();
         if let Some(caps) = yaml_re.captures(content) {
             let frontmatter = caps.get(1).map(|m| m.as_str()).unwrap_or("");
             let body = caps.get(2).map(|m| m.as_str()).unwrap_or("");
-            return Ok((frontmatter.to_string(), body.to_string(), FrontmatterFormat::Yaml));
+            return Ok((
+                frontmatter.to_string(),
+                body.to_string(),
+                FrontmatterFormat::Yaml,
+            ));
         }
 
         // Try TOML format (+++)
@@ -144,7 +161,11 @@ impl MarkdownProcessor {
         if let Some(caps) = toml_re.captures(content) {
             let frontmatter = caps.get(1).map(|m| m.as_str()).unwrap_or("");
             let body = caps.get(2).map(|m| m.as_str()).unwrap_or("");
-            return Ok((frontmatter.to_string(), body.to_string(), FrontmatterFormat::Toml));
+            return Ok((
+                frontmatter.to_string(),
+                body.to_string(),
+                FrontmatterFormat::Toml,
+            ));
         }
 
         anyhow::bail!("No frontmatter found in markdown file (tried YAML and TOML formats)");

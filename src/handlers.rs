@@ -19,13 +19,10 @@ pub async fn index(State(state): State<Arc<AppState>>) -> Result<Html<String>, A
     context.insert("posts", &posts);
     context.insert("title", "Home");
 
-    let html = state
-        .tera
-        .render("index.html", &context)
-        .map_err(|e| {
-            tracing::error!("Tera render error: {:?}", e);
-            AppError::TemplateError(format!("{:#?}", e))
-        })?;
+    let html = state.tera.render("index.html", &context).map_err(|e| {
+        tracing::error!("Tera render error: {:?}", e);
+        AppError::TemplateError(format!("{:#?}", e))
+    })?;
 
     Ok(Html(html))
 }
@@ -119,10 +116,7 @@ pub async fn search_index() -> Result<Json<Vec<SearchEntry>>, AppError> {
     let posts = processor.load_all_posts()?;
     let pages = processor.load_all_pages()?;
 
-    let mut entries: Vec<SearchEntry> = posts
-        .into_iter()
-        .map(|p| p.to_search_entry())
-        .collect();
+    let mut entries: Vec<SearchEntry> = posts.into_iter().map(|p| p.to_search_entry()).collect();
 
     entries.extend(pages.into_iter().map(|p| p.to_search_entry()));
 
