@@ -35,19 +35,19 @@ pub struct Post {
     pub title: String,
     #[serde(deserialize_with = "deserialize_flexible_date")]
     pub date: DateTime<Utc>,
-    #[serde(skip, default)]
+    #[serde(skip_deserializing, default)]
     pub slug: String,
-    #[serde(skip, default)]
+    #[serde(skip_deserializing, default)]
     pub url: String,
-    #[serde(skip, default)]
+    #[serde(skip_deserializing, default)]
     pub content: String,
-    #[serde(skip, default)]
+    #[serde(skip_deserializing, default)]
     pub html: String,
     #[serde(default)]
     pub draft: bool,
     #[serde(default)]
     pub tags: Vec<String>,
-    #[serde(skip)]
+    #[serde(skip_deserializing)]
     pub file_path: PathBuf,
     // Optional Hugo fields
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -73,15 +73,15 @@ pub struct Page {
     pub title: String,
     #[serde(deserialize_with = "deserialize_flexible_date")]
     pub date: DateTime<Utc>,
-    #[serde(skip, default)]
+    #[serde(skip_deserializing, default)]
     pub slug: String,
-    #[serde(skip, default)]
+    #[serde(skip_deserializing, default)]
     pub url: String,
-    #[serde(skip, default)]
+    #[serde(skip_deserializing, default)]
     pub content: String,
-    #[serde(skip, default)]
+    #[serde(skip_deserializing, default)]
     pub html: String,
-    #[serde(skip)]
+    #[serde(skip_deserializing)]
     pub file_path: PathBuf,
 }
 

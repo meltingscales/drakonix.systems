@@ -1,3 +1,8 @@
+---
+title: "Tools"
+date: 2025-01-01
+---
+
 # Tools
 
 A list of tools I use.

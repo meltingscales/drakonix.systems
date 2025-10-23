@@ -1,3 +1,8 @@
+---
+title: "Resume"
+date: 2025-01-01
+---
+
 # Resume
 
 ## Summary

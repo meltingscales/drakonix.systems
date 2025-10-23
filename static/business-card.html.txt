@@ -1,0 +1,84 @@
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<style>
+
+/* //if screen width is smaller than 3.5in */
+@media (max-width: 3.5in) {
+
+}
+
+/* //if screen is wider than 3.5in */
+@media only screen and (min-width: 3.5in) {
+  /* //then */
+  .business-card {
+    width: 35em !important;
+    height: 20em !important;
+  }
+}
+
+
+.business-card {
+  /* // avoids changing size if padding/margin changes.
+  // critical as these need to be typographically aligned. */
+  box-sizing: border-box;
+
+  /* //add padding for cutting */
+  padding: 0.75em; /*//TODO: Is this correct?*/
+
+  background: black;
+  color: white;
+}
+
+.business-card pre code {
+  color: lightgreen;
+}
+
+</style>
+
+<div class="business-card-both container">
+  <div class="business-card business-card-front container">
+    <h1>~/HenryPost</h1>
+    <pre><code>&gt; wget hnry.pst/business-card.tex; cat ./business-card.tex ⏎</code></pre>
+    <p style="text-align: center">
+      Cybersec - Automation Engineer - Helm &amp; K8s - L2 Support &amp;
+      DevSecOps
+    </p>
+    <table width="100%">
+      <tr>
+        <td>
+          <img
+            src="https://meltingscales.github.io/static/headshot.png"
+            alt="A picture of Henry smiling"
+            style="width: 7.5em; height: 7.5em; border: 5px solid darkgrey"
+          />
+        </td>
+        <td style="text-align: right">
+          <ul style="list-style: none; color:white">
+            <li>Chicago | Martha's Vineyard</li>
+            <li>meltingscales.github.io</li>
+            <li>henryfbp [at] gmail [dot] com</li>
+          </ul>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <hr />
+  <div class="business-card business-card-back container">
+    <div class="container">
+      <p>
+        I have an intense drive to explain, document, and teach programming and
+        technology concepts. When creating code, I strive to create reusable,
+        clean, and well-documented code. I have a wide and deep history of
+        programming projects, all under version control and most on my GitHub:
+        <br /><br />
+        <p style="text-align: center">github.com/meltingscales</p>
+      </p>
+      <p>
+        In short, I love to program, teach, and document my work; and I would
+        say that I’m very good at it.
+      </p>
+    </div>
+    <span>
+      <pre><code>skills = 'Python,Java,Kubernetes,Helm,Linux,SQL'.split(',')</code></pre>
+    </span>
+  </div>
+</div>

@@ -22,7 +22,10 @@ pub async fn index(State(state): State<Arc<AppState>>) -> Result<Html<String>, A
     let html = state
         .tera
         .render("index.html", &context)
-        .map_err(|e| AppError::TemplateError(e.to_string()))?;
+        .map_err(|e| {
+            tracing::error!("Tera render error: {:?}", e);
+            AppError::TemplateError(format!("{:#?}", e))
+        })?;
 
     Ok(Html(html))
 }

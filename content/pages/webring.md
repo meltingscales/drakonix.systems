@@ -1,3 +1,8 @@
+---
+title: "Webring"
+date: 2025-01-01
+---
+
 This is a curated list of other people's websites that I think are neat.
 
 

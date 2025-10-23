@@ -1,3 +1,8 @@
+---
+title: "About Me"
+date: 2025-01-01
+---
+
 Hello! Welcome to Henry Post's (my!) public website.
 
 ![](/static/headshot.png)

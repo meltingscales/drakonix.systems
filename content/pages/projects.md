@@ -1,3 +1,8 @@
+---
+title: "Projects"
+date: 2025-01-01
+---
+
 ## 2012 (beginning of highschool)
 
 ### NCP Tech Club
