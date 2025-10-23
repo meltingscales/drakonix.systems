@@ -4,6 +4,7 @@ mod markov;
 mod markdown;
 mod models;
 mod rss;
+mod schizo_rng;
 mod timer;
 
 use axum::{
@@ -25,6 +26,7 @@ use utoipa_swagger_ui::SwaggerUi;
         handlers::timer_status,
         handlers::convert_mp4_to_mp3,
         handlers::download_converted_file,
+        handlers::markov_babble_honeypot,
     ),
     components(
         schemas(
@@ -36,7 +38,8 @@ use utoipa_swagger_ui::SwaggerUi;
     ),
     tags(
         (name = "Timer", description = "Kitchen timer API endpoints"),
-        (name = "Converter", description = "Media conversion API endpoints")
+        (name = "Converter", description = "Media conversion API endpoints"),
+        (name = "Fun", description = "its fun lol")
     ),
     info(
         title = "Rust Blog Services API",

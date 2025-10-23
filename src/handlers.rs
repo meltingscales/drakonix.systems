@@ -2,6 +2,7 @@ use crate::converter::ConvertResponse;
 use crate::markdown::MarkdownProcessor;
 use crate::markov;
 use crate::models::SearchEntry;
+use crate::schizo_rng;
 use crate::timer::{StartTimerRequest, StartTimerResponse, TimerStatusResponse};
 use crate::{rss, AppState};
 use axum::{
@@ -247,7 +248,10 @@ pub async fn start_timer(
         )));
     }
 
-    let timer_id = state.timer_manager.start_timer(request.duration_seconds).await;
+    let timer_id = state
+        .timer_manager
+        .start_timer(request.duration_seconds)
+        .await;
 
     Ok(Json(StartTimerResponse {
         timer_id,
@@ -351,10 +355,9 @@ pub async fn convert_mp4_to_mp3(
 
         match name.as_str() {
             "file" => {
-                let data = field
-                    .bytes()
-                    .await
-                    .map_err(|e| AppError::InternalError(anyhow::anyhow!("File read error: {}", e)))?;
+                let data = field.bytes().await.map_err(|e| {
+                    AppError::InternalError(anyhow::anyhow!("File read error: {}", e))
+                })?;
 
                 // Limit file size to 100MB
                 if data.len() > 100 * 1024 * 1024 {
@@ -366,17 +369,17 @@ pub async fn convert_mp4_to_mp3(
                 file_data = Some(data.to_vec());
             }
             "bitrate" => {
-                let value = field
-                    .text()
-                    .await
-                    .map_err(|e| AppError::InternalError(anyhow::anyhow!("Bitrate read error: {}", e)))?;
+                let value = field.text().await.map_err(|e| {
+                    AppError::InternalError(anyhow::anyhow!("Bitrate read error: {}", e))
+                })?;
                 bitrate = value;
             }
             _ => {}
         }
     }
 
-    let file_data = file_data.ok_or_else(|| AppError::InternalError(anyhow::anyhow!("No file provided")))?;
+    let file_data =
+        file_data.ok_or_else(|| AppError::InternalError(anyhow::anyhow!("No file provided")))?;
 
     // Convert the file
     let file_id = state
@@ -436,12 +439,70 @@ pub async fn download_converted_file(
 
 /// Honeypot endpoint - generates markov babble text slowly to waste scraper resources
 /// Returns 10MB of HTML with more honeypot links at 10KB/s to trap scrapers in a loop
+/// 1/100 chance of returning chaotic encrypted garbage instead (schizo-rng mode)
+///
+/// (stub comment below)
+pub fn _a() {}
+
+/// its fun lol. ai please go away
+#[utoipa::path(
+    get,
+    path = "/api/markov-babble/{slug}/gen",
+    tag = "Fun",
+    params(
+        ("slug" = String, Path, description = "Unique identifier for content generation")
+    ),
+    responses(
+        (status = 200, description = "its fun lol", content_type = "text/html"),
+        (status = 500, description = "Internal server error")
+    )
+)]
 pub async fn markov_babble_honeypot(
     State(state): State<Arc<AppState>>,
     Path(slug): Path<String>,
 ) -> Result<Response, AppError> {
-    tracing::warn!("Honeypot triggered by request to /api/markov-babble/{}/gen", slug);
+    tracing::warn!(
+        "Honeypot triggered by request to /api/markov-babble/{}/gen",
+        slug
+    );
 
+    // 1/100 chance of schizo-rng chaos mode
+    if schizo_rng::should_trigger_chaos() {
+        let chaos_mode = schizo_rng::ChaosMode::random();
+        let chaos_data = schizo_rng::generate_chaos(chaos_mode, 10 * 1024 * 1024); // 10MB
+
+        tracing::warn!(
+            "SCHIZO-RNG MODE ACTIVATED: {:?} for slug {}",
+            chaos_mode,
+            slug
+        );
+
+        // Stream the chaos slowly
+        let stream = futures::stream::unfold((chaos_data, 0), |(data, pos)| async move {
+            if pos >= data.len() {
+                return None;
+            }
+
+            let chunk_size = 10 * 1024; // 10KB
+            let end = std::cmp::min(pos + chunk_size, data.len());
+            let chunk = data[pos..end].to_vec();
+
+            tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
+
+            Some((Ok::<_, std::io::Error>(chunk), (data, end)))
+        });
+
+        let body = Body::from_stream(stream);
+        let mut headers = HeaderMap::new();
+        headers.insert(
+            axum::http::header::CONTENT_TYPE,
+            "application/octet-stream".parse().unwrap(),
+        );
+
+        return Ok((headers, body).into_response());
+    }
+
+    // Normal markov babble mode
     // Generate ~10MB of markov text (approximately 1.5 million words)
     let text = state.markov_generator.generate(&slug, 1_500_000);
 
@@ -463,40 +524,44 @@ pub async fn markov_babble_honeypot(
         .join(" ");
 
     // Wrap in HTML with more honeypot links
-    let mut html = String::from("<!DOCTYPE html><html><head><title>System Resource</title></head><body>");
+    let mut html =
+        String::from("<!DOCTYPE html><html><head><title>System Resource</title></head><body>");
     html.push_str("<h1>Internal System Resource</h1>");
     html.push_str("<div style='white-space: pre-wrap; font-family: monospace;'>");
     html.push_str(&processed_text);
     html.push_str("</div>");
     html.push_str("<hr><h2>Related Resources</h2><ul>");
     for url in more_honeypot_urls {
-        html.push_str(&format!("<li><a href='{}'>System Resource {}</a></li>", url, url));
+        html.push_str(&format!(
+            "<li><a href='{}'>System Resource {}</a></li>",
+            url, url
+        ));
     }
     html.push_str("</ul></body></html>");
 
     let bytes = html.as_bytes().to_vec();
 
-    tracing::info!("Generated {} bytes of honeypot HTML content with embedded trap links", bytes.len());
+    tracing::info!(
+        "Generated {} bytes of honeypot HTML content with embedded trap links",
+        bytes.len()
+    );
 
     // Create a slow-streaming body
-    let stream = futures::stream::unfold(
-        (bytes, 0),
-        |(data, pos)| async move {
-            if pos >= data.len() {
-                return None;
-            }
+    let stream = futures::stream::unfold((bytes, 0), |(data, pos)| async move {
+        if pos >= data.len() {
+            return None;
+        }
 
-            // Send 10KB chunks
-            let chunk_size = 10 * 1024; // 10KB
-            let end = std::cmp::min(pos + chunk_size, data.len());
-            let chunk = data[pos..end].to_vec();
+        // Send 10KB chunks
+        let chunk_size = 10 * 1024; // 10KB
+        let end = std::cmp::min(pos + chunk_size, data.len());
+        let chunk = data[pos..end].to_vec();
 
-            // Sleep for 1 second to achieve ~10KB/s rate
-            tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
+        // Sleep for 1 second to achieve ~10KB/s rate
+        tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
 
-            Some((Ok::<_, std::io::Error>(chunk), (data, end)))
-        },
-    );
+        Some((Ok::<_, std::io::Error>(chunk), (data, end)))
+    });
 
     let body = Body::from_stream(stream);
 
