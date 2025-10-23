@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>All Posts</h1>
+<h1>Posts tagged with "{{ tag }}"</h1>
 
 {% if posts %}
     <ul class="posts-list">
@@ -20,6 +20,6 @@
         {% endfor %}
     </ul>
 {% else %}
-    <p>No posts yet.</p>
+    <p>No posts found with this tag.</p>
 {% endif %}
 {% endblock %}

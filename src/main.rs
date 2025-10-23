@@ -66,6 +66,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/posts", get(handlers::posts_list))
         .route("/posts/:slug", get(handlers::post_detail))
         .route("/pages/:slug", get(handlers::page_detail))
+        .route("/tags/:tag", get(handlers::tag_detail))
         .route("/rss.xml", get(handlers::rss_feed))
         .route("/search.json", get(handlers::search_index))
         // Serve static files (CSS, JS, images)

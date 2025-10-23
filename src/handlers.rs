@@ -123,6 +123,33 @@ pub async fn search_index() -> Result<Json<Vec<SearchEntry>>, AppError> {
     Ok(Json(entries))
 }
 
+/// Tag detail handler - shows all posts with a specific tag
+pub async fn tag_detail(
+    Path(tag): Path<String>,
+    State(state): State<Arc<AppState>>,
+) -> Result<Html<String>, AppError> {
+    let processor = MarkdownProcessor::new();
+    let all_posts = processor.load_all_posts()?;
+
+    // Filter posts that have this tag
+    let posts: Vec<_> = all_posts
+        .into_iter()
+        .filter(|p| p.tags.iter().any(|t| t == &tag))
+        .collect();
+
+    let mut context = Context::new();
+    context.insert("posts", &posts);
+    context.insert("tag", &tag);
+    context.insert("title", &format!("Posts tagged with '{}'", tag));
+
+    let html = state
+        .tera
+        .render("tag_detail.html", &context)
+        .map_err(|e| AppError::TemplateError(e.to_string()))?;
+
+    Ok(Html(html))
+}
+
 /// Custom error type for handlers
 #[derive(Debug)]
 pub enum AppError {
