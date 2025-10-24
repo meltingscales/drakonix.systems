@@ -477,8 +477,15 @@ pub async fn markov_babble_honeypot(
             slug
         );
 
+        // Get stream speed multiplier from environment (default: 1.0)
+        let speed_multiplier = std::env::var("MARKOV_STREAM_SPEED_MULTIPLIER")
+            .ok()
+            .and_then(|s| s.parse::<f64>().ok())
+            .unwrap_or(1.0)
+            .max(0.1); // Minimum 0.1x to prevent division issues
+
         // Stream the chaos slowly
-        let stream = futures::stream::unfold((chaos_data, 0), |(data, pos)| async move {
+        let stream = futures::stream::unfold((chaos_data, 0, speed_multiplier), |(data, pos, multiplier)| async move {
             if pos >= data.len() {
                 return None;
             }
@@ -487,9 +494,10 @@ pub async fn markov_babble_honeypot(
             let end = std::cmp::min(pos + chunk_size, data.len());
             let chunk = data[pos..end].to_vec();
 
-            tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
+            let sleep_duration_ms = (1000.0 / multiplier) as u64;
+            tokio::time::sleep(tokio::time::Duration::from_millis(sleep_duration_ms)).await;
 
-            Some((Ok::<_, std::io::Error>(chunk), (data, end)))
+            Some((Ok::<_, std::io::Error>(chunk), (data, end, multiplier)))
         });
 
         let body = Body::from_stream(stream);
@@ -546,8 +554,15 @@ pub async fn markov_babble_honeypot(
         bytes.len()
     );
 
+    // Get stream speed multiplier from environment (default: 1.0)
+    let speed_multiplier = std::env::var("MARKOV_STREAM_SPEED_MULTIPLIER")
+        .ok()
+        .and_then(|s| s.parse::<f64>().ok())
+        .unwrap_or(1.0)
+        .max(0.1); // Minimum 0.1x to prevent division issues
+
     // Create a slow-streaming body
-    let stream = futures::stream::unfold((bytes, 0), |(data, pos)| async move {
+    let stream = futures::stream::unfold((bytes, 0, speed_multiplier), |(data, pos, multiplier)| async move {
         if pos >= data.len() {
             return None;
         }
@@ -557,10 +572,11 @@ pub async fn markov_babble_honeypot(
         let end = std::cmp::min(pos + chunk_size, data.len());
         let chunk = data[pos..end].to_vec();
 
-        // Sleep for 1 second to achieve ~10KB/s rate
-        tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
+        // Sleep for 1 second / multiplier to achieve ~10KB/s * multiplier rate
+        let sleep_duration_ms = (1000.0 / multiplier) as u64;
+        tokio::time::sleep(tokio::time::Duration::from_millis(sleep_duration_ms)).await;
 
-        Some((Ok::<_, std::io::Error>(chunk), (data, end)))
+        Some((Ok::<_, std::io::Error>(chunk), (data, end, multiplier)))
     });
 
     let body = Body::from_stream(stream);
