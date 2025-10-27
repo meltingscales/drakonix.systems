@@ -445,6 +445,16 @@ footer {
     header nav .dropdown {
         width: 100%;
         padding-bottom: 0;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    header nav .dropdown-toggle {
+        width: 100%;
+        padding: 0.5rem 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 
     header nav .dropdown-menu {
@@ -454,12 +464,25 @@ footer {
         border: none;
         border-left: 2px solid #ddd;
         margin-left: 1rem;
+        margin-top: 0.5rem;
         padding-left: 1rem;
-        width: auto;
+        padding-top: 0.5rem;
+        padding-bottom: 0;
+        width: calc(100% - 1rem);
+        background: transparent;
     }
 
     header nav .dropdown.active .dropdown-menu {
         display: flex;
+    }
+
+    header nav .dropdown-menu a {
+        padding: 0.5rem 0;
+    }
+
+    header nav .dropdown-menu a:hover {
+        background: transparent;
+        text-decoration: underline;
     }
 
     /* Search bar full width on mobile */
