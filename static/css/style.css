@@ -53,6 +53,7 @@ header nav > ul {
 header nav a {
     text-decoration: none;
     color: inherit;
+    white-space: nowrap;
 }
 
 header nav .logo {
@@ -362,4 +363,113 @@ footer {
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
+}
+
+/* Hamburger menu button - hidden by default on desktop */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 2rem;
+    height: 2rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 10;
+}
+
+.hamburger span {
+    width: 2rem;
+    height: 0.25rem;
+    background: #333;
+    border-radius: 10px;
+    transition: all 0.3s linear;
+    position: relative;
+    transform-origin: 1px;
+}
+
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg);
+}
+
+/* Mobile responsive styles */
+@media screen and (max-width: 768px) {
+    header {
+        padding: 1rem;
+    }
+
+    header nav {
+        position: relative;
+    }
+
+    .hamburger {
+        display: flex;
+    }
+
+    header nav > ul.nav-menu {
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 100vh;
+        width: 70%;
+        max-width: 300px;
+        flex-direction: column;
+        background: white;
+        align-items: flex-start;
+        padding: 4rem 2rem 2rem;
+        gap: 1.5rem;
+        transform: translateX(100%);
+        transition: transform 0.3s ease-in-out;
+        box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+        z-index: 9;
+    }
+
+    header nav > ul.nav-menu.active {
+        transform: translateX(0);
+    }
+
+    header nav > ul.nav-menu li {
+        width: 100%;
+    }
+
+    /* Dropdown menu adjustments for mobile */
+    header nav .dropdown {
+        width: 100%;
+        padding-bottom: 0;
+    }
+
+    header nav .dropdown-menu {
+        position: static;
+        display: none;
+        box-shadow: none;
+        border: none;
+        border-left: 2px solid #ddd;
+        margin-left: 1rem;
+        padding-left: 1rem;
+        width: auto;
+    }
+
+    header nav .dropdown.active .dropdown-menu {
+        display: flex;
+    }
+
+    /* Search bar full width on mobile */
+    #search {
+        width: 100%;
+        min-width: unset;
+    }
+
+    /* Adjust main padding for mobile */
+    main {
+        padding: 0 1rem;
+    }
 }
