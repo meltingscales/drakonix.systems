@@ -237,6 +237,20 @@ footer {
     margin-bottom: 1rem;
 }
 
+.post-content ul, .page-content ul,
+.post-content ol, .page-content ol {
+    margin-left: 2rem;
+    margin-bottom: 1rem;
+}
+
+.post-content ul ul, .page-content ul ul,
+.post-content ol ol, .page-content ol ol,
+.post-content ul ol, .page-content ul ol,
+.post-content ol ul, .page-content ol ul {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
 .post-content code, .page-content code {
     background: var(--bg-secondary);
     padding: 0.125rem 0.25rem;

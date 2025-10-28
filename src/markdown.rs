@@ -163,21 +163,26 @@ impl MarkdownProcessor {
         }
 
         let mut html = String::from("<details class=\"toc\" open>\n<summary>Table of Contents</summary>\n<nav>\n<ul>\n");
-        let mut current_level = 0u8;
+        let mut current_level = 1u8;
 
         for entry in toc_entries {
+            // Close nested lists as needed
+            while current_level > entry.level {
+                html.push_str("</li>\n</ul>\n");
+                current_level -= 1;
+            }
+
+            // Close previous <li> at same level
+            if current_level == entry.level && current_level > 0 {
+                html.push_str("</li>\n");
+            }
+
             // Open nested lists as needed
             while current_level < entry.level {
                 if current_level > 0 {
-                    html.push_str("<ul>\n");
+                    html.push_str("\n<ul>\n");
                 }
                 current_level += 1;
-            }
-
-            // Close nested lists as needed
-            while current_level > entry.level {
-                html.push_str("</ul>\n</li>\n");
-                current_level -= 1;
             }
 
             html.push_str(&format!(
@@ -185,9 +190,6 @@ impl MarkdownProcessor {
                 html_escape::encode_text(&entry.id),
                 html_escape::encode_text(&entry.text)
             ));
-
-            // Only close <li> if next entry is same level or lower
-            // We'll handle this at the end or when level changes
         }
 
         // Close all remaining open lists
