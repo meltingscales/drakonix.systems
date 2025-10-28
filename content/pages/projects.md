@@ -329,3 +329,11 @@ Their staff needed a more efficient way to stitch data together, so I made them 
 [CARE Shelter Donation Aggregation](https://care-shelter-donation-aggregation-163012697625.us-central1.run.app/about)
 
 [Source code](https://github.com/meltingscales/CAREShelterDonationDataAggregation)
+
+### Animal Shelter Donation Thermometer tool
+
+As part of helping C.A.R.E. track their holiday shelter donations, I made a thermometer tool that tracks donations.
+
+[Animal Shelter Donation Thermometer](https://animal-shelter-donation-thermometer-163012697625.us-central1.run.app/faq)
+
+[Source code](https://github.com/meltingscales/animal-shelter-donation-thermometer)
