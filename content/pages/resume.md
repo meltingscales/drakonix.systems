@@ -7,21 +7,25 @@ date: 2025-01-01
 
 ## Summary
 
-I'm an accomplished security and application engineering professional with a proven record of delivering measurable business outcomes.
+I'm a senior security and application engineering professional with a history of delivering quality and accurate work.
 
-As Lead Application Security Engineer at Bayview Asset Management, I led secure coding training and vulnerability remediation, and created automation that provided C-suite execs with useful metrics. We achieved a 60% reduction in software risk within a year.
+### Bayview
 
-Currently, we are rolling out code security metrics across all business lines and expect to see many positive benefits from it.
+As Lead Application Security Engineer at Bayview Asset Management, I led secure coding training and vulnerability remediation, and created automation that provided executives with useful metrics. We achieved a 60% reduction in software risk within a year.
 
-My hands-on leadership in 0-day fixes and vulnerability remediation ensured effective management of both immediate threats and long-term risks.
+My leadership in 0-day fixes protected us against both immediate threats and long-term risks.
+
+### U.S. Bank
 
 At U.S. Bank, I advanced from Security Analyst to Senior Security Engineer and Assistant Vice President.
 
-I played a main role in modernizing development tooling, integrating a code scanning pipeline that I wrote myself across 9 languages and 10 build environments, and improved legacy application security through modern frameworks like Spring Boot and container orchestration with Kubernetes and Helm.
+I led the modernization of development tooling, integrating a code scanning pipeline that I wrote myself across 9 languages and 10 build environments, and improved legacy application security through modern frameworks like Spring Boot and container orchestration with Kubernetes and Helm.
 
-By simplifying business processes around reviewing potential vulnerabilities and sharing information with different teams, I made it easier for teams to understand and fix vulnerabilities, directly impacting risk management and security strategy.
+I wrote a field guide that my entire team used and sped up our vulnerability review process greatly.
 
-My academic foundation in cybersecurity is complemented by diverse projects, from [fire disaster data analysis](/static/IPRO%20-%20Improving%20Incident%20Response%20of%20the%20American%20Red%20Cross%20in%20the%20Greater%20Chicago%20Area%20by%20Using%20Text%20Classification%20of%20Posts%20From%20Twitter.pdf) to innovative cost-saving technology solutions. I am committed to writing clear, reusable, and well-documented code, and am passionate about teaching and technical leadership. My blend of business insight and technical expertise makes me a valuable asset to organizations focused on mitigating risk and driving operational excellence.
+My academic knowledge in cybersecurity is complemented by diverse projects, from [fire disaster data analysis](/static/IPRO%20-%20Improving%20Incident%20Response%20of%20the%20American%20Red%20Cross%20in%20the%20Greater%20Chicago%20Area%20by%20Using%20Text%20Classification%20of%20Posts%20From%20Twitter.pdf) to innovative cost-saving technology solutions. I write clear, reusable, and well-documented code, and am used to teaching developers and giving technical leadership.
+
+If you hire me, your organization will get safer, and very quickly.
 
 Throughout my education and career at U.S. Bank and Bayview, I have prioritized educating others. I have taught colleagues PowerBI reporting, Python scripting, Postman usage, vulnerability remediation, and process automation, and many other skills to colleagues and friends.
 
