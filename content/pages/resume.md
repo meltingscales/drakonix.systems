@@ -23,6 +23,8 @@ I led the modernization of development tooling, integrating a code scanning pipe
 
 I wrote a field guide that my entire team used and sped up our vulnerability review process greatly.
 
+### General
+
 My academic knowledge in cybersecurity is complemented by diverse projects, from [fire disaster data analysis](/static/IPRO%20-%20Improving%20Incident%20Response%20of%20the%20American%20Red%20Cross%20in%20the%20Greater%20Chicago%20Area%20by%20Using%20Text%20Classification%20of%20Posts%20From%20Twitter.pdf) to innovative cost-saving technology solutions. I write clear, reusable, and well-documented code, and am used to teaching developers and giving technical leadership.
 
 If you hire me, your organization will get safer, and very quickly.
