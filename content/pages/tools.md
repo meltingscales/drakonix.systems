@@ -120,3 +120,10 @@ You can pull these from ollama and self-host. I plan on running my own benchmark
 - https://www.darkreading.com/application-security
 - https://www.sans.org/newsletters/ouch/
 - https://www.databreachtoday.com/
+- https://medium.com/vmacwrites/tools-to-visualize-your-terraform-plan-d421c6255f9f
+- https://www.scaledagileframework.com/implementation-roadmap/
+- https://www.cia.gov/static/5c875f3ec660e092cf893f60b4a288df/SimpleSabotage.pdf
+- https://www.privacytools.io/
+- https://blog.openalgo.in/algorithmic-trading-roadmap-2025-from-curious-coder-to-confident-execution-0662572a7838
+- https://www.lesswrong.com/
+
