@@ -108,3 +108,15 @@ You can pull these from ollama and self-host. I plan on running my own benchmark
 
 - handy.computer - offline text transcription
 - sshx.io - share terminal (dangerous)
+
+
+## Hacking links
+
+- https://book.hacktricks.xyz/welcome/readme
+- https://www.revshells.com/
+- https://eclypsium.com/
+- https://ddosecrets.com/wiki/Distributed_Denial_of_Secrets
+- https://news.ycombinator.com/
+- https://www.darkreading.com/application-security
+- https://www.sans.org/newsletters/ouch/
+- https://www.databreachtoday.com/
