@@ -48,9 +48,15 @@ Only Linux, except for a Windows computer I use for piano playing.
 
 ## AI
 
+My current AI stack is here. I used to use ollama but it has issues with ROCm drivers.
+
+<https://github.com/meltingscales/cachyos-whitedragon-ai-lab>
+
+<!-- 
 - ollama: AI model serving
 - openwebui: frontend for ollama
 - comfyui: image/video/audio gen
+-->
 
 ### Corpo AI for coding
 
