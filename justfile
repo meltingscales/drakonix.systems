@@ -161,7 +161,7 @@ gcp-domain-map domain=DOMAIN_NAME:
 
 # List all domain mappings
 gcp-domain-list:
-    gcloud run domain-mappings list --region {{GCP_REGION}} --project {{GCP_PROJECT}}
+    gcloud beta run domain-mappings list --region {{GCP_REGION}} --project {{GCP_PROJECT}}
 
 # Get DNS records needed for domain verification
 gcp-domain-records domain=DOMAIN_NAME:
@@ -176,6 +176,15 @@ gcp-setup-drakonix:
     gcloud beta run domain-mappings create \
         --service {{SERVICE_NAME}} \
         --domain drakonix.systems \
+        --region {{GCP_REGION}} \
+        --platform managed \
+        --project {{GCP_PROJECT}}
+
+# Set up www.drakonix.systems subdomain
+gcp-setup-drakonix-www:
+    gcloud beta run domain-mappings create \
+        --service {{SERVICE_NAME}} \
+        --domain www.drakonix.systems \
         --region {{GCP_REGION}} \
         --platform managed \
         --project {{GCP_PROJECT}}
