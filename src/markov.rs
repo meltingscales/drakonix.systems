@@ -35,7 +35,7 @@ impl MarkovGenerator {
         let mut chain = HashMap::new();
 
         // Load word list from embedded file
-        let wordlist = include_str!("../static/wordlist.txt");
+        let wordlist = include_str!("../static-macro/wordlist.txt");
         let words: Vec<&str> = wordlist.lines().collect();
 
         // Build a more sophisticated markov chain using the dictionary

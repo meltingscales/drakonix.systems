@@ -24,8 +24,10 @@ RUN mkdir src && \
 
 # Copy source code
 COPY src ./src
-COPY templates ./templates
-COPY static ./static
+
+# Copy static-macro files needed for compile-time inclusion (include_str! macros)
+# Changes to these files will invalidate the build cache
+COPY static-macro ./static-macro
 
 # Build the actual application
 # Touch source files to ensure they're rebuilt even if deps are cached
@@ -39,11 +41,9 @@ WORKDIR /app
 # Copy binary from builder
 COPY --from=builder /app/target/release/rust-blog /app/rust-blog
 
-# Copy static assets and templates
+# Copy static assets and templates (changed frequently, so copy last)
 COPY templates /app/templates
 COPY static /app/static
-
-# Copy example content
 COPY content /app/content
 
 # Set environment variables

@@ -129,7 +129,7 @@ pub async fn rss_feed() -> Result<Response, AppError> {
 
 /// Robots.txt handler - serves the robots.txt file with proper content type
 pub async fn robots_txt() -> Result<Response, AppError> {
-    let robots_content = include_str!("../static/robots.txt");
+    let robots_content = include_str!("../static-macro/robots.txt");
 
     let mut headers = HeaderMap::new();
     headers.insert(
