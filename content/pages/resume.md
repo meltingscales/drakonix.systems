@@ -3,8 +3,6 @@ title: "Resume"
 date: 2025-01-01
 ---
 
-# Resume
-
 ## Summary
 
 I'm a senior security and application engineering professional with a history of delivering quality and accurate work.
