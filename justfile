@@ -171,6 +171,15 @@ gcp-domain-records domain=DOMAIN_NAME:
 gcp-domain-delete domain=DOMAIN_NAME:
     gcloud run domain-mappings delete {{domain}} --region {{GCP_REGION}} --project {{GCP_PROJECT}}
 
+# Set up drakonix.systems domain
+gcp-setup-drakonix:
+    gcloud beta run domain-mappings create \
+        --service {{SERVICE_NAME}} \
+        --domain drakonix.systems \
+        --region {{GCP_REGION}} \
+        --platform managed \
+        --project {{GCP_PROJECT}}
+
 # Development helpers
 # ===================
 
