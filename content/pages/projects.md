@@ -30,7 +30,7 @@ I learned how PHP code works, although I didn't understand what "code execution"
 
 I found out how to port forward, figured out how to install plugins to a Minecraft server. I used the WAMP stack: Windows, Apache, MySQL, PHP. I learned how to use MySQL, and I learned how to use PHPMyAdmin. Again, I had no real clue what I was doing, but through trial and error, I figured it out.
 
-We served about 20 individual players during 2012. I think that's a pretty good number for a 13-year-old. I was proud of it, and I still am. I think that it's a great example of how a young person can learn how to do something, and then do it. If they're dedicated enough, they can learn anything.
+We served about 20 individual players during 2012. I think that's a pretty good number for a 13-year-old. I was proud of it, and I still am. It is a great example of how a young person can learn how to do something, and then do it. If they're dedicated enough, they can learn anything.
 
 ## 2013
 
@@ -177,7 +177,7 @@ We are focusing on domestic terrorism.
 
 We scraped 4chan and Reddit using their publicly available APIs.
 
-We used old NSA ECHELON/PRISM lists of keywords that could indicate domestic terrorist/hate crime activity. This is a naive approach, but I feel that our code can easily be adapted. [Our "`ContentFlagger`" class can be easily adapted to use different types of classification methods](https://github.com/meltingscales/ITMS448-osint-dashboard-Bowser/blob/cb25a756e7b59990813ac3b85f42b48a7a44c9a6/bowser/contentFlagger.py#L49).
+We used old NSA ECHELON/PRISM lists of keywords that could indicate domestic terrorist/hate crime activity. This is a naive approach, but our code can easily be adapted. [Our "`ContentFlagger`" class can be easily adapted to use different types of classification methods](https://github.com/meltingscales/ITMS448-osint-dashboard-Bowser/blob/cb25a756e7b59990813ac3b85f42b48a7a44c9a6/bowser/contentFlagger.py#L49).
 
 ##### `ContentFlagger` modular code
 ```py
@@ -218,7 +218,7 @@ class ContentFlagger:
 
 #### Summary
 
-This project developed an innovative tool to enhance the American Red Cross’s emergency response by leveraging social media data, specifically by mining and classifying tweets related to house fires in the Chicago area. By integrating a Twitter scraper that filters posts based on keywords and filters by geolocation, with a suite of machine learning models—including Naive Bayes, Logistic Regression, and notably Linear Support Vector Classification—our team demonstrated an effective way to sift through vast amounts of social media content. This approach enables the rapid identification of critical incidents such as house fires and floods, significantly reducing the need for manual data review.
+This project built a tool to simplify the American Red Cross’s emergency response by using social media data. Specifically by mining and classifying tweets related to house fires in the Chicago area. We integrated a Twitter scraper that filters posts based on keywords and filters by geolocation with a few machine learning models; including Naive Bayes, Logistic Regression, and notably Linear Support Vector Classification. Our team built an effective way to sift through vast amounts of social media content. This approach would help the quick identification of house fires and floods, reducing the need for manual data review.
 
 This tool and the associated machine learning models could be used in many different ways:
 
@@ -226,11 +226,11 @@ This tool and the associated machine learning models could be used in many diffe
 - As a standalone tool for incident detection
 - As a way to provide real-time data to emergency responders
 - As a way to provide real-time data to the public or citizen scientists
-- Any other way! Go clone our repo and try it out! 😁
+- Any other way! Go clone our repo and try it out! :)
 
-The analysis revealed that while the automated system is promising—accurately detecting disaster-related tweets and providing a streamlined process for incident reporting—there is still room for improvement. Future enhancements, such as deeper integration of the scraper with the classifier and the implementation of active learning strategies, could further refine accuracy and reduce false positives. Overall, this project lays a strong foundation for harnessing real-time social media data to support timely and informed emergency response efforts, paving the way for smarter, data-driven disaster management solutions.
+The analysis revealed that while the automated system is promising. It accurately detects disaster-related tweets and simplifies incident reporting. But, there is still room for improvement. Future enhancements, such as deeper integration of the scraper with the classifier and the implementation of active learning strategies, could make it more accurate and reduce false positives. Overall, I think this project can help emergency response efforts, and make first responders' jobs faster and easier.
 
-Ideally, Twitter should provide these sorts of feeds to emergency responders, but until then, we have to rely on our own tools. Social media is a powerful tool for emergency response, and we hope that our work can help save lives and reduce the impact of disasters. 🌍🔥🌊
+Ideally, Twitter should provide these sorts of feeds to emergency responders, but until then, we have to rely on our own tools. Social media is a powerful tool for emergency response, and we hope that our work can help save lives and reduce the impact of disasters.
 
 ## 2020
 
@@ -238,7 +238,7 @@ Ideally, Twitter should provide these sorts of feeds to emergency responders, bu
 
 I created a "field guide" that provides a comprehensive overview of common vulnerabilities and their remediation strategies. This guide is intended to serve as a reference for security engineers and developers, helping them to quickly identify and address vulnerabilities in their code.
 
-It was over 20 pages, covered hundreds of different CWE types, and was a great resource for our team. I believe that it is still being used by my team today, in 2025.
+It was over 20 pages, covered hundreds of different CWE types, and was a great resource for our team. It is still being used by my team today, in 2025.
 
 ## 2021
 
