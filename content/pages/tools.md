@@ -48,15 +48,15 @@ Only Linux, except for a Windows computer I use for piano playing.
 
 ## AI
 
-My current AI stack is here. I used to use ollama but it has issues with ROCm drivers.
+My current AI stack is here. I used to use ollama but it has issues with ROCm drivers on AMD GPUs.
 
 <https://github.com/meltingscales/cachyos-whitedragon-ai-lab>
 
-<!-- 
-- ollama: AI model serving
-- openwebui: frontend for ollama
-- comfyui: image/video/audio gen
--->
+Current working stack:
+- llama.cpp: text generation backend (works with ROCm)
+- openwebui: frontend for LLM interaction (TBD)
+- comfyui: image/video/audio generation (TBD)
+- stablediffusion: image generation (TBD)
 
 ### Corpo AI for coding
 
@@ -64,12 +64,11 @@ My current AI stack is here. I used to use ollama but it has issues with ROCm dr
   - `aider`: OSS claude cli clone
   - etc...TODO: Add more coding agents here from testing.
 
-The basic pattern to locally host is just to run `ollama` on a powerful PC, set up a VPN with `tailscale`, and then
-just connect to the ollama endpoint with your less powerful computer via a coding agent like `aider` or a frontend like `openwebui`.
+The basic pattern to locally host is just to run `llama.cpp` (or `ollama` if you have NVIDIA GPUs) on a powerful PC, set up a VPN with `tailscale`, and then connect to the LLM endpoint with your less powerful computer via a coding agent like `aider` or a frontend like `openwebui`.
 
 ### Local AI models
 
-You can pull these from ollama and self-host. I plan on running my own benchmarks on each.
+These models were intended for ollama but can be converted for llama.cpp. I plan on running my own benchmarks on each.
 
 - llama3.2:3b
   - TODO: Test.
