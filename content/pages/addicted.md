@@ -1,5 +1,5 @@
 ---
-title: "You Are Addicted"
+title: "addicted"
 date: 2025-01-04
 ---
 
