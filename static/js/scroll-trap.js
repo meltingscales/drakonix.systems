@@ -6,12 +6,20 @@ if (window.location.pathname === '/') {
         const word = element.getAttribute('data-word');
         if (!word) return;
 
-        const sep = '        '; // 8 spaces between words
-        const offset = '      '; // 6 spaces offset on alternating rows
+        // Adjust spacing based on screen size for better mobile appearance
+        const isMobile = window.innerWidth <= 768;
+        const sep = isMobile ? '    ' : '        '; // 4 spaces on mobile, 8 on desktop
+        const offset = isMobile ? '  ' : '      '; // 2 spaces on mobile, 6 on desktop
 
-        // Calculate dimensions based on viewport
-        const charWidth = 10; // approximate char width in pixels at 1.2rem
-        const lineHeight = 1.5 * 19.2; // line-height * font-size in pixels
+        // Calculate dimensions based on viewport and current font size
+        // Get computed style to handle responsive font sizes
+        const computedStyle = window.getComputedStyle(element);
+        const fontSize = parseFloat(computedStyle.fontSize);
+        const lineHeightMultiplier = parseFloat(computedStyle.lineHeight) / fontSize;
+
+        // Approximate character width for monospace font (typically ~0.6 of font size)
+        const charWidth = fontSize * 0.6;
+        const lineHeight = lineHeightMultiplier * fontSize;
         const width = Math.floor(window.innerWidth / charWidth);
 
         // Calculate height to fill 500vh (5 pages)
