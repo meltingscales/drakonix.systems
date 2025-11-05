@@ -7,6 +7,14 @@ date: 2025-01-01
 
 I'm a senior security and application engineering professional with a history of delivering quality and accurate work.
 
+### AI Note
+
+Being born in the late 90s, I learned coding without using AI. When I was in highschool/college, LLMs were really not capable of generating/analyzing source code. As a result, I...can just code without AI! If you want proof, just read my GitHub history pre-2023. There's a lot.
+
+However, I have tested and used various different LLM coding tools, and they make coding so, so, so much faster. I am very pro-AI coding for speed's sake, but still understand the need for unit/user testing, proper documentation, and that LLMs aren't magic and can still make mistakes.
+
+For example, <https://dogbox.moe> was made almost entirely with AI, but it is a very fast, secure, and post-quantum-encryption-secure piece of software. Go test it yourself if you'd like.
+
 ### Bayview
 
 As Lead Application Security Engineer at Bayview Asset Management, I led secure coding training and vulnerability remediation, and created automation that provided executives with useful metrics. We achieved a 60% reduction in software risk within a year.
