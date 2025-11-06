@@ -23,4 +23,25 @@
     <p>No posts yet. Create your first post in <code>content/posts/</code></p>
     {% endif %}
 </section>
+{% endblock %} {% block scroll_trap %}
+<!-- Anti-infinite-scroll commentary -->
+<section class="scroll-trap" id="scroll-trap-stop" aria-hidden="true">
+    <a href="/pages/addicted" class="scroll-pattern-link" tabindex="-1">
+        <pre class="scroll-pattern" data-word="STOP SCROLLING"></pre>
+    </a>
+</section>
+
+<section class="scroll-trap" id="scroll-trap-addicted" aria-hidden="true">
+    <a href="/pages/addicted" class="scroll-pattern-link" tabindex="-1">
+        <pre class="scroll-pattern" data-word="ADDICTED"></pre>
+    </a>
+</section>
+
+<section class="scroll-trap" id="scroll-trap-link" aria-hidden="true">
+    <div class="scroll-message">
+        <a href="/pages/addicted" tabindex="-1"
+            >Learn about dopamine cycles →</a
+        >
+    </div>
+</section>
 {% endblock %}
