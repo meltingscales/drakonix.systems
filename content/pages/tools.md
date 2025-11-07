@@ -28,7 +28,7 @@ I am aggressively de-googling my life in 2025/2026.
 - just: very good build tool
 - postman: http requests
   - bruno is probably better, TODO use it
-  - in general, *ditch postman*. they're starting to put their client behind a paywall/login wall. move to an OSS tool that's free. it's not rocket science to make something that ingests OpenAPI Spec and just runs `curl`...so why force corporations or individuals to pay for the simple feature of saving a Postman colection?
+  - in general, *ditch postman*. they're starting to put their client behind a paywall/login wall. move to an OSS tool that's free. it's not rocket science to make something that ingests OpenAPI Spec and just runs `curl`...so why force corporations or individuals to pay for the simple feature of saving a Postman collection?
 
 ### Text Editing
 
