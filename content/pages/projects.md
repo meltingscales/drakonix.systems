@@ -290,13 +290,9 @@ I'd also love to combine the really old code from late highschool and some of my
 
 I did not implement all of those features, but I did implement a basic version of the system. I think that the idea is still a good one. I hope that someone else can pick up where I left off and make it a reality.
 
-[--> This is my final presentation video <--](https://youtu.be/0jUU-g4dFVg)
-
 [--> This is my final presentation PDF/ppt <--](https://github.com/meltingscales/cs-gy-6083-2025-spring-db-final-project/blob/master/PRESENTATION-Homeless-Shelter-Donation-Coordination-System.pdf)
 
 [--> This is the source code for the project <--](https://github.com/meltingscales/cs-gy-6083-2025-spring-db-final-project/)
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/0jUU-g4dFVg?si=6GtBMQnaMg54NcjO" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ### Legal Discovery: Google Chrome History
 
