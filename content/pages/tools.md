@@ -7,6 +7,14 @@ date: 2025-01-01
 
 A list of tools I use.
 
+## Fun/media
+
+I am aggressively de-googling my life in 2025/2026.
+
+- immich: google photos clone, self-hosted
+- navidrome: youtube music clone, self-hosted
+- more to come? :)
+
 ## Programming
 
 - python: general purpose language
@@ -20,6 +28,7 @@ A list of tools I use.
 - just: very good build tool
 - postman: http requests
   - bruno is probably better, TODO use it
+  - in general, *ditch postman*. they're starting to put their client behind a paywall/login wall. move to an OSS tool that's free. it's not rocket science to make something that ingests OpenAPI Spec and just runs `curl`...so why force corporations or individuals to pay for the simple feature of saving a Postman colection?
 
 ### Text Editing
 
@@ -48,7 +57,7 @@ Only Linux, except for a Windows computer I use for piano playing.
 
 ## AI
 
-My current AI stack is here. I used to use ollama but it has issues with ROCm drivers on AMD GPUs.
+My current AI stack is here. I used to use ollama but it has issues with ROCm drivers on AMD GPUs, so I switched to `llama.cpp`!
 
 <https://github.com/meltingscales/cachyos-whitedragon-ai-lab>
 
@@ -77,6 +86,7 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 - hf.co/bartowski/Qwen2.5-Coder-14B-Instruct-abliterated-GGUF:Q4_K_S
   - TODO: Test.
 - hf.co/mlabonne/gemma-3-27b-it-abliterated-GGUF:Q4_K_M
+  - Human remarks: It is indeed abliterated. It will happily generate usable Python malware.
   - TODO: Test.
 
 ### Anti AI/Anti Slop
@@ -108,12 +118,10 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
   - extensions: TODO
 - [gallery-dl: image downloader](https://github.com/mikf/gallery-dl)
 
-
 ## Other
 
 - handy.computer - offline text transcription
 - sshx.io - share terminal (dangerous)
-
 
 ## Hacking links
 
@@ -131,4 +139,3 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 - https://www.privacytools.io/
 - https://blog.openalgo.in/algorithmic-trading-roadmap-2025-from-curious-coder-to-confident-execution-0662572a7838
 - https://www.lesswrong.com/
-
