@@ -254,8 +254,7 @@ It seems that the growth of vulnerabilities is hyper-linear, and that the number
 
 [==> See this link for source code! <==](https://github.com/meltingscales/NYU-CS-GY-6813-infosec-and-privacy/tree/master/paper/final)
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/BgICl-5bqbQ?si=QxhW5DyURWL57YWK" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
+[==> See this link for a PDF presentation <==](https://github.com/meltingscales/NYU-CS-GY-6813-infosec-and-privacy/blob/master/paper/final/Henry%20Post%20-%20NYU-CS-GY-6813%20-%20A%20survey%20on%20automated%20software%20vulnerability%20discovery%2C%20exploitation%2C%20and%20patching%20-%20Combined%20Paper.pdf)
 
 ## 2023
 
@@ -263,7 +262,7 @@ It seems that the growth of vulnerabilities is hyper-linear, and that the number
 
 [==> See this link for source code! <==](https://github.com/meltingscales/NYU-CS-GY-6233-intro-to-os-final-paper)
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/msj1KjN7eb8?si=AnzAFE22jZzZWmiT" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+[==> See this link for a PDF presentation <==](https://github.com/meltingscales/NYU-CS-GY-6233-intro-to-os-final-paper/blob/master/Intro%20to%20OS%20-%20Henry%20Post%20-%20Vulnerabilities%20in%20Open-Source%20Language%20Servers%20-%20Presentation.pdf)
 
 ## 2024
 
@@ -272,8 +271,6 @@ It seems that the growth of vulnerabilities is hyper-linear, and that the number
 [==> See this link for source code! <==](https://github.com/meltingscales/NYU-CS-GY-6xxx-mobile-security-final-project)
 
 [==> See this link for a PDF presentation <==](https://github.com/meltingscales/NYU-CS-GY-6xxx-mobile-security-final-project/blob/master/MobSec%20Final%20Presentation.pdf)
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/4o2URWPtqX4?si=p-6e_cmdP7jCyWri" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 #### Summary
 
