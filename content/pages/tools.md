@@ -139,3 +139,12 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 - https://www.privacytools.io/
 - https://blog.openalgo.in/algorithmic-trading-roadmap-2025-from-curious-coder-to-confident-execution-0662572a7838
 - https://www.lesswrong.com/
+
+### Hacking tools
+
+#### To investigate
+
+- https://deepnet.store/products/dn_key-pro-experimental
+- Proxgrind
+- https://proxmark.com/ icopy-x
+- Bash Bunny
