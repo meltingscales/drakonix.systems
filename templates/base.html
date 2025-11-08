@@ -120,7 +120,7 @@
             aria-hidden="true"
         >
             {% if honeypot_urls %} {% for url in honeypot_urls %}
-            <a href="{{ url }}">Internal System Resource {{ loop.index }}</a>
+            <a href="{{ url }}" tabindex="-1">Internal System Resource {{ loop.index }}</a>
             {% endfor %} {% endif %}
         </div>
 

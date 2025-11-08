@@ -1,7 +1,7 @@
 {% extends "base.html" %} {% block content %}
 
 <section class="recent-posts">
-    <h2>Recent Posts</h2>
+    <h1>Recent Posts</h1>
     {% if posts %}
     <div class="posts-grid">
         {% for post in posts | slice(end=10) %}
