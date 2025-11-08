@@ -142,6 +142,20 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 
 ### Hacking tools
 
+#### Used
+
+- kali linux
+- parrotos
+
+- dirb
+- nmap
+- rustscan
+- ftp
+- some python idk lol
+- searchsploit
+- msfconsole
+- msfvenom
+
 #### To investigate
 
 - https://deepnet.store/products/dn_key-pro-experimental
