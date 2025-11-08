@@ -5,12 +5,10 @@ date: 2025-01-01
 
 ## Contact
 
-site: drakonix.systems
-
-email: see resume (anti bot measure)
-alt email: meltingscales@proton.me (not checked as much but I plan on migrating soon(tm))
-
-meatspace: I love IRL meetups. Just email me!
+- site: drakonix.systems
+- email: see resume (anti bot measure)
+- alt email: meltingscales@proton.me (not checked as much but I plan on migrating soon(tm))
+- meatspace: I love IRL meetups. Just email me!
 
 ## Summary
 
