@@ -34,6 +34,7 @@ Here's a list without 88x31 buttons:
 <li><a href="//mechanize.work">mechanize.work</a></li>
 <li><a href="//herman.bearblog.dev">herman.bearblog.dev</a></li>
 <li><a href="//ptrpa.ws">ptrpa.ws</a></li>
+<li><a href="//kognise.dev">kognise.dev</a></li>
 <li><a href="//pthorpe92.dev/intro/my-story/">A recent biography from an incarcerated programmer</a></li>
 <li><a href="//crimethinc.com/2004/01/01/despair">(CONTENT WARNING) a 2004 essay on suicide.</a></li>
 <li><a href="//cryptcoffee.github.io/research/luks.html">what is LUKS?</a></li>
