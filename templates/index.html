@@ -6,7 +6,7 @@
     <div class="posts-grid">
         {% for post in posts | slice(end=10) %}
         <article class="post-card">
-            <h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
+            <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
             <time datetime="{{ post.date }}">{{ post.date }}</time>
             {% if post.tags %}
             <div class="tags">
