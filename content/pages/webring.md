@@ -37,6 +37,7 @@ Here's a list without 88x31 buttons:
 <li><a href="//pthorpe92.dev/intro/my-story/">A recent biography from an incarcerated programmer</a></li>
 <li><a href="//crimethinc.com/2004/01/01/despair">(CONTENT WARNING) a 2004 essay on suicide.</a></li>
 <li><a href="//cryptcoffee.github.io/research/luks.html">what is LUKS?</a></li>
+<li><a href="https://how-did-i-get-here.net/">how-did-i-get-here.net</a></li>
 </ul>
 
 Here's a list of non-personal websites that are just good alternatives to
