@@ -47,3 +47,12 @@ I hope you enjoy your stay!
 - migrate all data (other than required corporate rootkit) to grapheneOS phone
 - fully delete gmail...whew
   - ...and fully de-google
+
+
+### bonus TODO
+
+- fully migrate away from GitHub as it's MS-owned now and will likely succumb to the same AI scraping as they do
+  - self-hosted GitLab with GitHub mirrors pushed nightly is probably the way to go
+
+- fully self-hosted Claude Code alternative 
+  - need to eval models and test them. may need more GPU RAM. consider getting a custom TPU instead of GPUs.
