@@ -42,6 +42,8 @@ Here's a list without 88x31 buttons:
 <li><a href="//ratatui.rs/showcase/apps/">ratatui TUI showcase</a></li>
 <li><a href="//deepfates.com">deepfates.com</a></li>
 <li><a href="//upward.earth">upward.earth</a></li>
+<li><a href="//cpu.land">cpu.land</a></li>
+<li><a href="//yeen.town">yeen.town</a></li>
 </ul>
 
 Here's a list of non-personal websites that are just good alternatives to
