@@ -40,8 +40,10 @@ Please...trust them if you want to grant me SSH access to your servers. It would
 I hope you enjoy your stay!
 
 
-## TODO list
+## 2026 Personal TODO
 
-- Migrate all old content from https://github.com/meltingscales/henrypost.net/
-
-- Migrate all old content from https://github.com/meltingscales/henryfbp.github.io-old2022
+- cheap-ish AWS Object Storage offload for self hosted security cam system (or just any place I can push raw video files for cheap)
+- migrate away from google in general
+- migrate all data (other than required corporate rootkit) to grapheneOS phone
+- fully delete gmail...whew
+  - ...and fully de-google
