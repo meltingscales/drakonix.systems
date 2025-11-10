@@ -28,6 +28,8 @@ I've been really, really busy since then. I recently built an AIPC/HEPC (Artific
 
 I had a conversation at a dinner place recently with a person who had grown up without access to the same opportunities as I did, and I showed them my uncensored AI. Immediately, they wanted access. Permanent access. I let them play with my phone for a bit, and realized that an easy-to-follow guide to self-host uncensored AI would be useful. This is my attempt to write that.
 
+A lot of this content will be stored in this guide, which I link to from `~/tools`: <https://github.com/meltingscales/cachyos-whitedragon-ai-lab>.
+
 <!-- author note: god i need to go to work so early tomorrow. hopefully i can finish this during the flight.-->
 
 INTRO
