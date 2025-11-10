@@ -1,5 +1,5 @@
 ---
-title: "Poor Man's Uncensored AI Guide 2025/2026"
+title: "Poor Man's Uncensored AI Guide 2025/2026 [WIP]"
 date: "2025-11-09"
 author: ""
 authorTwitter: ""
@@ -28,15 +28,30 @@ I've been really, really busy since then. I recently built an AIPC/HEPC (Artific
 
 I had a conversation with a person who had grown up without access to the same opportunities as I did, and I showed them my uncensored AI. Immediately, they wanted access. Permanent access. I let them play with my phone for a bit, and realized that an easy-to-follow guide to self-host uncensored AI would be useful. This is my attempt to write that.
 
+<!-- author note: god i need to go to work so early tomorrow. hopefully i can finish this during the flight.-->
+
 INTRO
 
 
 OUTCOME
 
-
 BRIEF_OVERVIEW
+
+TECH_USED
+
+AMD_VS_NVIDIA
 
 
 ACTUAL_CONTENT
-PATH_B: RUNPOD.IO
-PATH_A: GCP_VM_WITH_RENTED_GPU
+
+    PATH_B: RUNPOD.IO
+
+    PATH_A: GCP_VM_WITH_RENTED_GPU
+
+    PATH_C: DIY_CLOUD_HOSTING
+
+    PATH_D: GAMING_PC
+
+    PATH_E: CPU_ONLY_HIGH_RAM
+
+    PATH_F: CPU_ONLY_HIGH_RAM_SWAP_TO_DISK___EVIL_CHOICE_>;3
