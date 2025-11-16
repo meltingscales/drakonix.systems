@@ -7,6 +7,8 @@ date: 2025-01-03
 
 I do not maintain any social media accounts of any kind. No Facebook, no LinkedIn, no Twitter, etc.
 
+I do have a LinkedIn, but its only purpose is to redirect to my website.
+
 If you find profiles on social media platforms using my name, they are **not** mine and do not represent me.
 
 ## Contact
