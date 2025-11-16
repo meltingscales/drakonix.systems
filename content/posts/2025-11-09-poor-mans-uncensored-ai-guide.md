@@ -34,7 +34,6 @@ A lot of this content will be stored in this guide, which I link to from `~/tool
 
 INTRO
 
-
 OUTCOME
 
 BRIEF_OVERVIEW
@@ -42,7 +41,6 @@ BRIEF_OVERVIEW
 TECH_USED
 
 AMD_VS_NVIDIA
-
 
 ACTUAL_CONTENT
 

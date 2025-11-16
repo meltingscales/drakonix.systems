@@ -5,6 +5,8 @@ date: 2025-01-01
 
 This is a curated list of other people's websites that I think are neat.
 
+Some are personal sites, some are just content aggregators/social media, all are weird and cool and meant to fight algo-slop/corpo-slop.
+
 
 <style>
 .badges {
@@ -44,6 +46,8 @@ Here's a list without 88x31 buttons:
 <li><a href="//upward.earth">upward.earth</a></li>
 <li><a href="//cpu.land">cpu.land</a></li>
 <li><a href="//yeen.town">yeen.town</a></li>
+<li><a href="//lunarpunk.town">lunarpunk.town</a></li>
+<li><a href="//queer.party">queer.party</a></li>
 </ul>
 
 Here's a list of non-personal websites that are just good alternatives to
