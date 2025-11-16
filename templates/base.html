@@ -5,8 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="color-scheme" content="light dark" />
         <title>
-            {% block title %}{{ title | default(value="Rust Blog") }}{% endblock
-            %}
+            {% block title %}{{ title | default(value="drakonix.systems") }}{%
+            endblock %}
         </title>
         <link rel="stylesheet" href="/static/css/style.css" />
         <link
@@ -120,7 +120,9 @@
             aria-hidden="true"
         >
             {% if honeypot_urls %} {% for url in honeypot_urls %}
-            <a href="{{ url }}" tabindex="-1">Internal System Resource {{ loop.index }}</a>
+            <a href="{{ url }}" tabindex="-1"
+                >Internal System Resource {{ loop.index }}</a
+            >
             {% endfor %} {% endif %}
         </div>
 

@@ -1,7 +1,7 @@
 mod converter;
 mod handlers;
-mod markov;
 mod markdown;
+mod markov;
 mod models;
 mod rss;
 mod schizo_rng;
@@ -42,7 +42,7 @@ use utoipa_swagger_ui::SwaggerUi;
         (name = "Fun", description = "its fun lol")
     ),
     info(
-        title = "Rust Blog Services API",
+        title = "drakonix.systems Services API",
         version = "0.1.0",
         description = "API documentation for blog services including timers and media conversion",
     )
@@ -66,7 +66,10 @@ async fn main() -> anyhow::Result<()> {
     tracing::info!("Loading templates from templates/**/*.html");
     let mut tera = match tera::Tera::new("templates/**/*.html") {
         Ok(t) => {
-            tracing::info!("Successfully loaded {} templates", t.get_template_names().count());
+            tracing::info!(
+                "Successfully loaded {} templates",
+                t.get_template_names().count()
+            );
             t
         }
         Err(e) => {
@@ -128,15 +131,23 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/timer/:timer_id/cancel", post(handlers::cancel_timer))
         .route("/api/timer/:timer_id/status", get(handlers::timer_status))
         // FFmpeg converter service
-        .route("/services/ffmpeg-mp4-to-mp3", get(handlers::ffmpeg_converter_page))
+        .route(
+            "/services/ffmpeg-mp4-to-mp3",
+            get(handlers::ffmpeg_converter_page),
+        )
         .route(
             "/api/convert/mp4-to-mp3",
-            post(handlers::convert_mp4_to_mp3)
-                .layer(DefaultBodyLimit::max(100 * 1024 * 1024)) // 100MB limit
+            post(handlers::convert_mp4_to_mp3).layer(DefaultBodyLimit::max(100 * 1024 * 1024)), // 100MB limit
         )
-        .route("/api/convert/download/:file_id", get(handlers::download_converted_file))
+        .route(
+            "/api/convert/download/:file_id",
+            get(handlers::download_converted_file),
+        )
         // Honeypot endpoint - slow markov babble to trap scrapers
-        .route("/api/markov-babble/:slug/gen", get(handlers::markov_babble_honeypot))
+        .route(
+            "/api/markov-babble/:slug/gen",
+            get(handlers::markov_babble_honeypot),
+        )
         // Swagger UI for API documentation
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         // Serve static files (CSS, JS, images)

@@ -19,9 +19,9 @@ pub fn generate_feed(posts: &[Post]) -> Result<String> {
         .collect();
 
     let channel = ChannelBuilder::default()
-        .title("Rust Blog")
+        .title("drakonix.systems")
         .link(base_url.clone())
-        .description("A blog powered by Rust")
+        .description("RSS feed for drakonix.systems")
         .language(Some("en-us".to_string()))
         .items(items)
         .build();
