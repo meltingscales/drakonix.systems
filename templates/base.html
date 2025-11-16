@@ -36,9 +36,33 @@
                     <span></span>
                 </button>
                 <ul class="nav-menu">
-                    <li><a href="/pages/about-me">~/about-me</a></li>
-                    <li><a href="/pages/about-site">~/about-site</a></li>
-                    <li><a href="/pages/resume">~/resume</a></li>
+                    <li class="dropdown">
+                        <span
+                            class="dropdown-toggle"
+                            role="button"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                            tabindex="0"
+                            >~/about/</span
+                        >
+                        <ul class="dropdown-menu" role="menu">
+                            <li role="none">
+                                <a href="/pages/about-me" role="menuitem"
+                                    >./about-me</a
+                                >
+                            </li>
+                            <li role="none">
+                                <a href="/pages/about-site" role="menuitem"
+                                    >./about-site</a
+                                >
+                            </li>
+                            <li role="none">
+                                <a href="/pages/resume" role="menuitem"
+                                    >./resume</a
+                                >
+                            </li>
+                        </ul>
+                    </li>
                     <li>
                         <a href="/pages/social-media"
                             >find / -name "*social media*"</a
