@@ -53,25 +53,25 @@ Here's a list of tools and concepts with brief explanations:
 
 ### Hardware
 
-- CPU
-- RAM
-- GPU
+- CPU: Part that does normal calculations. Fast. Single-operation.
+- RAM: Temporary storage for running programs.
+- GPU: Part that does multiplication in parallel. Not fast but massively parallel compared to a CPU.
   - AMD GPU
   - NVIDIA GPU
-  - VRAM
-- TPU
+  - VRAM: Temporary storage for running programs on a GPU. Expensive.
+- TPU: Part that does special addition in parallel, meant to run large language models. Not that fast but again, massively parallel.
 
 ### Software
 
-- ollama
-- llama.cpp
-- openwebui
-- comfyui
-- stable diffusion
-- tensorflow
-- LM Studio
-- gguf
-- huggingface
+- ollama: backend for running text generation models.
+- llama.cpp: another backend for running text generation models.
+- openwebui: frontend (web UI) for text gen.
+- comfyui: frontend for image/video/audio/text gen. very nice.
+- stable diffusion: 
+- tensorflow: data science library
+- LM Studio: easy, beginner friendly version of openwebui.
+- gguf: file format for LLM weights (the actual data that makes up an LLM) as well as metadata.
+- huggingface: place people store model files
 
 ## AMD VS Nvidia
 
@@ -86,6 +86,25 @@ If you want an easy experience, use NVidia GPUs. You don't need a 24GB+ VRAM car
 This is where the guide actually starts ![](https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExMjlrYW1jbXZ4czVhemR6bTNrcnR4MThuYzBzbXFubTdubjQzaDdpeSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/Dps6uX4XPOKeA/200.webp)
 
 ### PATH_A: GCP_VM_WITH_RENTED_GPU
+
+Running Cost: $???/mo
+Idle Cost: $???/mo
+
+1. start a GCP VM
+1. assign it a GPU
+1. install ubuntu desktop
+1. install LM Studio
+  1. download the .appimage file
+  1. open terminal
+  1. run `cd` to change your directory to where you downloaded it
+  1. run `chmod +x THE_FILE_NAME.appimage` to make it executable
+  1. run `./THE_FILE_NAME.appimage` to run the file
+1. run `sudo apt update; sudo apt install fastfetch neofetch -y`
+1. run `fastfetch` to get system specs.
+1. pick <https://huggingface.co/mlabonne/gemma-3-27b-it-abliterated> as a model and download it 
+1. tweak context window (you can just tell Gemma 3 what your GPU and RAM and CPU are and ask it to guess, it's smart enough to be correct)
+1. ???
+1. profit!
 
 Cost: ??? $ / mo
 
