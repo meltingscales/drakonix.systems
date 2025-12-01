@@ -79,7 +79,7 @@ Here's a list of tools and concepts with brief explanations:
 
 I personally run an AMD GPU, but it took a week+ to get it working. I had to compile `llama.cpp` with a bunch of custom flags hidden in some GitHub discussion.
 
-If you want an easy experience, use NVidia GPUs. You don't need a 24GB+ VRAM card. You can likely get good imagegen working with lower VRAM cards.
+If you want an easy experience, use NVidia GPUs. You don't need a 24GB+ VRAM card; certainly not for text gen, and you can likely get good image gen working with lower VRAM cards.
 
 ## Actual Content
 
@@ -87,11 +87,24 @@ This is where the guide actually starts ![](https://media3.giphy.com/media/v1.Y2
 
 ### PATH_A: GCP_VM_WITH_RENTED_GPU
 
-Running Cost: $???/mo
-Idle Cost: $???/mo
+#### Specs
 
-1. start a GCP VM
-1. assign it a GPU
+| Feature | GCP VM with Rented GPU (PATH_A) |
+|-------------------|-----------------------|
+| Running Cost      | $150-250/mo           |
+| Idle Cost         | $60-100/mo            |
+| CPU               | n1-standard-4         |
+| GPU               | NVIDIA T4             |
+| RAM               | 16GB                  |
+
+#### Steps
+
+1. start a GCP VM with these specs:  
+   region: us-central1  
+   machine: n1-standard-4  
+   GPU: NVIDIA T4  
+   OS: Ubuntu LTS  
+   Disk: 100GB  
 1. install ubuntu desktop
 1. install LM Studio
   1. download the .appimage file
@@ -105,8 +118,6 @@ Idle Cost: $???/mo
 1. tweak context window (you can just tell Gemma 3 what your GPU and RAM and CPU are and ask it to guess, it's smart enough to be correct)
 1. ???
 1. profit!
-
-Cost: ??? $ / mo
 
 ### PATH B: RUNPOD.IO
 Cost: ??? $ / mo
