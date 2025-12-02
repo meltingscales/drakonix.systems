@@ -50,6 +50,7 @@ Here's a list without 88x31 buttons:
 <li><a href="//queer.party">queer.party</a></li>
 <li><a href="https://math.ucr.edu/home/baez/roots/">fractal roots</a></li>
 <li><a href="https://math.ucr.edu/home/baez/">baez - cool math and chaos</a></li>
+<li><a href="https://fmhy.net/">free media heck yeah</a></li>
 </ul>
 
 Here's a list of non-personal websites that are just good alternatives to
