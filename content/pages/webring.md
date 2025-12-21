@@ -51,6 +51,7 @@ Here's a list without 88x31 buttons:
 <li><a href="https://math.ucr.edu/home/baez/roots/">fractal roots</a></li>
 <li><a href="https://math.ucr.edu/home/baez/">baez - cool math and chaos</a></li>
 <li><a href="https://fmhy.net/">free media heck yeah</a></li>
+<li><a href="https://dontasktoask.com/">don't ask to ask - how to actually ask tech questions effectively</a></li>
 </ul>
 
 Here's a list of non-personal websites that are just good alternatives to
