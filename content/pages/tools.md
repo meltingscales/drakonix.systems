@@ -39,19 +39,32 @@ I am aggressively de-googling my life in 2025/2026.
 - zeditor - Fast and simple text editor. Rust backend.
 - nano - command line editor
 
+## CICD
+
+- jenkins
+  - AVOID. legacy and lots of design bugs
+  - pipeline is useful but...its 2025. try to use github cicd or similar. AVOID jenkins.
+- get good at bash
+- understand yaml
+- github runners
+  - (literally just docker containers w/ some yaml command runner. its all the same pattern.)
+  - can also do self hosted
+- <https://www.openstatus.dev/> (uptime/health, can self host)
+
 ## OS
 
-i highly recommend never using windows, for many, many reasons
+i highly recommend never using windows, for [many](https://en.wikipedia.org/wiki/The_Shadow_Brokers), [many](https://en.wikipedia.org/wiki/Edward_Snowden) [reasons](https://en.wikipedia.org/wiki/Server_Message_Block)
 
 - ubuntu - server OS
 - nixos - server/desktop OS
-- cachyOS - easy arch based OS, fast
+- cachyOS - easy arch based OS, fast. bleeding edge so stuff breaks. avoid if u value ur time or are new to linux.
 - TrueNAS CORE - freebsd based NAS OS that uses ZFS, ZFS is superior for use as a NAS for many reasons
+  - AVOID hardware based RAID. if ur card dies and u cant replace it, kiss your data goodbye. software based raid does not suffer from this issue.
 
 ## Hardware
 
 I run various cheap laptops and a few HEPC (High-End Personal Computer) setups.
-Only Linux, except for a Windows computer I use for piano playing.
+Only Linux, except for a Windows computer I use for piano playing/DAW/Frooty Loops.
 
 - https://pcpartpicker.com/user/henryfbp/saved/
 
