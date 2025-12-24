@@ -31,6 +31,7 @@ Some are personal sites, some are just content aggregators/social media, all are
 Here's a list without 88x31 buttons:
 
 <ul>
+<li><a href="//tinytoolk.it">tinytoolk.it</a></li>
 <li><a href="//justine.lol">justine.lol</a></li>
 <li><a href="//nullpt.rs">nullpt.rs</a></li>
 <li><a href="//mechanize.work">mechanize.work</a></li>
@@ -52,6 +53,8 @@ Here's a list without 88x31 buttons:
 <li><a href="https://math.ucr.edu/home/baez/">baez - cool math and chaos</a></li>
 <li><a href="https://fmhy.net/">free media heck yeah</a></li>
 <li><a href="https://dontasktoask.com/">don't ask to ask - how to actually ask tech questions effectively</a></li>
+<li><a href="https://jyn.dev/i-m-just-having-fun/">fun :)</a></li>
+<li><a href="https://neilthanedar.com/youre-not-burnt-out-youre-existentially-starving/">burnout or nihilism?</a></li>
 </ul>
 
 Here's a list of non-personal websites that are just good alternatives to
