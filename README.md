@@ -1,6 +1,6 @@
 # Rust Blog
 
-A blazingly fast blog engine powered by Rust, featuring server-side rendering, syntax highlighting, RSS feeds, and client-side search.
+wew rust. its a dynamic website hosted in gcp. yey
 
 ## Features
 
