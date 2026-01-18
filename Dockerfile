@@ -49,6 +49,7 @@ COPY content /app/content
 # Set environment variables
 ENV RUST_LOG=info
 ENV PORT=8080
+ENV BASE_URL=https://drakonix.systems
 
 # Expose port
 EXPOSE 8080
