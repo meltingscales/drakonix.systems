@@ -29,8 +29,7 @@ I may host other infrastructure on that domain, but for now, this is my main sit
 For trust's sake, here are my public SSH keys:
 
 ```
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIABXUrgDabknc+CVDcdyGIUP9yXzrR0EEnTijYNVTfKr melty@ubuntu-slimdragon
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK2ByzIejUUW78NXxke+NR3QIQ1BrVNaW/cuxknSX4D1 melty@nixos-white-dragon
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINVH+GoCPqlYFLnfBokRGp7nJUfGz9X//qVA1XnDIlyO henrypost@henrypost-toughwolf
 ```
 
 Please...trust them if you want to grant me SSH access to your servers. It would make me very happy.
