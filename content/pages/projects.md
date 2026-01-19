@@ -327,7 +327,7 @@ Their staff needed a more efficient way to stitch data together, so I made them 
 
 As part of helping C.A.R.E. track their holiday shelter donations, I made a thermometer tool that tracks donations.
 
-[Animal Shelter Donation Thermometer](https://animal-shelter-donation-thermometer-163012697625.us-central1.run.app/faq)
+[Animal Shelter Donation Thermometer website](https://animal-shelter-donation-thermometer-163012697625.us-central1.run.app/faq)
 
 [Source code](https://github.com/meltingscales/animal-shelter-donation-thermometer)
 
@@ -337,6 +337,6 @@ As part of helping C.A.R.E. track their holiday shelter donations, I made a ther
 
 To help C.A.R.E. digitally track their cat medication schedules. Local-only, no backend. Admin PIN login.
 
-[Source code](https://github.com/meltingscales/Meowderall)
+[Meowderall website](https://meowderall-255277323735.us-central1.run.app/)
 
-[Meowderall](https://meowderall-255277323735.us-central1.run.app/)
+[Source code](https://github.com/meltingscales/Meowderall)
