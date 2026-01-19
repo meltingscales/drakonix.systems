@@ -1,12 +1,7 @@
 # Build stage - use Debian 12 to match distroless runtime GLIBC version
-FROM rust:1-bookworm as builder
+FROM rust:1-bookworm AS builder
 
 WORKDIR /app
-
-# Install build dependencies
-RUN apt-get update && \
-    apt-get install -y pkg-config libssl-dev && \
-    rm -rf /var/lib/apt/lists/*
 
 # Copy manifests
 COPY Cargo.toml Cargo.lock ./

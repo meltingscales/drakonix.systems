@@ -44,7 +44,7 @@ clean:
 trivy-scan:
     #!/usr/bin/env bash
     echo "Building Docker image for scanning..."
-    docker build -t rust-blog:scan .
+    docker build --network=host -t rust-blog:scan .
     echo ""
     echo "Running Trivy vulnerability scan..."
     trivy image --severity HIGH,CRITICAL rust-blog:scan
@@ -53,7 +53,7 @@ trivy-scan:
 trivy-scan-all:
     #!/usr/bin/env bash
     echo "Building Docker image for scanning..."
-    docker build -t rust-blog:scan .
+    docker build --network=host -t rust-blog:scan .
     echo ""
     echo "Running Trivy vulnerability scan (all severities)..."
     trivy image rust-blog:scan
@@ -62,7 +62,7 @@ trivy-scan-all:
 trivy-scan-report:
     #!/usr/bin/env bash
     echo "Building Docker image for scanning..."
-    docker build -t rust-blog:scan .
+    docker build --network=host -t rust-blog:scan .
     echo ""
     echo "Running Trivy vulnerability scan and saving report..."
     trivy image --severity HIGH,CRITICAL --format json --output trivy-report.json rust-blog:scan
@@ -74,11 +74,11 @@ trivy-scan-report:
 
 # Build Docker image
 docker-build:
-    docker build -t rust-blog:latest .
+    docker build --network=host -t rust-blog:latest .
 
 # Build Docker image with a specific tag
 docker-build-tag tag:
-    docker build -t rust-blog:{{tag}} .
+    docker build --network=host -t rust-blog:{{tag}} .
 
 # Run Docker container locally
 docker-run port="8080":
@@ -103,12 +103,12 @@ DOMAIN_NAME := env_var_or_default("DOMAIN_NAME", "blog.example.com")
 
 # Build and push Docker image to Google Container Registry
 gcp-push:
-    docker build -t gcr.io/{{GCP_PROJECT}}/{{SERVICE_NAME}}:latest .
+    docker build --network=host -t gcr.io/{{GCP_PROJECT}}/{{SERVICE_NAME}}:latest .
     docker push gcr.io/{{GCP_PROJECT}}/{{SERVICE_NAME}}:latest
 
 # Build and push Docker image with a specific tag
 gcp-push-tag tag:
-    docker build -t gcr.io/{{GCP_PROJECT}}/{{SERVICE_NAME}}:{{tag}} .
+    docker build --network=host -t gcr.io/{{GCP_PROJECT}}/{{SERVICE_NAME}}:{{tag}} .
     docker push gcr.io/{{GCP_PROJECT}}/{{SERVICE_NAME}}:{{tag}}
 
 # Deploy to Google Cloud Run
