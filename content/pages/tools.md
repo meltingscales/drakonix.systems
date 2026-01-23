@@ -76,9 +76,11 @@ My current AI stack is here. I used to use ollama but it has issues with ROCm dr
 
 Current working stack:
 - llama.cpp: text generation backend (works with ROCm)
+- koboldcpp: easier to setup than llama.cpp.
 - openwebui: frontend for LLM interaction (TBD)
 - comfyui: image/video/audio generation (TBD)
 - stablediffusion: image generation (TBD)
+- [goose: Claude CLI clone, seems very formidable.](//github.com/block/goose)
 
 ### Corpo AI for coding
 
