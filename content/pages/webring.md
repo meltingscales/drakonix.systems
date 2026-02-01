@@ -66,3 +66,10 @@ corporate slop, algoslop, and AI slop. Replace doomscrolling with this.
     <li><a href="//deadstack.net/recent">deadstack.net</a></li>
     <li><a href="//www.himthe.dev/blog/microsoft-to-linux">himthe.dev</a></li>
 </ul>
+
+Here's a list of fun games or cool media, for fun.
+
+<ul>
+<li><a href="//rose.systems/animalist/">how many animals can you list?</a></li>
+
+</ul>
