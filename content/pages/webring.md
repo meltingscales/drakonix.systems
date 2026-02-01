@@ -70,6 +70,9 @@ corporate slop, algoslop, and AI slop. Replace doomscrolling with this.
 Here's a list of fun games or cool media, for fun.
 
 <ul>
-<li><a href="//rose.systems/animalist/">how many animals can you list?</a></li>
+<li><a href="//rose.systems/animalist/">how many animals can you list?</a><span> (my results: https://rose.systems/animalist
+
+55 animals listed
+🐩🙀🦜🐍𓆉🐜🦘𓃬🐊🐛🕷🪰🐤🐦🐌𓇼🐇🦊🐺🐻‍❄️🧑‍🌾🦍🦋🐛𓃰🐙🐌🐯𓃱🌈🦈🐛)</span></li>
 
 </ul>
