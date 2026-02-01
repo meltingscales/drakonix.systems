@@ -14,6 +14,7 @@ I am aggressively de-googling my life in 2025/2026.
 - immich: google photos clone, self-hosted
 - navidrome: youtube music clone, self-hosted
 - more to come? :)
+- <https://vesktop.dev/>
 
 ## Programming
 
