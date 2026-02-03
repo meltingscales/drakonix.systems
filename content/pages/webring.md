@@ -31,6 +31,7 @@ Some are personal sites, some are just content aggregators/social media, all are
 Here's a list without 88x31 buttons:
 
 <ul>
+<li><a href="//rose.systems">rose.systems</a></li>
 <li><a href="//tinytoolk.it">tinytoolk.it</a></li>
 <li><a href="//justine.lol">justine.lol</a></li>
 <li><a href="//nullpt.rs">nullpt.rs</a></li>
