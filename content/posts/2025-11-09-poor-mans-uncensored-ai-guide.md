@@ -133,3 +133,9 @@ Cost: ??? $ / mo
 
 ### PATH_F: CPU_ONLY_HIGH_RAM_SWAP_TO_DISK___EVIL_CHOICE_>;3
 Cost: ??? $ / mo
+
+### PATH_G: this guide
+
+https://www.reddit.com/r/LocalLLaMA/comments/1mfs9qn/guide_running_qwen30b_coderinstructthinking_with/
+
+todo cleanup test
