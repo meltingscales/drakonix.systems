@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOMAIN="drakonix.systems"
-NGINX_CONF="nginx/${DOMAIN}.conf"
+NGINX_CONF="${DOMAIN}.conf"
 
 echo "=== drakonix.systems infrastructure setup ==="
 
