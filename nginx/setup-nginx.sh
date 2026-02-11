@@ -36,7 +36,7 @@ else
     systemctl stop nginx 2>/dev/null || true
 
     certbot certonly --standalone -d "${DOMAIN}" \
-        --non-interactive --agree-tos --no-email || {
+        --non-interactive --agree-tos || {
         echo ""
         echo "WARNING: Certbot failed. You can retry manually with:"
         echo "  sudo certbot certonly --standalone -d ${DOMAIN}"
@@ -50,6 +50,7 @@ fi
 echo ""
 echo "[3/5] Deploying nginx config..."
 # Arch/Cachyos uses /etc/nginx/conf.d/ for site configs
+mkdir -p /etc/nginx/conf.d
 cp "${SCRIPT_DIR}/${NGINX_CONF}" "/etc/nginx/conf.d/${DOMAIN}.conf"
 
 # Remove default site if it exists
