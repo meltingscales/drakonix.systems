@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOMAIN="drakonix.systems"
 NGINX_CONF="${DOMAIN}.conf"
 
-echo "=== drakonix.systems infrastructure setup ==="
+echo "=== drakonix.systems infrastructure setup (Cachyos/Arch) ==="
 
 # --- Preflight checks ---
 if [[ $EUID -ne 0 ]]; then
@@ -21,8 +21,7 @@ fi
 # --- Install dependencies ---
 echo ""
 echo "[1/5] Installing nginx and certbot..."
-apt-get update -qq
-apt-get install -y -qq nginx certbot python3-certbot-nginx
+pacman -Sy --noconfirm --needed nginx certbot
 
 # --- TLS certs (before nginx config, since config references certs) ---
 echo ""
@@ -37,7 +36,7 @@ else
     systemctl stop nginx 2>/dev/null || true
 
     certbot certonly --standalone -d "${DOMAIN}" \
-        --non-interactive --agree-tos --register-unsafely-without-email || {
+        --non-interactive --agree-tos --no-email || {
         echo ""
         echo "WARNING: Certbot failed. You can retry manually with:"
         echo "  sudo certbot certonly --standalone -d ${DOMAIN}"
@@ -50,11 +49,11 @@ fi
 # --- Deploy nginx config ---
 echo ""
 echo "[3/5] Deploying nginx config..."
-cp "${SCRIPT_DIR}/${NGINX_CONF}" "/etc/nginx/sites-available/${DOMAIN}.conf"
-ln -sf "/etc/nginx/sites-available/${DOMAIN}.conf" "/etc/nginx/sites-enabled/${DOMAIN}.conf"
+# Arch/Cachyos uses /etc/nginx/conf.d/ for site configs
+cp "${SCRIPT_DIR}/${NGINX_CONF}" "/etc/nginx/conf.d/${DOMAIN}.conf"
 
 # Remove default site if it exists
-rm -f /etc/nginx/sites-enabled/default
+rm -f /etc/nginx/conf.d/default.conf
 
 echo "Testing nginx config..."
 nginx -t
@@ -67,15 +66,23 @@ systemctl restart nginx
 
 # --- Firewall ---
 echo ""
-echo "[5/5] Configuring firewall (ufw)..."
-if command -v ufw &>/dev/null; then
+echo "[5/5] Configuring firewall..."
+if command -v firewall-cmd &>/dev/null; then
+    # firewalld
+    firewall-cmd --permanent --add-service=ssh 2>/dev/null || true
+    firewall-cmd --permanent --add-service=http 2>/dev/null || true
+    firewall-cmd --permanent --add-service=https 2>/dev/null || true
+    firewall-cmd --reload 2>/dev/null || true
+    echo "firewalld rules applied."
+elif command -v ufw &>/dev/null; then
+    # ufw (sometimes used on Arch)
     ufw allow 22/tcp   comment 'SSH'    2>/dev/null || true
     ufw allow 80/tcp   comment 'HTTP'   2>/dev/null || true
     ufw allow 443/tcp  comment 'HTTPS'  2>/dev/null || true
     ufw --force enable
     echo "UFW rules applied."
 else
-    echo "ufw not found, skipping firewall setup."
+    echo "No firewall detected (firewalld/ufw not found)."
     echo "Make sure ports 22, 80, and 443 are open."
 fi
 
@@ -91,5 +98,5 @@ echo "       :3001  meowderall (/dragonrouter/meowderall)"
 echo "       :3002  carethermometer (/dragonrouter/carethermometer)"
 echo "       :3003  donationaggregator (/dragonrouter/donationaggregator)"
 echo "  4. To update nginx config later, just git pull and run:"
-echo "       sudo cp nginx/${DOMAIN}.conf /etc/nginx/sites-available/"
+echo "       sudo cp nginx/${DOMAIN}.conf /etc/nginx/conf.d/"
 echo "       sudo nginx -t && sudo systemctl reload nginx"
