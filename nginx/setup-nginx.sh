@@ -22,9 +22,9 @@ fi
 
 # --- Install dependencies ---
 echo ""
-echo "[1/5] Installing nginx and certbot..."
+echo "[1/5] Installing nginx, certbot, and build tools..."
 apt-get update
-apt-get install -y nginx certbot
+apt-get install -y nginx certbot pipx gcc
 
 # --- TLS certs (before nginx config, since config references certs) ---
 echo ""
