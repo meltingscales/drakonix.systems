@@ -1,0 +1,16 @@
+[Unit]
+Description=Drakonix Systems Web Service
+After=network.target
+
+[Service]
+Type=simple
+User=USER_PLACEHOLDER
+WorkingDirectory=REPO_DIR_PLACEHOLDER
+Environment="PORT=3000"
+Environment="RUST_LOG=info"
+ExecStart=REPO_DIR_PLACEHOLDER/target/release/rust-blog
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
