@@ -4,6 +4,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOMAIN="drakonix.systems"
 NGINX_CONF="${DOMAIN}.conf"
+# Set your email for Let's Encrypt notifications
+CERTBOT_EMAIL="henryfbp@gmail.com"
 
 echo "=== drakonix.systems infrastructure setup (Debian 12) ==="
 
@@ -37,7 +39,7 @@ else
     systemctl stop nginx 2>/dev/null || true
 
     certbot certonly --standalone -d "${DOMAIN}" \
-        --non-interactive --agree-tos || {
+        --non-interactive --agree-tos --email "${CERTBOT_EMAIL}" || {
         echo ""
         echo "WARNING: Certbot failed. You can retry manually with:"
         echo "  sudo certbot certonly --standalone -d ${DOMAIN}"
