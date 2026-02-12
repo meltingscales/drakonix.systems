@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOMAIN="drakonix.systems"
 NGINX_CONF="${DOMAIN}.conf"
 
-echo "=== drakonix.systems infrastructure setup (Cachyos/Arch) ==="
+echo "=== drakonix.systems infrastructure setup (Debian 12) ==="
 
 # --- Preflight checks ---
 if [[ $EUID -ne 0 ]]; then
@@ -21,7 +21,8 @@ fi
 # --- Install dependencies ---
 echo ""
 echo "[1/5] Installing nginx and certbot..."
-pacman -Sy --noconfirm --needed nginx certbot
+apt-get update
+apt-get install -y nginx certbot
 
 # --- TLS certs (before nginx config, since config references certs) ---
 echo ""
@@ -49,12 +50,12 @@ fi
 # --- Deploy nginx config ---
 echo ""
 echo "[3/5] Deploying nginx config..."
-# Arch/Cachyos uses /etc/nginx/conf.d/ for site configs
 mkdir -p /etc/nginx/conf.d
 cp "${SCRIPT_DIR}/${NGINX_CONF}" "/etc/nginx/conf.d/${DOMAIN}.conf"
 
-# Remove default site if it exists
+# Remove default site configs (Debian default)
 rm -f /etc/nginx/conf.d/default.conf
+rm -f /etc/nginx/sites-enabled/default 2>/dev/null || true
 
 echo "Testing nginx config..."
 nginx -t
@@ -91,13 +92,14 @@ echo ""
 echo "=== Setup complete ==="
 echo ""
 echo "Next steps:"
-echo "  1. Make sure your router forwards ports 80 and 443 to this machine."
-echo "  2. Point DNS for ${DOMAIN} to your public IP (or configure DDNS)."
-echo "  3. Deploy your Rust services:"
+echo "  1. Configure GCP firewall to allow HTTP (80) and HTTPS (443) traffic:"
+echo "       gcloud compute firewall-rules create allow-http --allow tcp:80"
+echo "       gcloud compute firewall-rules create allow-https --allow tcp:443"
+echo "  2. Deploy your Rust services:"
 echo "       :3000  main site (drakonix.systems/)"
 echo "       :3001  meowderall (/dragonrouter/meowderall)"
 echo "       :3002  carethermometer (/dragonrouter/carethermometer)"
 echo "       :3003  donationaggregator (/dragonrouter/donationaggregator)"
-echo "  4. To update nginx config later, just git pull and run:"
+echo "  3. To update nginx config later, just git pull and run:"
 echo "       sudo cp nginx/${DOMAIN}.conf /etc/nginx/conf.d/"
 echo "       sudo nginx -t && sudo systemctl reload nginx"
