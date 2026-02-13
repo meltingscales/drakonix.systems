@@ -116,6 +116,28 @@ just gcp-url
 
 Deploy all 4 services to a GCP e2-micro VM with nginx reverse proxy:
 
+**Optional: Build locally and copy binaries** (saves VM disk/CPU)
+
+```bash
+# Build drakonix.systems locally and copy to VM
+cargo build --release
+scp target/release/rust-blog henrypost@34.132.91.229:~/Git/drakonix.systems/target/release/
+
+# Build CAREShelter Thermometer locally and copy to VM
+cd ~/Git/animal-shelter-donation-thermometer && cargo build --release
+scp target/release/animal-shelter-donation-thermometer henrypost@34.132.91.229:~/Git/animal-shelter-donation-thermometer/target/release/
+
+# Build CAREShelter Donation Aggregation locally and copy to VM
+cd ~/Git/CAREShelterDonationDataAggregation && cargo build --release
+scp target/release/web henrypost@34.132.91.229:~/Git/CAREShelterDonationDataAggregation/target/release/
+
+# Meowderall is Elm - build static files locally and copy
+cd ~/Git/Meowderall && just build-release
+scp static/elm.js henrypost@34.132.91.229:~/Git/Meowderall/static/
+```
+
+Then on VM (binaries already built, systemd-install skips build):
+
 ```bash
 # drakonix.systems (main site, port 3000)
 cd ~/Git/drakonix.systems
