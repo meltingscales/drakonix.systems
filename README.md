@@ -1,6 +1,13 @@
-# Rust Blog
+# drakonix.systems
 
-wew rust. its a dynamic website hosted in gcp. yey
+My personal website
+
+## Subdomain list
+
+- [drakonix.systems](//drakonix.systems): [github](https://github.com/meltingscales/drakonix.systems) blog and micro utils
+- [donationaggregator.drakonix.systems](//donationaggregator.drakonix.systems) [github](https://github.com/meltingscales/CAREShelterDonationDataAggregation) animal shelter data aggregator
+- [meowderall.drakonix.systems](//meowderall.drakonix.systems) [github](https://github.com/meltingscales/Meowderall) cat med tracker
+- [thermometer.drakonix.systems](//thermometer.drakonix.systems) [github](https://github.com/meltingscales/animal-shelter-donation-thermometer) donation thermometer
 
 ## Features
 
