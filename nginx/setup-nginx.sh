@@ -24,7 +24,7 @@ fi
 echo ""
 echo "[1/5] Installing nginx, certbot, and build tools..."
 apt-get update
-apt-get install -y nginx certbot pipx gcc
+apt-get install -y nginx certbot pipx gcc npm
 
 # --- TLS certs (before nginx config, since config references certs) ---
 echo ""
