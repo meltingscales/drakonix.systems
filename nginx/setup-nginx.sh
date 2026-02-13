@@ -28,21 +28,20 @@ apt-get install -y nginx certbot pipx gcc npm
 
 # --- TLS certs (before nginx config, since config references certs) ---
 echo ""
-echo "[2/5] Setting up TLS certificates..."
+echo "[2/5] Setting up TLS certificates (wildcard)..."
 if [[ -d "/etc/letsencrypt/live/${DOMAIN}" ]]; then
     echo "Certs already exist for ${DOMAIN}, skipping."
 else
-    echo "Obtaining certs via certbot standalone..."
-    echo "NOTE: Port 80 must be reachable from the internet for this to work."
+    echo "Obtaining wildcard cert for ${DOMAIN} and *.${DOMAIN}..."
+    echo "NOTE: This requires a DNS TXT record challenge."
+    echo "      You'll need to add a TXT record when prompted."
 
-    # Stop nginx if running so certbot can bind to port 80
-    systemctl stop nginx 2>/dev/null || true
-
-    certbot certonly --standalone -d "${DOMAIN}" \
-        --non-interactive --agree-tos --email "${CERTBOT_EMAIL}" || {
+    certbot certonly --manual --preferred-challenges dns \
+        -d "${DOMAIN}" -d "*.${DOMAIN}" \
+        --email "${CERTBOT_EMAIL}" --agree-tos || {
         echo ""
         echo "WARNING: Certbot failed. You can retry manually with:"
-        echo "  sudo certbot certonly --standalone -d ${DOMAIN}"
+        echo "  sudo certbot certonly --manual --preferred-challenges dns -d ${DOMAIN} -d *.${DOMAIN}"
         echo ""
         echo "Continuing setup without TLS for now..."
         echo "Nginx will fail to start until certs are in place."
