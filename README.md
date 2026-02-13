@@ -22,7 +22,7 @@ wew rust. its a dynamic website hosted in gcp. yey
 ### Development
 
 ```bash
-# Run the server locally
+# Run server locally
 just run
 
 # Or with hot reload (requires cargo-watch)
@@ -85,13 +85,13 @@ The Dockerfile uses a multi-stage build with dependency caching to speed up buil
 To clear Docker build cache when needed:
 ```bash
 # Clear all build cache
-docker builder prune -a
+docker builder prune -af
 
 # Clear cache for specific image
 docker build --no-cache -t your-image-name .
 
 # Remove all unused images and containers
-docker system prune -a
+docker system prune -af
 ```
 
 **When to clear cache**:
@@ -112,64 +112,60 @@ just gcp-deploy-all
 just gcp-url
 ```
 
-### GCP VM Deployment (Systemd Services)
+### GCP VM Deployment (Subdomains)
 
-Deploy all 4 services to a GCP e2-micro VM with nginx reverse proxy:
+Deploy all 4 services to a GCP e2-micro VM with nginx. Each service gets its own subdomain.
 
-**Optional: Build locally and copy binaries** (saves VM disk/CPU)
+**DNS Setup** - Add A records for each subdomain pointing to the same VM IP:
 
 ```bash
-# Build drakonix.systems locally and copy to VM
-cargo build --release
-scp target/release/rust-blog drakonix.systems:~/Git/drakonix.systems/target/release/
-
-# Build CAREShelter Thermometer locally and copy to VM
-cd ~/Git/animal-shelter-donation-thermometer && cargo build --release
-scp target/release/animal-shelter-donation-thermometer drakonix.systems:~/Git/animal-shelter-donation-thermometer/target/release/
-
-# Build CAREShelter Donation Aggregation locally and copy to VM
-cd ~/Git/CAREShelterDonationDataAggregation && cargo build --release
-scp target/release/web drakonix.systems:~/Git/CAREShelterDonationDataAggregation/target/release/
-
-# Meowderall is Elm - build static files locally and copy
-cd ~/Git/Meowderall && just build-release
-scp static/elm.js drakonix.systems:~/Git/Meowderall/static/
+# Point all subdomains to your VM
+drakonix.systems              → 34.132.91.229
+donationaggregator.drakonix.systems → 34.132.91.229
+carethermometer.drakonix.systems   → 34.132.91.229
+meowderall.drakonix.systems        → 34.132.91.229
 ```
 
-Then on VM (binaries already built, systemd-install skips build):
+**On VM** - Build and install each service:
 
 ```bash
 # drakonix.systems (main site, port 3000)
 cd ~/Git/drakonix.systems
-git pull
 cargo build --release
 sudo just systemd-install
 
 # Meowderall (Elm SPA, port 3001)
 cd ~/Git/Meowderall
-git pull
 just build-release
 sudo just systemd-install
 
-# CAREShelter Donation Thermometer (port 3002)
+# CAREShelter Thermometer (port 3002)
 cd ~/Git/animal-shelter-donation-thermometer
-git pull
 cargo build --release
 sudo just systemd-install
 
-# CAREShelter Donation Data Aggregation (port 3003)
+# CAREShelter Donation Aggregation (port 3003)
 cd ~/Git/CAREShelterDonationDataAggregation
-git pull
 cargo build --release
 sudo just systemd-install
 ```
 
-Verify all services are running:
+Verify all 4 services are running:
+
 ```bash
 sudo systemctl status drakonix-systems meowderall care-shelter-donation animal-shelter-thermometer
 ```
 
-Manage services:
+**nginx Config** - Copy and reload nginx config:
+
+```bash
+cd ~/Git/drakonix.systems
+sudo cp nginx/drakonix.systems.conf /etc/nginx/conf.d/
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+**Manage services**:
+
 ```bash
 # Restart a service
 sudo just systemd-restart
@@ -213,12 +209,11 @@ sudo just systemd-uninstall
 
 ### Styling
 
-Edit `static/css/style.css` to customize the look. The default is a minimal reset style - add your own theme!
+Edit `static/css/style.css` to customize look. The default is a minimal reset style - add your own theme!
 
 ### Templates
 
 Templates are in `templates/` and use Tera syntax (similar to Jinja2):
-
 - `base.html` - Base template
 - `index.html` - Home page
 - `posts_list.html` - All posts listing
@@ -227,7 +222,7 @@ Templates are in `templates/` and use Tera syntax (similar to Jinja2):
 
 ### Search
 
-The search JavaScript is in `static/js/search.js` and uses the `/search.json` endpoint for the search index.
+The search JavaScript is in `static/js/search.js` and uses `/search.json` endpoint for search index.
 
 ## Available Commands
 
