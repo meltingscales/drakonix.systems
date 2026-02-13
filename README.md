@@ -112,6 +112,53 @@ just gcp-deploy-all
 just gcp-url
 ```
 
+### GCP VM Deployment (Systemd Services)
+
+Deploy all 4 services to a GCP e2-micro VM with nginx reverse proxy:
+
+```bash
+# drakonix.systems (main site, port 3000)
+cd ~/Git/drakonix.systems
+git pull
+cargo build --release
+sudo just systemd-install
+
+# Meowderall (Elm SPA, port 3001)
+cd ~/Git/Meowderall
+git pull
+just build-release
+sudo just systemd-install
+
+# CAREShelter Donation Thermometer (port 3002)
+cd ~/Git/animal-shelter-donation-thermometer
+git pull
+cargo build --release
+sudo just systemd-install
+
+# CAREShelter Donation Data Aggregation (port 3003)
+cd ~/Git/CAREShelterDonationDataAggregation
+git pull
+cargo build --release
+sudo just systemd-install
+```
+
+Verify all services are running:
+```bash
+sudo systemctl status drakonix-systems meowderall care-shelter-donation animal-shelter-thermometer
+```
+
+Manage services:
+```bash
+# Restart a service
+sudo just systemd-restart
+
+# View logs
+sudo just systemd-logs
+
+# Uninstall a service
+sudo just systemd-uninstall
+```
+
 ### Environment Variables
 
 - `PORT`: Server port (default: 8080)
