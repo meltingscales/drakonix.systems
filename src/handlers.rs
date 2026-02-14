@@ -30,7 +30,7 @@ pub async fn index(State(state): State<Arc<AppState>>) -> Result<Html<String>, A
 
     let mut context = Context::new();
     context.insert("posts", &posts);
-    context.insert("title", "Home");
+    context.insert("title", "Home - drakonix.systems");
     add_honeypot_urls(&mut context);
 
     let html = state.tera.render("index.html", &context).map_err(|e| {
@@ -48,7 +48,7 @@ pub async fn posts_list(State(state): State<Arc<AppState>>) -> Result<Html<Strin
 
     let mut context = Context::new();
     context.insert("posts", &posts);
-    context.insert("title", "All Posts");
+    context.insert("title", "All Posts - drakonix.systems");
     add_honeypot_urls(&mut context);
 
     let html = state
