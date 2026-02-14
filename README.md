@@ -4,10 +4,10 @@ My personal website
 
 ## Subdomain list
 
-- [drakonix.systems](//drakonix.systems): [github](https://github.com/meltingscales/drakonix.systems) blog and micro utils
-- [donationaggregator.drakonix.systems](//donationaggregator.drakonix.systems) [github](https://github.com/meltingscales/CAREShelterDonationDataAggregation) animal shelter data aggregator
-- [meowderall.drakonix.systems](//meowderall.drakonix.systems) [github](https://github.com/meltingscales/Meowderall) cat med tracker
-- [carethermometer.drakonix.systems](//carethermometer.drakonix.systems) [github](https://github.com/meltingscales/animal-shelter-donation-thermometer) donation thermometer
+- [drakonix.systems](//drakonix.systems): {[github](https://github.com/meltingscales/drakonix.systems)} blog and micro utils
+- [donationaggregator.drakonix.systems](//donationaggregator.drakonix.systems) {[github](https://github.com/meltingscales/CAREShelterDonationDataAggregation)} animal shelter data aggregator
+- [meowderall.drakonix.systems](//meowderall.drakonix.systems) {[github](https://github.com/meltingscales/Meowderall)} cat med tracker
+- [carethermometer.drakonix.systems](//carethermometer.drakonix.systems) {[github](https://github.com/meltingscales/animal-shelter-donation-thermometer)} donation thermometer
 
 ## Features
 
