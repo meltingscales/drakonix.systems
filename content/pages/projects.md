@@ -340,3 +340,11 @@ To help C.A.R.E. digitally track their cat medication schedules. Local-only, no 
 [Meowderall website](https://meowderall.drakonix.systems/)
 
 [Source code](https://github.com/meltingscales/Meowderall)
+
+### CACC Rabies Data
+
+I helped provide 2026 Cat/Dog rabies vaccination stats to CACC, Chicago Animal Care and Control.
+
+I used Rust alongside z.ai/Claude to gather API data and generate a data sheet for CACC. Sent to Cook County's Automatic Certificate Entry (ACE) program.
+
+Closed source for security reasons.
