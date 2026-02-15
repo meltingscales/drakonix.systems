@@ -319,7 +319,7 @@ I volunteer at a wonderful animal shelter called "Community Animal Rescue Effort
 
 Their staff needed a more efficient way to stitch data together, so I made them a website. It's pretty secure, fast, and simple.
 
-[CARE Shelter Donation Aggregation](https://drakonix.systems/dragonrouter/donationaggregator/about)
+[CARE Shelter Donation Aggregation](https://donationaggregator.drakonix.systems/about)
 
 [Source code](https://github.com/meltingscales/CAREShelterDonationDataAggregation)
 
@@ -327,7 +327,7 @@ Their staff needed a more efficient way to stitch data together, so I made them 
 
 As part of helping C.A.R.E. track their holiday shelter donations, I made a thermometer tool that tracks donations.
 
-[Animal Shelter Donation Thermometer website](https://drakonix.systems/dragonrouter/carethermometer/faq)
+[Animal Shelter Donation Thermometer website](https://carethermometer.drakonix.systems/faq)
 
 [Source code](https://github.com/meltingscales/animal-shelter-donation-thermometer)
 
@@ -337,6 +337,6 @@ As part of helping C.A.R.E. track their holiday shelter donations, I made a ther
 
 To help C.A.R.E. digitally track their cat medication schedules. Local-only, no backend. Admin PIN login.
 
-[Meowderall website](https://drakonix.systems/dragonrouter/meowderall)
+[Meowderall website](https://meowderall.drakonix.systems/)
 
 [Source code](https://github.com/meltingscales/Meowderall)
