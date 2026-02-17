@@ -18,3 +18,7 @@ I don't know how else to...I don't know. Reduce suffering in the world? Foster a
 I feel like all humans may experience this crisis ("crisis? is that the right word?") sometimes.
 
 Yeah. I can't solve all problems. I will focus only on the basic ones.
+
+...
+
+I like computers because they let me think almost as fast as I can think trapped in a meat suit.
