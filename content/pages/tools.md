@@ -141,20 +141,20 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 
 ## Hacking links
 
-- https://book.hacktricks.xyz/welcome/readme
-- https://www.revshells.com/
-- https://eclypsium.com/
-- https://ddosecrets.com/wiki/Distributed_Denial_of_Secrets
-- https://news.ycombinator.com/
-- https://www.darkreading.com/application-security
-- https://www.sans.org/newsletters/ouch/
-- https://www.databreachtoday.com/
-- https://medium.com/vmacwrites/tools-to-visualize-your-terraform-plan-d421c6255f9f
-- https://www.scaledagileframework.com/implementation-roadmap/
-- https://www.cia.gov/static/5c875f3ec660e092cf893f60b4a288df/SimpleSabotage.pdf
-- https://www.privacytools.io/
-- https://blog.openalgo.in/algorithmic-trading-roadmap-2025-from-curious-coder-to-confident-execution-0662572a7838
-- https://www.lesswrong.com/
+- <https://book.hacktricks.xyz/welcome/readme>
+- <https://www.revshells.com/>
+- <https://eclypsium.com/>
+- <https://ddosecrets.com/wiki/Distributed_Denial_of_Secrets>
+- <https://news.ycombinator.com/>
+- <https://https://www.darkreading.com/application-security>
+- <https://www.sans.org/newsletters/ouch/>
+- <https://www.databreachtoday.com/>
+- <https://medium.com/vmacwrites/tools-to-visualize-your-terraform-plan-d421c6255f9f>
+- <https://www.scaledagileframework.com/implementation-roadmap/>
+- <https://www.cia.gov/static/5c875f3ec660e092cf893f60b4a288df/SimpleSabotage.pdf>
+- <https://www.privacytools.io/>
+- <https://blog.openalgo.in/algorithmic-trading-roadmap-2025-from-curious-coder-to-confident-execution-0662572a7838>
+- <https://www.lesswrong.com/>
 
 ### Hacking tools
 
@@ -174,7 +174,8 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 
 #### To investigate
 
-- https://deepnet.store/products/dn_key-pro-experimental
+- <https://deepnet.store/products/dn_key-pro-experimental>
 - Proxgrind
-- https://proxmark.com/ icopy-x
+- <https://proxmark.com/> icopy-x
 - Bash Bunny
+- <https://github.com/I-Am-Jakoby/Flipper-Zero-BadUSB/tree/main/Payloads>
