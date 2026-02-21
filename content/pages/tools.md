@@ -16,6 +16,7 @@ I am aggressively de-googling my life in 2025/2026.
 - more to come? :)
 - <https://vesktop.dev/>
 - <https://switch.hacks.guide/>
+  - <https://github.com/nh-server/switch-guide>
 
 ## Programming
 
