@@ -32,6 +32,7 @@ For trust's sake, here are my public SSH keys:
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINVH+GoCPqlYFLnfBokRGp7nJUfGz9X//qVA1XnDIlyO henrypost@henrypost-toughwolf
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKPd5pEcogkQ0LQCMi3lN25tPtxWhVK91efrKiotdeYq henrypost@kali-toughwolf
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOYBWyDCJn5OahbCGzybXjWWdCwhWmu5YJ7u4WN80S2O henrypost@kalameet
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAPvdax9WFq/y2lWEK5vLamMbs2sO3DSFuQvpBHo5wbH henrypost@henrypost-slimwolf
 ```
 
 Please...trust them if you want to grant me SSH access to your servers. It would make me very happy.
