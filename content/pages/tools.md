@@ -15,6 +15,7 @@ I am aggressively de-googling my life in 2025/2026.
 - navidrome: youtube music clone, self-hosted
 - more to come? :)
 - <https://vesktop.dev/>
+- <https://switch.hacks.guide/>
 
 ## Programming
 
