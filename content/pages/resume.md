@@ -3,6 +3,12 @@ title: "Resume"
 date: 2025-01-01
 ---
 
+## Links
+
+- [LinkedIn](https://www.linkedin.com/in/henryfidelbradleypost/)
+- [personal github](https://github.com/meltingscales)
+- [work github](https://github.com/henrypost)
+
 ## Summary
 
 I'm a senior security and application engineering professional with a history of delivering quality and accurate work.
@@ -13,13 +19,17 @@ Being born in the late 90s, I learned coding without using AI. When I was in hig
 
 However, I have tested and used various different LLM coding tools, and they make coding so, so, so much faster. I am very pro-AI coding for speed's sake, but still understand the need for unit/user testing, proper documentation, and that LLMs aren't magic and can still make mistakes.
 
-For example, <https://dogbox.moe> was made almost entirely with AI, but it is a very fast, secure, and post-quantum-encryption-secure piece of software. Go test it yourself if you'd like.
+For example, <https://github.com/meltingscales/dogbox.moe> was made almost entirely with AI, but it is a very fast, secure, and post-quantum-encryption-secure piece of software. Go test it yourself if you'd like.
 
 ### Bayview
 
 As Lead Application Security Engineer at Bayview Asset Management, I led secure coding training and vulnerability remediation, and created automation that provided executives with useful metrics. We achieved a 60% reduction in software risk within a year.
 
-My leadership in 0-day fixes protected us against both immediate threats and long-term risks.
+My leadership in 0-day fixes protected us against both immediate threats and long-term risks. 
+
+I continue to research and provide red-team, purple-team style support to our organization by using various pen testing tools.
+
+I also lead penetration testing, interview vendors, and continue to cost-cut while improving efficiency and various services.
 
 ### U.S. Bank
 
