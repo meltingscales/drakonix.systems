@@ -130,6 +130,8 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/timer/start", post(handlers::start_timer))
         .route("/api/timer/:timer_id/cancel", post(handlers::cancel_timer))
         .route("/api/timer/:timer_id/status", get(handlers::timer_status))
+        // Death timer service
+        .route("/services/death-timer", get(handlers::death_timer_page))
         // FFmpeg converter service
         .route(
             "/services/ffmpeg-mp4-to-mp3",

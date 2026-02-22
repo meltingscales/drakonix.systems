@@ -310,6 +310,19 @@ pub async fn timer_status(
     }))
 }
 
+/// Death timer page handler
+pub async fn death_timer_page(State(state): State<Arc<AppState>>) -> Result<Html<String>, AppError> {
+    let mut context = Context::new();
+    add_honeypot_urls(&mut context);
+
+    let html = state
+        .tera
+        .render("death_timer.html", &context)
+        .map_err(|e| AppError::TemplateError(e.to_string()))?;
+
+    Ok(Html(html))
+}
+
 /// FFmpeg converter page handler
 pub async fn ffmpeg_converter_page(
     State(state): State<Arc<AppState>>,

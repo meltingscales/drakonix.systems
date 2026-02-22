@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="death-timer-container">
+    <h1>&#x2620;&#xfe0f; Death Timer</h1>
+    <p class="subtitle">How many times can you do something before you die?<br>Enter your age, pick an activity, find out.</p>
+
+    <div class="dt-form">
+        <div class="dt-row">
+            <label for="dt-age">Your age</label>
+            <input type="number" id="dt-age" min="1" max="120" value="25" />
+        </div>
+        <div class="dt-row">
+            <label for="dt-life-exp">Life expectancy</label>
+            <input type="number" id="dt-life-exp" min="1" max="150" value="78" />
+            <span class="dt-hint">(US avg is ~78)</span>
+        </div>
+        <div class="dt-row">
+            <label for="dt-activity">Activity</label>
+            <select id="dt-activity">
+                <option value="900">eat a Big Mac &#x1f354;</option>
+                <option value="720">speedrun Minecraft any% &#x26cf;&#xfe0f;</option>
+                <option value="11640">watch Titanic (1997) &#x1f6a2;</option>
+                <option value="50400">drive from Chicago to Texas &#x1f697;</option>
+                <option value="14400">run a marathon &#x1f3c3;</option>
+                <option value="10800">play a full game of Monopoly &#x1f3b2;</option>
+                <option value="216000">read War and Peace &#x1f4da;</option>
+                <option value="198000">beat Dark Souls &#x2694;&#xfe0f;</option>
+                <option value="223200">watch all of Breaking Bad &#x1f9ea;</option>
+                <option value="5184000">circumnavigate the globe by cargo ship &#x1f30d;</option>
+                <option value="custom">custom...</option>
+            </select>
+        </div>
+
+        <div class="dt-row dt-custom-row" id="dt-custom-row" style="display:none">
+            <label for="dt-custom-name">Activity name</label>
+            <input type="text" id="dt-custom-name" placeholder="e.g. watch a Lord of the Rings extended cut" />
+        </div>
+        <div class="dt-row dt-custom-row" id="dt-custom-dur-row" style="display:none">
+            <label for="dt-custom-duration">Duration</label>
+            <input type="number" id="dt-custom-duration" min="1" value="60" placeholder="seconds" />
+            <span class="dt-hint">seconds</span>
+        </div>
+
+        <button id="dt-calculate-btn" class="dt-btn">Calculate my doom</button>
+    </div>
+
+    <div id="dt-result" class="dt-result" style="display:none">
+        <p class="dt-you-can">You can still&#x2026;</p>
+        <p id="dt-activity-label" class="dt-activity-label"></p>
+        <div class="dt-count-box">
+            <span id="dt-count" class="dt-count">0</span>
+        </div>
+        <p class="dt-more-times">more times before you die.</p>
+        <p id="dt-context" class="dt-context"></p>
+        <button id="dt-reset-btn" class="dt-btn dt-btn-secondary">&#x21a9; Start over</button>
+    </div>
+
+    <div id="dt-dead" class="dt-dead" style="display:none">
+        <p>&#x1f480; According to these numbers, you&#x2019;re already on borrowed time.</p>
+        <p>Make it count.</p>
+        <button id="dt-dead-reset-btn" class="dt-btn dt-btn-secondary">&#x21a9; Start over</button>
+    </div>
+</div>
+
+<style>
+.death-timer-container {
+    max-width: 660px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.death-timer-container h1 {
+    font-size: 2.2rem;
+    margin-bottom: 0.4rem;
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    line-height: 1.5;
+}
+
+.dt-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.dt-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.dt-row label {
+    font-weight: 600;
+    min-width: 120px;
+}
+
+.dt-row input[type="number"],
+.dt-row input[type="text"],
+.dt-row select {
+    padding: 0.45rem 0.65rem;
+    border: 1px solid var(--border-primary);
+    border-radius: 4px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.dt-row input[type="number"] { width: 90px; }
+.dt-row input[type="text"]   { flex: 1; min-width: 180px; }
+.dt-row select               { flex: 1; min-width: 220px; }
+
+.dt-hint {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.dt-btn {
+    align-self: flex-start;
+    padding: 0.7rem 1.4rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: #c0392b;
+    color: #fff;
+    margin-top: 0.5rem;
+    transition: background 0.15s;
+}
+
+.dt-btn:hover { background: #922b21; }
+
+.dt-btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-primary);
+    margin-top: 1.5rem;
+}
+.dt-btn-secondary:hover { background: var(--bg-hover); }
+
+/* Result panel */
+.dt-result {
+    text-align: center;
+    padding: 2rem;
+    border: 2px solid var(--border-primary);
+    border-radius: 10px;
+    background: var(--bg-secondary);
+}
+
+.dt-you-can {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.3rem;
+}
+
+.dt-activity-label {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+}
+
+.dt-count-box {
+    margin: 0 auto 1.2rem;
+}
+
+.dt-count {
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-size: clamp(2.8rem, 8vw, 5.5rem);
+    font-weight: bold;
+    color: #c0392b;
+    letter-spacing: -0.02em;
+    display: block;
+    word-break: break-all;
+}
+
+.dt-more-times {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.8rem;
+}
+
+.dt-context {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/* Dead panel */
+.dt-dead {
+    text-align: center;
+    padding: 2rem;
+    border: 2px dashed #c0392b;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    line-height: 2;
+}
+</style>
+
+<script>
+const activitySelect = document.getElementById('dt-activity');
+const customRow      = document.getElementById('dt-custom-row');
+const customDurRow   = document.getElementById('dt-custom-dur-row');
+const customName     = document.getElementById('dt-custom-name');
+const customDuration = document.getElementById('dt-custom-duration');
+const calcBtn        = document.getElementById('dt-calculate-btn');
+const resetBtn       = document.getElementById('dt-reset-btn');
+const deadResetBtn   = document.getElementById('dt-dead-reset-btn');
+
+const formEl     = document.querySelector('.dt-form');
+const resultEl   = document.getElementById('dt-result');
+const deadEl     = document.getElementById('dt-dead');
+const countEl    = document.getElementById('dt-count');
+const labelEl    = document.getElementById('dt-activity-label');
+const contextEl  = document.getElementById('dt-context');
+
+let tickInterval = null;
+
+activitySelect.addEventListener('change', () => {
+    const isCustom = activitySelect.value === 'custom';
+    customRow.style.display    = isCustom ? '' : 'none';
+    customDurRow.style.display = isCustom ? '' : 'none';
+});
+
+function getActivityLabel() {
+    if (activitySelect.value === 'custom') {
+        return customName.value.trim() || 'do that thing';
+    }
+    return activitySelect.options[activitySelect.selectedIndex].text;
+}
+
+function getActivityDuration() {
+    if (activitySelect.value === 'custom') {
+        return Math.max(1, parseFloat(customDuration.value) || 60);
+    }
+    return parseFloat(activitySelect.value);
+}
+
+function formatCount(n) {
+    if (n >= 1000) {
+        // Commas for thousands, 2 decimal places
+        const parts = n.toFixed(2).split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        return parts.join('.');
+    }
+    return n.toFixed(2);
+}
+
+function showForm() {
+    formEl.style.display    = '';
+    resultEl.style.display  = 'none';
+    deadEl.style.display    = 'none';
+    if (tickInterval) { clearInterval(tickInterval); tickInterval = null; }
+}
+
+calcBtn.addEventListener('click', () => {
+    const age        = parseFloat(document.getElementById('dt-age').value)      || 0;
+    const lifeExp    = parseFloat(document.getElementById('dt-life-exp').value) || 78;
+    const yearsLeft  = lifeExp - age;
+
+    if (yearsLeft <= 0) {
+        formEl.style.display   = 'none';
+        resultEl.style.display = 'none';
+        deadEl.style.display   = '';
+        return;
+    }
+
+    const secondsLeft   = yearsLeft * 365.25 * 24 * 3600;
+    const actDuration   = getActivityDuration();
+    let   timesLeft     = secondsLeft / actDuration;
+    const decPerSecond  = 1 / actDuration;
+
+    labelEl.textContent = getActivityLabel();
+    countEl.textContent = formatCount(timesLeft);
+
+    // Context line
+    const perDay  = (86400 / actDuration).toFixed(1);
+    const perWeek = (604800 / actDuration).toFixed(1);
+    contextEl.textContent =
+        `(~${perDay} per day / ~${perWeek} per week if that's all you did)`;
+
+    formEl.style.display   = 'none';
+    resultEl.style.display = '';
+    deadEl.style.display   = 'none';
+
+    if (tickInterval) clearInterval(tickInterval);
+    tickInterval = setInterval(() => {
+        timesLeft -= decPerSecond;
+        if (timesLeft <= 0) {
+            timesLeft = 0;
+            clearInterval(tickInterval);
+            tickInterval = null;
+        }
+        countEl.textContent = formatCount(timesLeft);
+    }, 1000);
+});
+
+resetBtn.addEventListener('click', showForm);
+deadResetBtn.addEventListener('click', showForm);
+</script>
+{% endblock %}
