@@ -1,9 +1,10 @@
-{% extends "base.html" %}
-
-{% block content %}
+{% extends "base.html" %} {% block content %}
 <div class="death-timer-container">
     <h1>&#x2620;&#xfe0f; Death Timer</h1>
-    <p class="subtitle">How many times can you do something before you die?<br>Enter your age, pick an activity, find out.</p>
+    <p class="subtitle">
+        How many times can you do something before you die?<br />Enter your age,
+        pick an activity, find out.
+    </p>
 
     <!-- ── FORM ── -->
     <div class="dt-form" id="dt-form">
@@ -13,32 +14,58 @@
         </div>
         <div class="dt-row">
             <label for="dt-life-exp">Life expectancy</label>
-            <input type="number" id="dt-life-exp" min="1" max="150" value="78" />
+            <input
+                type="number"
+                id="dt-life-exp"
+                min="1"
+                max="150"
+                value="78"
+            />
             <span class="dt-hint">(US avg ~78)</span>
         </div>
         <div class="dt-row">
             <label for="dt-activity">Activity</label>
             <select id="dt-activity">
                 <option value="900">eat a Big Mac &#x1f354;</option>
-                <option value="720">speedrun Minecraft any% &#x26cf;&#xfe0f;</option>
+                <option value="720">
+                    speedrun Minecraft any% &#x26cf;&#xfe0f;
+                </option>
                 <option value="11640">watch Titanic (1997) &#x1f6a2;</option>
-                <option value="50400">drive from Chicago to Texas &#x1f697;</option>
+                <option value="50400">
+                    drive from Chicago to Texas &#x1f697;
+                </option>
                 <option value="14400">run a marathon &#x1f3c3;</option>
-                <option value="10800">play a full game of Monopoly &#x1f3b2;</option>
+                <option value="10800">
+                    play a full game of Monopoly &#x1f3b2;
+                </option>
                 <option value="216000">read War and Peace &#x1f4da;</option>
                 <option value="198000">beat Dark Souls &#x2694;&#xfe0f;</option>
-                <option value="223200">watch all of Breaking Bad &#x1f9ea;</option>
-                <option value="5184000">circumnavigate the globe by cargo ship &#x1f30d;</option>
+                <option value="223200">
+                    watch all of Breaking Bad &#x1f9ea;
+                </option>
+                <option value="5184000">
+                    circumnavigate the globe by cargo ship &#x1f30d;
+                </option>
                 <option value="custom">custom...</option>
             </select>
         </div>
-        <div id="dt-custom-name-row" class="dt-row" style="display:none">
+        <div id="dt-custom-name-row" class="dt-row" style="display: none">
             <label for="dt-custom-name">Activity name</label>
-            <input type="text" id="dt-custom-name" placeholder="e.g. watch a Lord of the Rings extended cut" />
+            <input
+                type="text"
+                id="dt-custom-name"
+                placeholder="e.g. watch a Lord of the Rings extended cut"
+            />
         </div>
-        <div id="dt-custom-dur-row" class="dt-row" style="display:none">
+        <div id="dt-custom-dur-row" class="dt-row" style="display: none">
             <label>Duration</label>
-            <input type="number" id="dt-custom-duration" min="1" value="1" style="width:80px" />
+            <input
+                type="number"
+                id="dt-custom-duration"
+                min="1"
+                value="1"
+                style="width: 80px"
+            />
             <select id="dt-custom-dur-unit">
                 <option value="60">minutes</option>
                 <option value="3600" selected>hours</option>
@@ -50,17 +77,30 @@
     </div>
 
     <!-- ── RESULT ── -->
-    <div id="dt-result" style="display:none">
+    <div id="dt-result" style="display: none">
         <div class="dt-result-layout">
-
             <!-- Left: main content -->
             <div class="dt-main-col">
                 <div class="dt-result-top">
                     <!-- Prev/next nav flanks the "You can still…" line so layout stays stable -->
                     <div class="dt-featured-nav">
-                        <button id="dt-feat-prev" class="dt-nav-btn" aria-label="Previous activity" style="visibility:hidden">&#x25c0;</button>
+                        <button
+                            id="dt-feat-prev"
+                            class="dt-nav-btn"
+                            aria-label="Previous activity"
+                            style="visibility: hidden"
+                        >
+                            &#x25c0;
+                        </button>
                         <p class="dt-you-can">You can still&#x2026;</p>
-                        <button id="dt-feat-next" class="dt-nav-btn" aria-label="Next activity" style="visibility:hidden">&#x25b6;</button>
+                        <button
+                            id="dt-feat-next"
+                            class="dt-nav-btn"
+                            aria-label="Next activity"
+                            style="visibility: hidden"
+                        >
+                            &#x25b6;
+                        </button>
                     </div>
                     <p id="dt-main-label" class="dt-activity-label"></p>
                     <div class="dt-count-box">
@@ -73,24 +113,38 @@
 
                 <div class="dt-viz-controls">
                     <div class="dt-tabs">
-                        <button id="dt-tab-chart"  class="dt-tab dt-tab-active">&#x1f4ca; Chart</button>
-                        <button id="dt-tab-waffle" class="dt-tab">&#x2b1b; Waffle</button>
+                        <button id="dt-tab-chart" class="dt-tab dt-tab-active">
+                            &#x1f4ca; Chart
+                        </button>
+                        <button id="dt-tab-waffle" class="dt-tab">
+                            &#x2b1b; Waffle
+                        </button>
                     </div>
-                    <div style="display:flex;gap:0.4rem">
-                        <button id="dt-auto-advance" class="dt-log-btn">&#x25b6;&#x25b6; Auto: OFF</button>
-                        <button id="dt-log-toggle" class="dt-log-btn">Log scale: ON</button>
+                    <div style="display: flex; gap: 0.4rem">
+                        <button id="dt-auto-advance" class="dt-log-btn">
+                            &#x25b6;&#x25b6; Autoplay: OFF
+                        </button>
+                        <button id="dt-log-toggle" class="dt-log-btn">
+                            Log scale: ON
+                        </button>
                     </div>
                 </div>
 
                 <div id="dt-chart-panel" class="dt-panel">
-                    <p id="dt-chart-empty" class="dt-panel-empty">Toggle activities on the right to compare them.</p>
+                    <p id="dt-chart-empty" class="dt-panel-empty">
+                        Toggle activities on the right to compare them.
+                    </p>
                     <div class="dt-chart-wrap">
                         <canvas id="dt-chart"></canvas>
                     </div>
                 </div>
 
                 <!-- Waffle panel: populated dynamically -->
-                <div id="dt-waffle-panel" class="dt-panel" style="display:none"></div>
+                <div
+                    id="dt-waffle-panel"
+                    class="dt-panel"
+                    style="display: none"
+                ></div>
             </div>
 
             <!-- Right: activity sidebar -->
@@ -101,370 +155,512 @@
                     <p class="dt-sidebar-custom-title">Custom activity</p>
                     <input type="text" id="dt-sb-name" placeholder="Name" />
                     <div class="dt-sb-dur-row">
-                        <input type="number" id="dt-sb-dur" placeholder="Amount" min="1" value="1" />
+                        <input
+                            type="number"
+                            id="dt-sb-dur"
+                            placeholder="Amount"
+                            min="1"
+                            value="1"
+                        />
                         <select id="dt-sb-dur-unit">
                             <option value="60">min</option>
                             <option value="3600" selected>hr</option>
                             <option value="86400">day</option>
                             <option value="604800">wk</option>
                         </select>
-                        <button id="dt-sb-add-btn" class="dt-btn dt-btn-sm">Add</button>
+                        <button id="dt-sb-add-btn" class="dt-btn dt-btn-sm">
+                            Add
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="dt-bottom-row">
-            <button id="dt-reset-btn" class="dt-btn dt-btn-secondary">&#x21a9; Start over</button>
-            <button id="dt-share-btn" class="dt-btn dt-btn-secondary">&#x1f517; Copy link</button>
+            <button id="dt-reset-btn" class="dt-btn dt-btn-secondary">
+                &#x21a9; Start over
+            </button>
+            <button id="dt-share-btn" class="dt-btn dt-btn-secondary">
+                &#x1f517; Copy link
+            </button>
         </div>
     </div>
 
     <!-- ── DEAD ── -->
-    <div id="dt-dead" style="display:none">
-        <p>&#x1f480; According to these numbers, you&#x2019;re already on borrowed time.</p>
+    <div id="dt-dead" style="display: none">
+        <p>
+            &#x1f480; According to these numbers, you&#x2019;re already on
+            borrowed time.
+        </p>
         <p>Make it count.</p>
-        <button id="dt-dead-reset" class="dt-btn dt-btn-secondary">&#x21a9; Start over</button>
+        <button id="dt-dead-reset" class="dt-btn dt-btn-secondary">
+            &#x21a9; Start over
+        </button>
     </div>
 </div>
 
 <style>
-.death-timer-container {
-    max-width: 1344px;
-    margin: 0 auto;
-    padding: 2rem;
-}
-.death-timer-container h1 { font-size: 2.2rem; margin-bottom: 0.4rem; }
-.subtitle { color: var(--text-secondary); margin-bottom: 2rem; line-height: 1.5; }
+    .death-timer-container {
+        max-width: 1344px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    .death-timer-container h1 {
+        font-size: 2.2rem;
+        margin-bottom: 0.4rem;
+    }
+    .subtitle {
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        line-height: 1.5;
+    }
 
-/* ── Form ── */
-.dt-form { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; max-width: 600px; }
-.dt-row  { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
-.dt-row label { font-weight: 600; min-width: 140px; }
-.dt-row input[type="number"],
-.dt-row input[type="text"],
-.dt-row select {
-    padding: 0.45rem 0.65rem;
-    border: 1px solid var(--border-primary);
-    border-radius: 4px;
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    font-size: 1rem;
-}
-.dt-row input[type="number"] { width: 90px; }
-.dt-row input[type="text"]   { flex: 1; min-width: 180px; }
-.dt-row select               { flex: 1; min-width: 220px; }
-.dt-hint { color: var(--text-secondary); font-size: 0.85rem; }
+    /* ── Form ── */
+    .dt-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        max-width: 600px;
+    }
+    .dt-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+    .dt-row label {
+        font-weight: 600;
+        min-width: 140px;
+    }
+    .dt-row input[type="number"],
+    .dt-row input[type="text"],
+    .dt-row select {
+        padding: 0.45rem 0.65rem;
+        border: 1px solid var(--border-primary);
+        border-radius: 4px;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        font-size: 1rem;
+    }
+    .dt-row input[type="number"] {
+        width: 90px;
+    }
+    .dt-row input[type="text"] {
+        flex: 1;
+        min-width: 180px;
+    }
+    .dt-row select {
+        flex: 1;
+        min-width: 220px;
+    }
+    .dt-hint {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
 
-/* ── Buttons ── */
-.dt-btn {
-    align-self: flex-start;
-    padding: 0.7rem 1.4rem;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    background: #c0392b;
-    color: #fff;
-    margin-top: 0.5rem;
-    transition: background 0.15s;
-}
-.dt-btn:hover { background: #922b21; }
-.dt-btn-sm { padding: 0.38rem 0.8rem; font-size: 0.88rem; margin-top: 0; align-self: unset; flex-shrink: 0; }
-.dt-btn-secondary {
-    background: var(--bg-tertiary);
-    color: var(--text-primary);
-    border: 1px solid var(--border-primary);
-    margin-top: 0;
-}
-.dt-btn-secondary:hover { background: var(--bg-hover); }
-.dt-bottom-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
+    /* ── Buttons ── */
+    .dt-btn {
+        align-self: flex-start;
+        padding: 0.7rem 1.4rem;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        background: #c0392b;
+        color: #fff;
+        margin-top: 0.5rem;
+        transition: background 0.15s;
+    }
+    .dt-btn:hover {
+        background: #922b21;
+    }
+    .dt-btn-sm {
+        padding: 0.38rem 0.8rem;
+        font-size: 0.88rem;
+        margin-top: 0;
+        align-self: unset;
+        flex-shrink: 0;
+    }
+    .dt-btn-secondary {
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+        border: 1px solid var(--border-primary);
+        margin-top: 0;
+    }
+    .dt-btn-secondary:hover {
+        background: var(--bg-hover);
+    }
+    .dt-bottom-row {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }
 
-/* ── Two-column layout ── */
-.dt-result-layout {
-    display: grid;
-    grid-template-columns: 62% 1fr;
-    gap: 1.5rem;
-    align-items: start;
-    margin-bottom: 0.5rem;
-}
-@media (max-width: 680px) {
-    .dt-result-layout { grid-template-columns: 1fr; }
-    .dt-sidebar { position: static; max-height: 320px; }
-}
+    /* ── Two-column layout ── */
+    .dt-result-layout {
+        display: grid;
+        grid-template-columns: 62% 1fr;
+        gap: 1.5rem;
+        align-items: start;
+        margin-bottom: 0.5rem;
+    }
+    @media (max-width: 680px) {
+        .dt-result-layout {
+            grid-template-columns: 1fr;
+        }
+        .dt-sidebar {
+            position: static;
+            max-height: 320px;
+        }
+    }
 
-/* ── Big number + featured nav ── */
-.dt-result-top {
-    text-align: center;
-    padding: 1.4rem 1rem 1rem;
-    border: 2px solid var(--border-primary);
-    border-radius: 10px;
-    background: var(--bg-secondary);
-    margin-bottom: 1.2rem;
-}
-.dt-you-can { font-size: 1.05rem; color: var(--text-secondary); margin-bottom: 0.25rem; }
+    /* ── Big number + featured nav ── */
+    .dt-result-top {
+        text-align: center;
+        padding: 1.4rem 1rem 1rem;
+        border: 2px solid var(--border-primary);
+        border-radius: 10px;
+        background: var(--bg-secondary);
+        margin-bottom: 1.2rem;
+    }
+    .dt-you-can {
+        font-size: 1.05rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.25rem;
+    }
 
-.dt-featured-nav {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-bottom: 0.25rem;
-}
-.dt-nav-btn {
-    background: none;
-    border: 1px solid var(--border-primary);
-    border-radius: 4px;
-    cursor: pointer;
-    color: var(--text-secondary);
-    padding: 0.2rem 0.55rem;
-    font-size: 0.85rem;
-    transition: background 0.12s, color 0.12s;
-    flex-shrink: 0;
-    line-height: 1.4;
-}
-.dt-nav-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+    .dt-featured-nav {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 0.25rem;
+    }
+    .dt-nav-btn {
+        background: none;
+        border: 1px solid var(--border-primary);
+        border-radius: 4px;
+        cursor: pointer;
+        color: var(--text-secondary);
+        padding: 0.2rem 0.55rem;
+        font-size: 0.85rem;
+        transition:
+            background 0.12s,
+            color 0.12s;
+        flex-shrink: 0;
+        line-height: 1.4;
+    }
+    .dt-nav-btn:hover {
+        background: var(--bg-hover);
+        color: var(--text-primary);
+    }
 
-.dt-activity-label { font-size: 1.3rem; font-weight: 700; margin: 0 0 0.7rem; }
-.dt-count-box      { margin: 0 auto 0.7rem; }
-.dt-count {
-    font-family: 'Courier New', 'Consolas', monospace;
-    font-size: clamp(2.4rem, 6vw, 4.5rem);
-    font-weight: bold;
-    color: #c0392b;
-    display: block;
-    white-space: nowrap;
-    letter-spacing: -0.02em;
-}
-.dt-more-times { font-size: 1rem; color: var(--text-secondary); margin-bottom: 0.4rem; }
-.dt-context    { font-size: 0.85rem; color: var(--text-secondary); font-style: italic; }
-.dt-heartbeat  { font-size: 0.82rem; color: var(--text-secondary); margin-top: 0.4rem; letter-spacing: 0.01em; }
+    .dt-activity-label {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin: 0 0 0.7rem;
+    }
+    .dt-count-box {
+        margin: 0 auto 0.7rem;
+    }
+    .dt-count {
+        font-family: "Courier New", "Consolas", monospace;
+        font-size: clamp(2.4rem, 6vw, 4.5rem);
+        font-weight: bold;
+        color: #c0392b;
+        display: block;
+        white-space: nowrap;
+        letter-spacing: -0.02em;
+    }
+    .dt-more-times {
+        font-size: 1rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.4rem;
+    }
+    .dt-context {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        font-style: italic;
+    }
+    .dt-heartbeat {
+        font-size: 0.82rem;
+        color: var(--text-secondary);
+        margin-top: 0.4rem;
+        letter-spacing: 0.01em;
+    }
 
-/* ── Viz controls ── */
-.dt-viz-controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.9rem;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-.dt-tabs { display: flex; gap: 0.4rem; }
-.dt-tab {
-    padding: 0.4rem 0.9rem;
-    border: 1px solid var(--border-primary);
-    border-radius: 4px;
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    font-size: 0.92rem;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background 0.12s, color 0.12s;
-}
-.dt-tab-active { background: #c0392b; color: #fff; border-color: #c0392b; }
-.dt-tab:not(.dt-tab-active):hover { background: var(--bg-hover); }
-.dt-log-btn {
-    padding: 0.4rem 0.9rem;
-    border: 1px solid var(--border-primary);
-    border-radius: 4px;
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    font-size: 0.88rem;
-    cursor: pointer;
-    font-weight: 600;
-    min-width: 8rem;
-    text-align: center;
-}
-.dt-log-btn:hover { background: var(--bg-hover); }
-.dt-log-btn-active { background: #c0392b !important; color: #fff !important; border-color: #c0392b !important; }
+    /* ── Viz controls ── */
+    .dt-viz-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.9rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .dt-tabs {
+        display: flex;
+        gap: 0.4rem;
+    }
+    .dt-tab {
+        padding: 0.4rem 0.9rem;
+        border: 1px solid var(--border-primary);
+        border-radius: 4px;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        font-size: 0.92rem;
+        cursor: pointer;
+        font-weight: 600;
+        transition:
+            background 0.12s,
+            color 0.12s;
+    }
+    .dt-tab-active {
+        background: #c0392b;
+        color: #fff;
+        border-color: #c0392b;
+    }
+    .dt-tab:not(.dt-tab-active):hover {
+        background: var(--bg-hover);
+    }
+    .dt-log-btn {
+        padding: 0.4rem 0.9rem;
+        border: 1px solid var(--border-primary);
+        border-radius: 4px;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        font-size: 0.88rem;
+        cursor: pointer;
+        font-weight: 600;
+        min-width: 8rem;
+        text-align: center;
+    }
+    .dt-log-btn:hover {
+        background: var(--bg-hover);
+    }
+    .dt-log-btn-active {
+        background: #c0392b !important;
+        color: #fff !important;
+        border-color: #c0392b !important;
+    }
 
-/* ── Chart ── */
-.dt-panel { margin-bottom: 1rem; }
-.dt-panel-empty {
-    font-size: 0.88rem;
-    color: var(--text-secondary);
-    font-style: italic;
-    margin-bottom: 0.5rem;
-    display: none;
-}
-.dt-panel-empty.visible { display: block; }
-.dt-chart-wrap { position: relative; width: 100%; }
+    /* ── Chart ── */
+    .dt-panel {
+        margin-bottom: 1rem;
+    }
+    .dt-panel-empty {
+        font-size: 0.88rem;
+        color: var(--text-secondary);
+        font-style: italic;
+        margin-bottom: 0.5rem;
+        display: none;
+    }
+    .dt-panel-empty.visible {
+        display: block;
+    }
+    .dt-chart-wrap {
+        position: relative;
+        width: 100%;
+    }
 
-/* ── Multi-waffle ── */
-.dt-multi-waffle {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 1rem;
-}
-.dt-waffle-card {
-    border: 1px solid var(--border-primary);
-    border-top: 3px solid; /* color set inline */
-    border-radius: 6px;
-    padding: 0.65rem 0.75rem;
-    background: var(--bg-secondary);
-}
-.dt-waffle-card-title {
-    font-size: 0.82rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.dt-waffle-card-grid {
-    display: grid;
-    grid-template-columns: repeat(20, 10px);
-    gap: 2px;
-    margin-bottom: 0.4rem;
-    overflow: hidden;
-}
-/* Per-card color for filled squares via CSS variable on the grid */
-.dt-waffle-card-grid .dt-waffle-sq.filled {
-    background-color: var(--sq-color, #c0392b);
-}
-.dt-waffle-sq {
-    width: 10px;
-    height: 10px;
-    border-radius: 1px;
-    transition: background-color 0.3s ease;
-}
-.dt-waffle-sq.filled { background-color: #c0392b; }  /* default; overridden per-card */
-.dt-waffle-sq.empty  { background-color: var(--bg-tertiary); }
-.dt-waffle-card-label {
-    font-size: 0.74rem;
-    color: var(--text-secondary);
-    font-style: italic;
-}
+    /* ── Multi-waffle ── */
+    .dt-multi-waffle {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1rem;
+    }
+    .dt-waffle-card {
+        border: 1px solid var(--border-primary);
+        border-top: 3px solid; /* color set inline */
+        border-radius: 6px;
+        padding: 0.65rem 0.75rem;
+        background: var(--bg-secondary);
+    }
+    .dt-waffle-card-title {
+        font-size: 0.82rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .dt-waffle-card-grid {
+        display: grid;
+        grid-template-columns: repeat(20, 10px);
+        gap: 2px;
+        margin-bottom: 0.4rem;
+        overflow: hidden;
+    }
+    /* Per-card color for filled squares via CSS variable on the grid */
+    .dt-waffle-card-grid .dt-waffle-sq.filled {
+        background-color: var(--sq-color, #c0392b);
+    }
+    .dt-waffle-sq {
+        width: 10px;
+        height: 10px;
+        border-radius: 1px;
+        transition: background-color 0.3s ease;
+    }
+    .dt-waffle-sq.filled {
+        background-color: #c0392b;
+    } /* default; overridden per-card */
+    .dt-waffle-sq.empty {
+        background-color: var(--bg-tertiary);
+    }
+    .dt-waffle-card-label {
+        font-size: 0.74rem;
+        color: var(--text-secondary);
+        font-style: italic;
+    }
 
-/* ── Sidebar ── */
-.dt-sidebar {
-    border: 1px solid var(--border-primary);
-    border-radius: 8px;
-    background: var(--bg-secondary);
-    position: sticky;
-    top: 1rem;
-    max-height: 75vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-.dt-sidebar-header {
-    padding: 0.65rem 0.9rem;
-    font-weight: 700;
-    font-size: 0.82rem;
-    border-bottom: 1px solid var(--border-primary);
-    flex-shrink: 0;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--text-secondary);
-}
-.dt-sidebar-list { overflow-y: auto; flex: 1; padding: 0.35rem; }
+    /* ── Sidebar ── */
+    .dt-sidebar {
+        border: 1px solid var(--border-primary);
+        border-radius: 8px;
+        background: var(--bg-secondary);
+        position: sticky;
+        top: 1rem;
+        max-height: 75vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    .dt-sidebar-header {
+        padding: 0.65rem 0.9rem;
+        font-weight: 700;
+        font-size: 0.82rem;
+        border-bottom: 1px solid var(--border-primary);
+        flex-shrink: 0;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--text-secondary);
+    }
+    .dt-sidebar-list {
+        overflow-y: auto;
+        flex: 1;
+        padding: 0.35rem;
+    }
 
-.dt-sidebar-item {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    padding: 0.42rem 0.5rem;
-    border-radius: 6px;
-    cursor: pointer;
-    border: 1.5px solid transparent;
-    transition: background-color 0.12s, border-color 0.12s;
-    user-select: none;
-}
-.dt-sidebar-item:hover { background: var(--bg-hover); }
+    .dt-sidebar-item {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.42rem 0.5rem;
+        border-radius: 6px;
+        cursor: pointer;
+        border: 1.5px solid transparent;
+        transition:
+            background-color 0.12s,
+            border-color 0.12s;
+        user-select: none;
+    }
+    .dt-sidebar-item:hover {
+        background: var(--bg-hover);
+    }
 
-.dt-sidebar-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    border: 2px solid;
-    flex-shrink: 0;
-    transition: background-color 0.12s;
-}
-.dt-sidebar-name {
-    flex: 1;
-    font-size: 0.8rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    min-width: 0;
-}
-.dt-sidebar-count {
-    font-family: 'Courier New', monospace;
-    font-size: 0.74rem;
-    color: var(--text-secondary);
-    white-space: nowrap;
-    flex-shrink: 0;
-    min-width: 4.5rem;
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-}
-/* Featured indicator: small triangle shown next to active+featured item */
-.dt-feat-star {
-    font-size: 0.65rem;
-    flex-shrink: 0;
-    opacity: 0.8;
-}
-.dt-sidebar-remove {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-    padding: 0;
-    flex-shrink: 0;
-    line-height: 1;
-}
-.dt-sidebar-remove:hover { color: #c0392b; }
+    .dt-sidebar-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        border: 2px solid;
+        flex-shrink: 0;
+        transition: background-color 0.12s;
+    }
+    .dt-sidebar-name {
+        flex: 1;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 0;
+    }
+    .dt-sidebar-count {
+        font-family: "Courier New", monospace;
+        font-size: 0.74rem;
+        color: var(--text-secondary);
+        white-space: nowrap;
+        flex-shrink: 0;
+        min-width: 4.5rem;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+    }
+    /* Featured indicator: small triangle shown next to active+featured item */
+    .dt-feat-star {
+        font-size: 0.65rem;
+        flex-shrink: 0;
+        opacity: 0.8;
+    }
+    .dt-sidebar-remove {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        padding: 0;
+        flex-shrink: 0;
+        line-height: 1;
+    }
+    .dt-sidebar-remove:hover {
+        color: #c0392b;
+    }
 
-/* ── Sidebar custom form ── */
-.dt-sidebar-custom {
-    border-top: 1px solid var(--border-primary);
-    padding: 0.6rem 0.7rem;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-}
-.dt-sidebar-custom-title {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-}
-.dt-sidebar-custom input[type="text"],
-.dt-sidebar-custom input[type="number"] {
-    width: 100%;
-    padding: 0.35rem 0.5rem;
-    border: 1px solid var(--border-primary);
-    border-radius: 4px;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    font-size: 0.85rem;
-}
-.dt-sb-dur-row { display: flex; gap: 0.4rem; align-items: center; }
-.dt-sb-dur-row input  { flex: 1; min-width: 0; }
-.dt-sb-dur-row select {
-    padding: 0.35rem 0.3rem;
-    border: 1px solid var(--border-primary);
-    border-radius: 4px;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    font-size: 0.82rem;
-    flex-shrink: 0;
-}
+    /* ── Sidebar custom form ── */
+    .dt-sidebar-custom {
+        border-top: 1px solid var(--border-primary);
+        padding: 0.6rem 0.7rem;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+    .dt-sidebar-custom-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+    .dt-sidebar-custom input[type="text"],
+    .dt-sidebar-custom input[type="number"] {
+        width: 100%;
+        padding: 0.35rem 0.5rem;
+        border: 1px solid var(--border-primary);
+        border-radius: 4px;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        font-size: 0.85rem;
+    }
+    .dt-sb-dur-row {
+        display: flex;
+        gap: 0.4rem;
+        align-items: center;
+    }
+    .dt-sb-dur-row input {
+        flex: 1;
+        min-width: 0;
+    }
+    .dt-sb-dur-row select {
+        padding: 0.35rem 0.3rem;
+        border: 1px solid var(--border-primary);
+        border-radius: 4px;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        font-size: 0.82rem;
+        flex-shrink: 0;
+    }
 
-/* ── Dead ── */
-#dt-dead {
-    text-align: center;
-    padding: 2rem;
-    border: 2px dashed #c0392b;
-    border-radius: 10px;
-    font-size: 1.2rem;
-    line-height: 2;
-}
+    /* ── Dead ── */
+    #dt-dead {
+        text-align: center;
+        padding: 2rem;
+        border: 2px dashed #c0392b;
+        border-radius: 10px;
+        font-size: 1.2rem;
+        line-height: 2;
+    }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
