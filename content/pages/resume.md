@@ -54,4 +54,5 @@ Throughout my education and career at U.S. Bank and Bayview, I have prioritized 
 
 <iframe src="/static/Henry-Post-Resume.pdf" width="100%" height="1000px">
     <p>Your browser does not support iframes. Please visit the link above to download a copy of my resume.</p>
+    <p><a href="/static/Henry-Post-Resume.pdf">Or, view it here.</a></p>
 </iframe>
