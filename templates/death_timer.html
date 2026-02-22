@@ -45,59 +45,54 @@
 
     <!-- ── RESULT ── -->
     <div id="dt-result" style="display:none">
+        <div class="dt-result-layout">
 
-        <!-- Big number -->
-        <div class="dt-result-top">
-            <p class="dt-you-can">You can still&#x2026;</p>
-            <p id="dt-main-label" class="dt-activity-label"></p>
-            <div class="dt-count-box">
-                <span id="dt-count" class="dt-count">0</span>
-            </div>
-            <p class="dt-more-times">more times before you die.</p>
-            <p id="dt-context" class="dt-context"></p>
-        </div>
+            <!-- Left: main content -->
+            <div class="dt-main-col">
+                <div class="dt-result-top">
+                    <p class="dt-you-can">You can still&#x2026;</p>
+                    <p id="dt-main-label" class="dt-activity-label"></p>
+                    <div class="dt-count-box">
+                        <span id="dt-count" class="dt-count">0</span>
+                    </div>
+                    <p class="dt-more-times">more times before you die.</p>
+                    <p id="dt-context" class="dt-context"></p>
+                </div>
 
-        <!-- View controls -->
-        <div class="dt-viz-controls">
-            <div class="dt-tabs">
-                <button id="dt-tab-chart"  class="dt-tab dt-tab-active">&#x1f4ca; Chart</button>
-                <button id="dt-tab-waffle" class="dt-tab">&#x2b1b; Waffle</button>
-            </div>
-            <button id="dt-log-toggle" class="dt-log-btn">Log scale: ON</button>
-        </div>
+                <div class="dt-viz-controls">
+                    <div class="dt-tabs">
+                        <button id="dt-tab-chart"  class="dt-tab dt-tab-active">&#x1f4ca; Chart</button>
+                        <button id="dt-tab-waffle" class="dt-tab">&#x2b1b; Waffle</button>
+                    </div>
+                    <button id="dt-log-toggle" class="dt-log-btn">Log scale: ON</button>
+                </div>
 
-        <!-- ── Chart panel ── -->
-        <div id="dt-chart-panel" class="dt-panel">
-            <div class="dt-compare-row">
-                <select id="dt-cmp-select">
-                    <option value="900">eat a Big Mac &#x1f354;</option>
-                    <option value="720">speedrun Minecraft any% &#x26cf;&#xfe0f;</option>
-                    <option value="11640">watch Titanic (1997) &#x1f6a2;</option>
-                    <option value="50400">drive from Chicago to Texas &#x1f697;</option>
-                    <option value="14400">run a marathon &#x1f3c3;</option>
-                    <option value="10800">play a full game of Monopoly &#x1f3b2;</option>
-                    <option value="216000">read War and Peace &#x1f4da;</option>
-                    <option value="198000">beat Dark Souls &#x2694;&#xfe0f;</option>
-                    <option value="223200">watch all of Breaking Bad &#x1f9ea;</option>
-                    <option value="5184000">circumnavigate the globe by cargo ship &#x1f30d;</option>
-                    <option value="custom">custom...</option>
-                </select>
-                <button id="dt-cmp-add-btn" class="dt-btn dt-btn-sm">+ Add</button>
-            </div>
-            <div id="dt-cmp-custom-row" class="dt-compare-row" style="display:none">
-                <input type="text"   id="dt-cmp-custom-name" placeholder="Activity name" />
-                <input type="number" id="dt-cmp-custom-dur"  placeholder="Duration (sec)" value="3600" min="1" />
-            </div>
-            <div id="dt-cmp-list" class="dt-cmp-list"></div>
-            <div class="dt-chart-wrap">
-                <canvas id="dt-chart"></canvas>
-            </div>
-        </div>
+                <div id="dt-chart-panel" class="dt-panel">
+                    <p id="dt-chart-empty" class="dt-chart-empty">Toggle activities on the right to compare them.</p>
+                    <div class="dt-chart-wrap">
+                        <canvas id="dt-chart"></canvas>
+                    </div>
+                </div>
 
-        <!-- ── Waffle panel ── -->
-        <div id="dt-waffle-panel" class="dt-panel" style="display:none">
-            <div id="dt-waffle-grid" class="dt-waffle-grid"></div>
-            <p id="dt-waffle-label" class="dt-waffle-label"></p>
+                <div id="dt-waffle-panel" class="dt-panel" style="display:none">
+                    <div id="dt-waffle-grid" class="dt-waffle-grid"></div>
+                    <p id="dt-waffle-label" class="dt-waffle-label"></p>
+                </div>
+            </div>
+
+            <!-- Right: activity sidebar -->
+            <div class="dt-sidebar" id="dt-sidebar">
+                <div class="dt-sidebar-header">Activities</div>
+                <div class="dt-sidebar-list" id="dt-sidebar-list"></div>
+                <div class="dt-sidebar-custom">
+                    <p class="dt-sidebar-custom-title">Custom activity</p>
+                    <input type="text"   id="dt-sb-name" placeholder="Name" />
+                    <div class="dt-sb-dur-row">
+                        <input type="number" id="dt-sb-dur" placeholder="Seconds" min="1" value="3600" />
+                        <button id="dt-sb-add-btn" class="dt-btn dt-btn-sm">Add</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <button id="dt-reset-btn" class="dt-btn dt-btn-secondary">&#x21a9; Start over</button>
@@ -113,7 +108,7 @@
 
 <style>
 .death-timer-container {
-    max-width: 780px;
+    max-width: 960px;
     margin: 0 auto;
     padding: 2rem;
 }
@@ -121,7 +116,7 @@
 .subtitle { color: var(--text-secondary); margin-bottom: 2rem; line-height: 1.5; }
 
 /* ── Form ── */
-.dt-form { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
+.dt-form { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; max-width: 600px; }
 .dt-row  { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
 .dt-row label { font-weight: 600; min-width: 140px; }
 .dt-row input[type="number"],
@@ -154,56 +149,75 @@
     transition: background 0.15s;
 }
 .dt-btn:hover { background: #922b21; }
-.dt-btn-sm { padding: 0.42rem 0.9rem; font-size: 0.9rem; margin-top: 0; }
+.dt-btn-sm {
+    padding: 0.38rem 0.8rem;
+    font-size: 0.88rem;
+    margin-top: 0;
+    align-self: unset;
+    flex-shrink: 0;
+}
 .dt-btn-secondary {
     background: var(--bg-tertiary);
     color: var(--text-primary);
     border: 1px solid var(--border-primary);
-    margin-top: 1.5rem;
+    margin-top: 1rem;
 }
 .dt-btn-secondary:hover { background: var(--bg-hover); }
+
+/* ── Result two-column layout ── */
+.dt-result-layout {
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    gap: 1.5rem;
+    align-items: start;
+    margin-bottom: 0.5rem;
+}
+@media (max-width: 680px) {
+    .dt-result-layout { grid-template-columns: 1fr; }
+    .dt-sidebar { position: static; max-height: 320px; }
+}
 
 /* ── Big number ── */
 .dt-result-top {
     text-align: center;
-    padding: 1.5rem 1rem 1.2rem;
+    padding: 1.4rem 1rem 1rem;
     border: 2px solid var(--border-primary);
     border-radius: 10px;
     background: var(--bg-secondary);
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.2rem;
 }
-.dt-you-can        { font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 0.3rem; }
-.dt-activity-label { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.8rem; }
-.dt-count-box      { margin: 0 auto 0.8rem; }
+.dt-you-can        { font-size: 1.05rem; color: var(--text-secondary); margin-bottom: 0.25rem; }
+.dt-activity-label { font-size: 1.35rem; font-weight: 700; margin-bottom: 0.7rem; }
+.dt-count-box      { margin: 0 auto 0.7rem; }
 .dt-count {
     font-family: 'Courier New', 'Consolas', monospace;
-    font-size: clamp(2.6rem, 7vw, 5rem);
+    font-size: clamp(2.4rem, 6vw, 4.5rem);
     font-weight: bold;
     color: #c0392b;
     display: block;
     word-break: break-all;
     letter-spacing: -0.02em;
 }
-.dt-more-times { font-size: 1.05rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
-.dt-context    { font-size: 0.88rem; color: var(--text-secondary); font-style: italic; }
+.dt-more-times { font-size: 1rem; color: var(--text-secondary); margin-bottom: 0.4rem; }
+.dt-context    { font-size: 0.85rem; color: var(--text-secondary); font-style: italic; }
 
 /* ── Viz controls ── */
 .dt-viz-controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 0.9rem;
     flex-wrap: wrap;
     gap: 0.5rem;
 }
 .dt-tabs { display: flex; gap: 0.4rem; }
 .dt-tab {
-    padding: 0.42rem 1rem;
+    padding: 0.4rem 0.9rem;
     border: 1px solid var(--border-primary);
     border-radius: 4px;
     background: var(--bg-secondary);
     color: var(--text-primary);
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     cursor: pointer;
     font-weight: 600;
     transition: background 0.12s, color 0.12s;
@@ -211,77 +225,27 @@
 .dt-tab-active { background: #c0392b; color: #fff; border-color: #c0392b; }
 .dt-tab:not(.dt-tab-active):hover { background: var(--bg-hover); }
 .dt-log-btn {
-    padding: 0.42rem 1rem;
+    padding: 0.4rem 0.9rem;
     border: 1px solid var(--border-primary);
     border-radius: 4px;
     background: var(--bg-secondary);
     color: var(--text-primary);
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     cursor: pointer;
     font-weight: 600;
 }
 .dt-log-btn:hover { background: var(--bg-hover); }
 
-/* ── Panels ── */
-.dt-panel { margin-bottom: 1.5rem; }
-
-/* ── Compare controls ── */
-.dt-compare-row {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-bottom: 0.6rem;
-}
-.dt-compare-row select,
-.dt-compare-row input[type="text"],
-.dt-compare-row input[type="number"] {
-    padding: 0.38rem 0.55rem;
-    border: 1px solid var(--border-primary);
-    border-radius: 4px;
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    font-size: 0.95rem;
-}
-.dt-compare-row select               { flex: 1; min-width: 200px; }
-.dt-compare-row input[type="text"]   { flex: 1; min-width: 140px; }
-.dt-compare-row input[type="number"] { width: 120px; }
-
-/* ── Comparison chips ── */
-.dt-cmp-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.45rem;
-    margin-bottom: 0.9rem;
-    min-height: 2rem;
-}
-.dt-cmp-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.28rem 0.55rem;
-    border-radius: 20px;
-    font-size: 0.82rem;
-    font-weight: 600;
-    background: var(--bg-tertiary);
-    border: 2px solid;
-}
-.dt-chip-dot   { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-.dt-chip-name  { max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.dt-chip-count { font-family: monospace; font-size: 0.78rem; color: var(--text-secondary); margin-left: 0.15rem; }
-.dt-chip-remove {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 0.95rem;
-    line-height: 1;
-    color: var(--text-secondary);
-    padding: 0 0 0 0.15rem;
-}
-.dt-chip-remove:hover { color: #c0392b; }
-.dt-chip-main .dt-chip-remove { display: none; }
-
 /* ── Chart ── */
+.dt-panel { margin-bottom: 1rem; }
+.dt-chart-empty {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-bottom: 0.5rem;
+    display: none;
+}
+.dt-chart-empty.visible { display: block; }
 .dt-chart-wrap { position: relative; width: 100%; }
 
 /* ── Waffle ── */
@@ -307,6 +271,115 @@
     font-style: italic;
 }
 
+/* ── Sidebar ── */
+.dt-sidebar {
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    background: var(--bg-secondary);
+    position: sticky;
+    top: 1rem;
+    max-height: 75vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.dt-sidebar-header {
+    padding: 0.65rem 0.9rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--border-primary);
+    flex-shrink: 0;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+.dt-sidebar-list {
+    overflow-y: auto;
+    flex: 1;
+    padding: 0.35rem;
+}
+.dt-sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.42rem 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: background-color 0.12s, border-color 0.12s;
+    user-select: none;
+    position: relative;
+}
+.dt-sidebar-item:hover { background: var(--bg-hover); }
+.dt-sidebar-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid;
+    flex-shrink: 0;
+    transition: background-color 0.12s;
+}
+.dt-sidebar-name {
+    flex: 1;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+.dt-sidebar-count {
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.dt-sidebar-remove {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    padding: 0 0 0 0.1rem;
+    flex-shrink: 0;
+    line-height: 1;
+}
+.dt-sidebar-remove:hover { color: #c0392b; }
+
+/* ── Sidebar custom form ── */
+.dt-sidebar-custom {
+    border-top: 1px solid var(--border-primary);
+    padding: 0.6rem 0.7rem;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+.dt-sidebar-custom-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.1rem;
+}
+.dt-sidebar-custom input[type="text"],
+.dt-sidebar-custom input[type="number"] {
+    width: 100%;
+    padding: 0.35rem 0.5rem;
+    border: 1px solid var(--border-primary);
+    border-radius: 4px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+}
+.dt-sb-dur-row {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+}
+.dt-sb-dur-row input { flex: 1; min-width: 0; }
+
 /* ── Dead ── */
 #dt-dead {
     text-align: center;
@@ -320,62 +393,69 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script>
-// ── Constants ───────────────────────────────────────────────────────────────
-const COLORS = [
-    '#e74c3c','#3498db','#2ecc71','#f39c12',
-    '#9b59b6','#1abc9c','#e67e22','#27ae60',
+// ── Preset activity definitions (must match the <select> options in the form) ──
+const PRESET_ACTIVITIES = [
+    { label: 'eat a Big Mac \u{1f354}',                         duration: 900,     color: '#e74c3c' },
+    { label: 'speedrun Minecraft any% \u{26cf}\ufe0f',          duration: 720,     color: '#3498db' },
+    { label: 'watch Titanic (1997) \u{1f6a2}',                  duration: 11640,   color: '#2ecc71' },
+    { label: 'drive from Chicago to Texas \u{1f697}',           duration: 50400,   color: '#f39c12' },
+    { label: 'run a marathon \u{1f3c3}',                        duration: 14400,   color: '#9b59b6' },
+    { label: 'play a full game of Monopoly \u{1f3b2}',          duration: 10800,   color: '#1abc9c' },
+    { label: 'read War and Peace \u{1f4da}',                    duration: 216000,  color: '#e67e22' },
+    { label: 'beat Dark Souls \u{2694}\ufe0f',                  duration: 198000,  color: '#27ae60' },
+    { label: 'watch all of Breaking Bad \u{1f9ea}',             duration: 223200,  color: '#8e44ad' },
+    { label: 'circumnavigate the globe by cargo ship \u{1f30d}',duration: 5184000, color: '#2980b9' },
 ];
-const WAFFLE_MAX  = 400;
-const WAFFLE_COLS = 20;
 
-// ── State ───────────────────────────────────────────────────────────────────
+const EXTRA_COLORS = ['#c0392b','#7f8c8d','#d35400','#16a085','#2c3e50','#f1c40f'];
+
+// ── State ────────────────────────────────────────────────────────────────────
 const S = {
-    secondsLeft: 0,
-    items:       [],   // { label, duration, color }
-    interval:    null,
-    chart:       null,
-    logScale:    true,
-    view:        'chart',
+    secondsLeft:     0,
+    primaryLabel:    '',
+    primaryDuration: 0,
+    presetOn:        new Array(PRESET_ACTIVITIES.length).fill(false),
+    customActs:      [],  // { id, label, duration, color, on }
+    nextId:          0,
+    interval:        null,
+    chart:           null,
+    logScale:        true,
+    view:            'chart',
     waffle: { totalSquares: 0, squareValue: 0, lastFilled: -1 },
 };
 
-// ── DOM ─────────────────────────────────────────────────────────────────────
-const el = id => document.getElementById(id);
-const formEl      = el('dt-form');
-const resultEl    = el('dt-result');
-const deadEl      = el('dt-dead');
-const countEl     = el('dt-count');
-const mainLabelEl = el('dt-main-label');
-const contextEl   = el('dt-context');
-const chartPanel  = el('dt-chart-panel');
-const wafflePanel = el('dt-waffle-panel');
-const tabChart    = el('dt-tab-chart');
-const tabWaffle   = el('dt-tab-waffle');
-const logToggle   = el('dt-log-toggle');
-const cmpSelect   = el('dt-cmp-select');
-const cmpList     = el('dt-cmp-list');
-const waffleGrid  = el('dt-waffle-grid');
-const waffleLabel = el('dt-waffle-label');
+// ── DOM ──────────────────────────────────────────────────────────────────────
+const el       = id => document.getElementById(id);
+const formEl   = el('dt-form');
+const resultEl = el('dt-result');
+const deadEl   = el('dt-dead');
 
-// ── Formatting ──────────────────────────────────────────────────────────────
+// ── Formatting ───────────────────────────────────────────────────────────────
 function fmt(n) {
     if (n < 0) return '0.00';
     const [i, d] = n.toFixed(2).split('.');
     return i.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '.' + d;
 }
 function fmtShort(n) {
-    if (n >= 1e9)  return (n / 1e9).toFixed(2) + 'B';
-    if (n >= 1e6)  return (n / 1e6).toFixed(2) + 'M';
-    if (n >= 1000) return (n / 1000).toFixed(2) + 'K';
-    return n.toFixed(2);
+    if (n >= 1e9)  return (n / 1e9).toFixed(1)  + 'B';
+    if (n >= 1e6)  return (n / 1e6).toFixed(1)  + 'M';
+    if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+    return n.toFixed(1);
 }
 
-// ── Math ────────────────────────────────────────────────────────────────────
+// ── Math ─────────────────────────────────────────────────────────────────────
 function calcTimes(duration) {
     return Math.max(0, S.secondsLeft / duration);
 }
 
-// ── Chart ───────────────────────────────────────────────────────────────────
+function getActiveItems() {
+    const items = [];
+    PRESET_ACTIVITIES.forEach((a, i) => { if (S.presetOn[i]) items.push(a); });
+    S.customActs.forEach(a => { if (a.on) items.push(a); });
+    return items;
+}
+
+// ── Chart ────────────────────────────────────────────────────────────────────
 function cssVar(name) {
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
@@ -385,13 +465,7 @@ function initChart() {
     const ctx = el('dt-chart').getContext('2d');
     S.chart = new Chart(ctx, {
         type: 'bar',
-        data: {
-            labels: [],
-            datasets: [{
-                data: [], backgroundColor: [], borderColor: [], borderWidth: 2,
-                maxBarThickness: 44,
-            }],
-        },
+        data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderColor: [], borderWidth: 2, maxBarThickness: 44 }] },
         options: {
             indexAxis: 'y',
             responsive: true,
@@ -399,20 +473,13 @@ function initChart() {
             animation: false,
             plugins: {
                 legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: ctx => '  ' + fmt(ctx.raw) + ' times',
-                    },
-                },
+                tooltip: { callbacks: { label: c => '  ' + fmt(c.raw) + ' times' } },
             },
             scales: {
                 x: {
                     type: S.logScale ? 'logarithmic' : 'linear',
-                    ticks: {
-                        color: cssVar('--text-primary') || '#333',
-                        callback: v => fmtShort(v),
-                    },
-                    grid: { color: cssVar('--border-primary') || '#ddd' },
+                    ticks: { color: cssVar('--text-primary') || '#333', callback: v => fmtShort(v) },
+                    grid:  { color: cssVar('--border-primary') || '#ddd' },
                 },
                 y: {
                     ticks: { color: cssVar('--text-primary') || '#333' },
@@ -425,147 +492,254 @@ function initChart() {
 }
 
 function syncChartHeight() {
-    el('dt-chart').parentElement.style.height =
-        Math.max(90, S.items.length * 68) + 'px';
+    const n = getActiveItems().length;
+    el('dt-chart').parentElement.style.height = Math.max(60, n * 68) + 'px';
     if (S.chart) S.chart.resize();
 }
 
 function updateChart() {
+    const items = getActiveItems();
+    const empty = el('dt-chart-empty');
+    if (items.length === 0) {
+        empty.classList.add('visible');
+        el('dt-chart').parentElement.style.height = '0';
+        if (S.chart) { S.chart.data.labels = []; S.chart.data.datasets[0].data = []; S.chart.update('none'); }
+        return;
+    }
+    empty.classList.remove('visible');
+    syncChartHeight();
     if (!S.chart) return;
     const ch = S.chart;
-    ch.data.labels = S.items.map(i => i.label);
-    ch.data.datasets[0].data            = S.items.map(i => Math.max(0.0001, calcTimes(i.duration)));
-    ch.data.datasets[0].backgroundColor = S.items.map(i => i.color + '55');
-    ch.data.datasets[0].borderColor     = S.items.map(i => i.color);
+    ch.data.labels                          = items.map(i => i.label);
+    ch.data.datasets[0].data               = items.map(i => Math.max(0.0001, calcTimes(i.duration)));
+    ch.data.datasets[0].backgroundColor    = items.map(i => i.color + '55');
+    ch.data.datasets[0].borderColor        = items.map(i => i.color);
     ch.options.scales.x.type = S.logScale ? 'logarithmic' : 'linear';
     ch.update('none');
 }
 
-// ── Waffle ──────────────────────────────────────────────────────────────────
+// ── Waffle ───────────────────────────────────────────────────────────────────
 function buildWaffle(initCount) {
     const w = S.waffle;
-    w.totalSquares = Math.min(WAFFLE_MAX, Math.max(1, Math.ceil(initCount)));
+    w.totalSquares = Math.min(400, Math.max(1, Math.ceil(initCount)));
     w.squareValue  = initCount / w.totalSquares;
     w.lastFilled   = -1;
-    waffleGrid.innerHTML = '';
+    const grid = el('dt-waffle-grid');
+    grid.innerHTML = '';
     for (let i = 0; i < w.totalSquares; i++) {
         const sq = document.createElement('div');
         sq.className = 'dt-waffle-sq filled';
-        waffleGrid.appendChild(sq);
+        grid.appendChild(sq);
     }
     renderWaffle(initCount);
 }
 
 function renderWaffle(currentCount) {
     const w = S.waffle;
-    const filled = Math.min(w.totalSquares,
-        Math.max(0, Math.floor(currentCount / w.squareValue)));
+    const filled = Math.min(w.totalSquares, Math.max(0, Math.floor(currentCount / w.squareValue)));
     if (filled !== w.lastFilled) {
         w.lastFilled = filled;
-        waffleGrid.querySelectorAll('.dt-waffle-sq').forEach((sq, i) => {
+        el('dt-waffle-grid').querySelectorAll('.dt-waffle-sq').forEach((sq, i) => {
             sq.className = 'dt-waffle-sq ' + (i < filled ? 'filled' : 'empty');
         });
     }
     const sv = w.squareValue;
-    const sqTip = sv < 1.5 ? '&#x25a0; = 1 time' : `&#x25a0; &#x2248; ${Math.round(sv).toLocaleString()} times`;
-    waffleLabel.innerHTML =
+    const sqTip = sv < 1.5 ? '&#x25a0; = 1 time' : `&#x25a0; &asymp; ${Math.round(sv).toLocaleString()} times`;
+    el('dt-waffle-label').innerHTML =
         `${sqTip} &nbsp;&middot;&nbsp; ${fmt(currentCount)} remaining &nbsp;&middot;&nbsp; ${filled}/${w.totalSquares} blocks`;
 }
 
-// ── Comparison chip list ────────────────────────────────────────────────────
-function renderCmpList(full = true) {
-    if (!full) {
-        // fast path: just update count text in existing chips
-        cmpList.querySelectorAll('.dt-cmp-chip').forEach((chip, i) => {
-            if (i < S.items.length) {
-                const span = chip.querySelector('.dt-chip-count');
-                if (span) span.textContent = fmtShort(calcTimes(S.items[i].duration));
-            }
-        });
-        return;
-    }
-    cmpList.innerHTML = '';
-    S.items.forEach((item, idx) => {
-        const chip = document.createElement('div');
-        chip.className = 'dt-cmp-chip' + (idx === 0 ? ' dt-chip-main' : '');
-        chip.style.borderColor = item.color;
-        chip.innerHTML =
-            `<span class="dt-chip-dot" style="background:${item.color}"></span>` +
-            `<span class="dt-chip-name">${item.label}</span>` +
-            `<span class="dt-chip-count">${fmtShort(calcTimes(item.duration))}</span>` +
-            `<button class="dt-chip-remove" data-idx="${idx}" title="Remove">&#x2715;</button>`;
-        cmpList.appendChild(chip);
+// ── Sidebar ──────────────────────────────────────────────────────────────────
+function buildSidebar() {
+    const list = el('dt-sidebar-list');
+    list.innerHTML = '';
+
+    PRESET_ACTIVITIES.forEach((act, i) => {
+        const on = S.presetOn[i];
+        list.appendChild(makeSidebarItem({
+            label: act.label,
+            duration: act.duration,
+            color: act.color,
+            on,
+            countAttr: `data-preset-count="${i}"`,
+            onClick: () => togglePreset(i),
+        }));
     });
-    cmpList.querySelectorAll('.dt-chip-remove').forEach(btn => {
-        btn.addEventListener('click', e => {
-            const i = parseInt(e.currentTarget.dataset.idx);
-            if (i > 0) {
-                S.items.splice(i, 1);
-                renderCmpList(true);
-                updateChart();
-                syncChartHeight();
-            }
+
+    S.customActs.forEach(act => {
+        const item = makeSidebarItem({
+            label: act.label,
+            duration: act.duration,
+            color: act.color,
+            on: act.on,
+            countAttr: `data-custom-count="${act.id}"`,
+            onClick: () => toggleCustom(act.id),
+            onRemove: () => removeCustom(act.id),
         });
+        list.appendChild(item);
     });
 }
 
-// ── Tick ────────────────────────────────────────────────────────────────────
+function makeSidebarItem({ label, duration, color, on, countAttr, onClick, onRemove }) {
+    const div = document.createElement('div');
+    div.className = 'dt-sidebar-item';
+    applySidebarItemStyle(div, color, on);
+
+    div.innerHTML =
+        `<span class="dt-sidebar-dot"></span>` +
+        `<span class="dt-sidebar-name">${label}</span>` +
+        `<span class="dt-sidebar-count" ${countAttr}>${fmtShort(calcTimes(duration))}</span>` +
+        (onRemove ? `<button class="dt-sidebar-remove" title="Remove">&#x2715;</button>` : '');
+
+    applyDotStyle(div.querySelector('.dt-sidebar-dot'), color, on);
+
+    div.addEventListener('click', e => {
+        if (e.target.classList.contains('dt-sidebar-remove')) return;
+        onClick();
+    });
+    if (onRemove) {
+        div.querySelector('.dt-sidebar-remove').addEventListener('click', e => {
+            e.stopPropagation();
+            onRemove();
+        });
+    }
+    return div;
+}
+
+function applySidebarItemStyle(div, color, on) {
+    div.style.borderColor       = on ? color : 'transparent';
+    div.style.backgroundColor   = on ? color + '18' : '';
+}
+function applyDotStyle(dot, color, on) {
+    dot.style.borderColor       = color;
+    dot.style.backgroundColor   = on ? color : 'transparent';
+}
+
+function togglePreset(i) {
+    S.presetOn[i] = !S.presetOn[i];
+    // Update just the one sidebar item (no full rebuild)
+    const items = el('dt-sidebar-list').querySelectorAll('.dt-sidebar-item');
+    // preset items come first in the list
+    if (items[i]) {
+        const act = PRESET_ACTIVITIES[i];
+        const on  = S.presetOn[i];
+        applySidebarItemStyle(items[i], act.color, on);
+        applyDotStyle(items[i].querySelector('.dt-sidebar-dot'), act.color, on);
+    }
+    updateChart();
+    syncChartHeight();
+}
+
+function toggleCustom(id) {
+    const act = S.customActs.find(a => a.id === id);
+    if (!act) return;
+    act.on = !act.on;
+    const item = el('dt-sidebar-list').querySelector(`[data-custom-id="${id}"]`);
+    if (item) {
+        applySidebarItemStyle(item, act.color, act.on);
+        applyDotStyle(item.querySelector('.dt-sidebar-dot'), act.color, act.on);
+    }
+    updateChart();
+    syncChartHeight();
+}
+
+function removeCustom(id) {
+    S.customActs = S.customActs.filter(a => a.id !== id);
+    buildSidebar();
+    updateChart();
+    syncChartHeight();
+}
+
+function addCustomActivity(label, duration) {
+    const usedColors = new Set([
+        ...PRESET_ACTIVITIES.map(a => a.color),
+        ...S.customActs.map(a => a.color),
+    ]);
+    const allColors = [...EXTRA_COLORS, '#c0392b'];
+    const color = allColors.find(c => !usedColors.has(c)) || '#c0392b';
+
+    const act = { id: S.nextId++, label, duration, color, on: true };
+    S.customActs.push(act);
+
+    // Append to sidebar list without full rebuild
+    const listEl = el('dt-sidebar-list');
+    const item = makeSidebarItem({
+        label: act.label,
+        duration: act.duration,
+        color: act.color,
+        on: act.on,
+        countAttr: `data-custom-count="${act.id}"`,
+        onClick: () => toggleCustom(act.id),
+        onRemove: () => removeCustom(act.id),
+    });
+    item.dataset.customId = act.id;
+    listEl.appendChild(item);
+
+    updateChart();
+    syncChartHeight();
+}
+
+function updateSidebarCounts() {
+    PRESET_ACTIVITIES.forEach((act, i) => {
+        const span = document.querySelector(`[data-preset-count="${i}"]`);
+        if (span) span.textContent = fmtShort(calcTimes(act.duration));
+    });
+    S.customActs.forEach(act => {
+        const span = document.querySelector(`[data-custom-count="${act.id}"]`);
+        if (span) span.textContent = fmtShort(calcTimes(act.duration));
+    });
+}
+
+// ── View switching ────────────────────────────────────────────────────────────
+function showView(v) {
+    S.view = v;
+    const isChart = v === 'chart';
+    el('dt-chart-panel').style.display  = isChart ? '' : 'none';
+    el('dt-waffle-panel').style.display = isChart ? 'none' : '';
+    el('dt-tab-chart').classList.toggle('dt-tab-active', isChart);
+    el('dt-tab-waffle').classList.toggle('dt-tab-active', !isChart);
+    el('dt-log-toggle').style.display = isChart ? '' : 'none';
+    if (isChart) {
+        updateChart();
+    } else {
+        renderWaffle(calcTimes(S.primaryDuration));
+    }
+}
+
+// ── Tick ──────────────────────────────────────────────────────────────────────
 function tick() {
     S.secondsLeft = Math.max(0, S.secondsLeft - 1);
-    if (!S.items.length) return;
-
-    const ct = calcTimes(S.items[0].duration);
-    countEl.textContent = fmt(ct);
-
-    renderCmpList(false);  // fast: update counts only
-
+    el('dt-count').textContent = fmt(calcTimes(S.primaryDuration));
+    updateSidebarCounts();
     if (S.view === 'chart') {
         updateChart();
     } else {
-        renderWaffle(ct);
+        renderWaffle(calcTimes(S.primaryDuration));
     }
 }
 
-// ── View switching ──────────────────────────────────────────────────────────
-function showView(v) {
-    S.view = v;
-    if (v === 'chart') {
-        chartPanel.style.display  = '';
-        wafflePanel.style.display = 'none';
-        tabChart.classList.add('dt-tab-active');
-        tabWaffle.classList.remove('dt-tab-active');
-        logToggle.style.display = '';
-        updateChart();
-    } else {
-        chartPanel.style.display  = 'none';
-        wafflePanel.style.display = '';
-        tabChart.classList.remove('dt-tab-active');
-        tabWaffle.classList.add('dt-tab-active');
-        logToggle.style.display = 'none';
-        if (S.items.length) renderWaffle(calcTimes(S.items[0].duration));
-    }
-}
-
-// ── Reset ───────────────────────────────────────────────────────────────────
+// ── Reset ─────────────────────────────────────────────────────────────────────
 function reset() {
     if (S.interval) { clearInterval(S.interval); S.interval = null; }
     if (S.chart)    { S.chart.destroy(); S.chart = null; }
-    S.items = [];
+    S.presetOn     = new Array(PRESET_ACTIVITIES.length).fill(false);
+    S.customActs   = [];
     S.waffle.lastFilled = -1;
-    cmpList.innerHTML    = '';
-    waffleGrid.innerHTML = '';
+    el('dt-sidebar-list').innerHTML = '';
+    el('dt-waffle-grid').innerHTML  = '';
     formEl.style.display   = '';
     resultEl.style.display = 'none';
     deadEl.style.display   = 'none';
 }
 
-// ── Main form handlers ──────────────────────────────────────────────────────
+// ── Form: activity select ─────────────────────────────────────────────────────
 el('dt-activity').addEventListener('change', function () {
     const c = this.value === 'custom';
     el('dt-custom-name-row').style.display = c ? '' : 'none';
     el('dt-custom-dur-row').style.display  = c ? '' : 'none';
 });
 
+// ── Calculate ─────────────────────────────────────────────────────────────────
 el('dt-calc-btn').addEventListener('click', () => {
     const age     = parseFloat(el('dt-age').value)      || 0;
     const lifeExp = parseFloat(el('dt-life-exp').value) || 78;
@@ -579,72 +753,67 @@ el('dt-calc-btn').addEventListener('click', () => {
     }
 
     S.secondsLeft = years * 365.25 * 24 * 3600;
+    S.presetOn    = new Array(PRESET_ACTIVITIES.length).fill(false);
+    S.customActs  = [];
 
     const sel = el('dt-activity');
-    let actLabel, actDuration;
     if (sel.value === 'custom') {
-        actLabel    = el('dt-custom-name').value.trim() || 'do that thing';
-        actDuration = Math.max(1, parseFloat(el('dt-custom-duration').value) || 3600);
+        const label    = el('dt-custom-name').value.trim() || 'custom activity';
+        const duration = Math.max(1, parseFloat(el('dt-custom-duration').value) || 3600);
+        S.primaryLabel    = label;
+        S.primaryDuration = duration;
+        S.customActs.push({ id: S.nextId++, label, duration, color: EXTRA_COLORS[0], on: true });
     } else {
-        actLabel    = sel.options[sel.selectedIndex].text;
-        actDuration = parseFloat(sel.value);
+        const duration = parseFloat(sel.value);
+        const idx      = PRESET_ACTIVITIES.findIndex(a => a.duration === duration);
+        if (idx >= 0) {
+            S.presetOn[idx]    = true;
+            S.primaryLabel     = PRESET_ACTIVITIES[idx].label;
+            S.primaryDuration  = PRESET_ACTIVITIES[idx].duration;
+        }
     }
 
-    S.items = [{ label: actLabel, duration: actDuration, color: COLORS[0] }];
-
-    const initCount = calcTimes(actDuration);
-    mainLabelEl.textContent = actLabel;
-    countEl.textContent     = fmt(initCount);
-    contextEl.textContent   =
-        `(~${(86400 / actDuration).toFixed(1)}/day · ~${(604800 / actDuration).toFixed(1)}/week if that's all you did)`;
+    el('dt-main-label').textContent = S.primaryLabel;
+    el('dt-count').textContent      = fmt(calcTimes(S.primaryDuration));
+    el('dt-context').textContent    =
+        `(~${(86400 / S.primaryDuration).toFixed(1)}/day · ~${(604800 / S.primaryDuration).toFixed(1)}/week if that's all you did)`;
 
     formEl.style.display   = 'none';
     resultEl.style.display = '';
     deadEl.style.display   = 'none';
 
     initChart();
-    renderCmpList(true);
-    updateChart();
-    buildWaffle(initCount);
+    buildSidebar();
+    buildWaffle(calcTimes(S.primaryDuration));
     showView('chart');
 
     if (S.interval) clearInterval(S.interval);
     S.interval = setInterval(tick, 1000);
 });
 
-// ── Comparison select handler ───────────────────────────────────────────────
-cmpSelect.addEventListener('change', function () {
-    el('dt-cmp-custom-row').style.display = this.value === 'custom' ? '' : 'none';
-});
-
-el('dt-cmp-add-btn').addEventListener('click', () => {
-    let label, duration;
-    if (cmpSelect.value === 'custom') {
-        label    = el('dt-cmp-custom-name').value.trim() || 'custom activity';
-        duration = Math.max(1, parseFloat(el('dt-cmp-custom-dur').value) || 3600);
-    } else {
-        label    = cmpSelect.options[cmpSelect.selectedIndex].text;
-        duration = parseFloat(cmpSelect.value);
-    }
-    if (S.items.some(i => i.label === label)) return;  // no duplicates
-    S.items.push({ label, duration, color: COLORS[S.items.length % COLORS.length] });
-    renderCmpList(true);
-    updateChart();
-    syncChartHeight();
-});
-
-// ── Log scale ───────────────────────────────────────────────────────────────
-logToggle.addEventListener('click', () => {
+// ── Log scale toggle ──────────────────────────────────────────────────────────
+el('dt-log-toggle').addEventListener('click', () => {
     S.logScale = !S.logScale;
-    logToggle.textContent = 'Log scale: ' + (S.logScale ? 'ON' : 'OFF');
+    el('dt-log-toggle').textContent = 'Log scale: ' + (S.logScale ? 'ON' : 'OFF');
     updateChart();
 });
 
-// ── Tabs ─────────────────────────────────────────────────────────────────────
-tabChart.addEventListener('click',  () => showView('chart'));
-tabWaffle.addEventListener('click', () => showView('waffle'));
+// ── View tabs ─────────────────────────────────────────────────────────────────
+el('dt-tab-chart').addEventListener('click',  () => showView('chart'));
+el('dt-tab-waffle').addEventListener('click', () => showView('waffle'));
 
-// ── Reset buttons ────────────────────────────────────────────────────────────
+// ── Sidebar custom add ────────────────────────────────────────────────────────
+el('dt-sb-add-btn').addEventListener('click', () => {
+    const label    = el('dt-sb-name').value.trim();
+    const duration = Math.max(1, parseFloat(el('dt-sb-dur').value) || 3600);
+    if (!label) { el('dt-sb-name').focus(); return; }
+    if (S.customActs.some(a => a.label === label)) return;  // no dupes
+    addCustomActivity(label, duration);
+    el('dt-sb-name').value = '';
+    el('dt-sb-dur').value  = '3600';
+});
+
+// ── Reset buttons ─────────────────────────────────────────────────────────────
 el('dt-reset-btn').addEventListener('click',  reset);
 el('dt-dead-reset').addEventListener('click', reset);
 </script>
