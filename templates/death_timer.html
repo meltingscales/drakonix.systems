@@ -111,7 +111,10 @@
             </div>
         </div>
 
-        <button id="dt-reset-btn" class="dt-btn dt-btn-secondary">&#x21a9; Start over</button>
+        <div class="dt-bottom-row">
+            <button id="dt-reset-btn" class="dt-btn dt-btn-secondary">&#x21a9; Start over</button>
+            <button id="dt-share-btn" class="dt-btn dt-btn-secondary">&#x1f517; Copy link</button>
+        </div>
     </div>
 
     <!-- ── DEAD ── -->
@@ -170,9 +173,10 @@
     background: var(--bg-tertiary);
     color: var(--text-primary);
     border: 1px solid var(--border-primary);
-    margin-top: 1rem;
+    margin-top: 0;
 }
 .dt-btn-secondary:hover { background: var(--bg-hover); }
+.dt-bottom-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
 
 /* ── Two-column layout ── */
 .dt-result-layout {

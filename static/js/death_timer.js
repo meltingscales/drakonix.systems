@@ -632,6 +632,14 @@ el('dt-sb-add-btn').addEventListener('click', () => {
 el('dt-reset-btn').addEventListener('click',  reset);
 el('dt-dead-reset').addEventListener('click', reset);
 
+el('dt-share-btn').addEventListener('click', () => {
+    navigator.clipboard.writeText(location.href).then(() => {
+        const btn = el('dt-share-btn');
+        btn.textContent = '\u2713 Copied!';
+        setTimeout(() => { btn.innerHTML = '&#x1f517; Copy link'; }, 2000);
+    });
+});
+
 // ── Hash restore on load ──────────────────────────────────────────────────────
 (function () {
     const decoded = decodeHash();
