@@ -50,13 +50,13 @@
             <!-- Left: main content -->
             <div class="dt-main-col">
                 <div class="dt-result-top">
-                    <p class="dt-you-can">You can still&#x2026;</p>
-                    <!-- Prev/next nav around the featured activity label -->
+                    <!-- Prev/next nav flanks the "You can still…" line so layout stays stable -->
                     <div class="dt-featured-nav">
-                        <button id="dt-feat-prev" class="dt-nav-btn" aria-label="Previous activity" style="display:none">&#x25c0;</button>
-                        <p id="dt-main-label" class="dt-activity-label"></p>
-                        <button id="dt-feat-next" class="dt-nav-btn" aria-label="Next activity" style="display:none">&#x25b6;</button>
+                        <button id="dt-feat-prev" class="dt-nav-btn" aria-label="Previous activity" style="visibility:hidden">&#x25c0;</button>
+                        <p class="dt-you-can">You can still&#x2026;</p>
+                        <button id="dt-feat-next" class="dt-nav-btn" aria-label="Next activity" style="visibility:hidden">&#x25b6;</button>
                     </div>
+                    <p id="dt-main-label" class="dt-activity-label"></p>
                     <div class="dt-count-box">
                         <span id="dt-count" class="dt-count">0</span>
                     </div>
@@ -190,7 +190,7 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    margin-bottom: 0.7rem;
+    margin-bottom: 0.25rem;
 }
 .dt-nav-btn {
     background: none;
@@ -206,7 +206,7 @@
 }
 .dt-nav-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
 
-.dt-activity-label { font-size: 1.3rem; font-weight: 700; margin: 0; min-height: 1.6rem; }
+.dt-activity-label { font-size: 1.3rem; font-weight: 700; margin: 0 0 0.7rem; }
 .dt-count-box      { margin: 0 auto 0.7rem; }
 .dt-count {
     font-family: 'Courier New', 'Consolas', monospace;
@@ -501,8 +501,8 @@ function calcTimes(duration) {
 function setFeatured(idx) {
     const items = getActiveItems();
     if (items.length === 0) {
-        el('dt-feat-prev').style.display = 'none';
-        el('dt-feat-next').style.display = 'none';
+        el('dt-feat-prev').style.visibility = 'hidden';
+        el('dt-feat-next').style.visibility = 'hidden';
         el('dt-main-label').textContent  = '';
         el('dt-count').textContent       = '—';
         el('dt-context').textContent     = '';
@@ -520,8 +520,8 @@ function setFeatured(idx) {
         `(~${(86400 / item.duration).toFixed(1)}/day · ~${(604800 / item.duration).toFixed(1)}/week if that's all you did)`;
 
     const multi = items.length > 1;
-    el('dt-feat-prev').style.display = multi ? '' : 'none';
-    el('dt-feat-next').style.display = multi ? '' : 'none';
+    el('dt-feat-prev').style.visibility = multi ? '' : 'hidden';
+    el('dt-feat-next').style.visibility = multi ? '' : 'hidden';
 
     updateSidebarFeatured();
 }
