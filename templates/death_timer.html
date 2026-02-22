@@ -76,7 +76,10 @@
                         <button id="dt-tab-chart"  class="dt-tab dt-tab-active">&#x1f4ca; Chart</button>
                         <button id="dt-tab-waffle" class="dt-tab">&#x2b1b; Waffle</button>
                     </div>
-                    <button id="dt-log-toggle" class="dt-log-btn">Log scale: ON</button>
+                    <div style="display:flex;gap:0.4rem">
+                        <button id="dt-auto-advance" class="dt-log-btn">&#x25b6;&#x25b6; Auto: OFF</button>
+                        <button id="dt-log-toggle" class="dt-log-btn">Log scale: ON</button>
+                    </div>
                 </div>
 
                 <div id="dt-chart-panel" class="dt-panel">
@@ -272,6 +275,7 @@
     font-weight: 600;
 }
 .dt-log-btn:hover { background: var(--bg-hover); }
+.dt-log-btn-active { background: #c0392b !important; color: #fff !important; border-color: #c0392b !important; }
 
 /* ── Chart ── */
 .dt-panel { margin-bottom: 1rem; }

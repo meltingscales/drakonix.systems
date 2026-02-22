@@ -36,6 +36,8 @@ const S = {
     chart:           null,
     logScale:        true,
     view:            'chart',
+    autoAdvance:     false,
+    autoAdvanceTimer: null,
 };
 
 // Per-card waffle state: label → { totalSquares, squareValue, lastFilled, gridEl, labelEl }
@@ -150,6 +152,7 @@ function runCalculate({ age, lifeExp, presetOn, customActs, nextId, view, logSca
     S.initialized = false;  // suppress encodeHash during setup
     if (S.interval) { clearInterval(S.interval); S.interval = null; }
     if (S.chart)    { S.chart.destroy(); S.chart = null; }
+    setAutoAdvance(false);
 
     S.age         = age;
     S.lifeExp     = lifeExp;
@@ -187,6 +190,21 @@ function runCalculate({ age, lifeExp, presetOn, customActs, nextId, view, logSca
     S.initialized = true;
     encodeHash();
     S.interval = setInterval(tick, 1000);
+}
+
+// ── Auto-advance ──────────────────────────────────────────────────────────────
+function setAutoAdvance(on) {
+    S.autoAdvance = on;
+    if (S.autoAdvanceTimer) { clearInterval(S.autoAdvanceTimer); S.autoAdvanceTimer = null; }
+    if (on) {
+        S.autoAdvanceTimer = setInterval(() => {
+            if (getActiveItems().length > 1) setFeatured(S.featuredIdx + 1);
+        }, 30000);
+    }
+    const btn = el('dt-auto-advance');
+    if (!btn) return;
+    btn.textContent = '\u25b6\u25b6 Auto: ' + (on ? 'ON' : 'OFF');
+    btn.classList.toggle('dt-log-btn-active', on);
 }
 
 // ── Featured navigation ───────────────────────────────────────────────────────
@@ -559,6 +577,7 @@ function tick() {
 function reset() {
     if (S.interval) { clearInterval(S.interval); S.interval = null; }
     if (S.chart)    { S.chart.destroy(); S.chart = null; }
+    setAutoAdvance(false);
     S.initialized = false;
     S.presetOn    = new Array(PRESET_ACTIVITIES.length).fill(false);
     S.customActs  = [];
@@ -607,6 +626,8 @@ el('dt-calc-btn').addEventListener('click', () => {
 
 el('dt-feat-prev').addEventListener('click', () => setFeatured(S.featuredIdx - 1));
 el('dt-feat-next').addEventListener('click', () => setFeatured(S.featuredIdx + 1));
+
+el('dt-auto-advance').addEventListener('click', () => setAutoAdvance(!S.autoAdvance));
 
 el('dt-log-toggle').addEventListener('click', () => {
     S.logScale = !S.logScale;
