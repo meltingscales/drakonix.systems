@@ -274,6 +274,14 @@ systemd-logs:
     SERVICE_NAME="${SERVICE_NAME:-drakonix-systems}"
     journalctl -u ${SERVICE_NAME} -f
 
+# Reload templates + content without recompiling (just restarts the service)
+# Tera loads templates from disk at startup, so a restart is all that's needed.
+reload:
+    #!/usr/bin/env bash
+    SERVICE_NAME="${SERVICE_NAME:-drakonix-systems}"
+    systemctl restart ${SERVICE_NAME}
+    systemctl status ${SERVICE_NAME}
+
 # Restart the service
 systemd-restart:
     #!/usr/bin/env bash

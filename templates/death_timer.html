@@ -130,7 +130,7 @@
 
 <style>
 .death-timer-container {
-    max-width: 960px;
+    max-width: 1344px;
     margin: 0 auto;
     padding: 2rem;
 }
@@ -184,7 +184,7 @@
 /* ── Two-column layout ── */
 .dt-result-layout {
     display: grid;
-    grid-template-columns: 1fr 260px;
+    grid-template-columns: 62% 1fr;
     gap: 1.5rem;
     align-items: start;
     margin-bottom: 0.5rem;
@@ -273,6 +273,8 @@
     font-size: 0.88rem;
     cursor: pointer;
     font-weight: 600;
+    min-width: 8rem;
+    text-align: center;
 }
 .dt-log-btn:hover { background: var(--bg-hover); }
 .dt-log-btn-active { background: #c0392b !important; color: #fff !important; border-color: #c0392b !important; }
@@ -394,6 +396,9 @@
     color: var(--text-secondary);
     white-space: nowrap;
     flex-shrink: 0;
+    min-width: 4.5rem;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
 }
 /* Featured indicator: small triangle shown next to active+featured item */
 .dt-feat-star {
