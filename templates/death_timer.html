@@ -37,8 +37,14 @@
             <input type="text" id="dt-custom-name" placeholder="e.g. watch a Lord of the Rings extended cut" />
         </div>
         <div id="dt-custom-dur-row" class="dt-row" style="display:none">
-            <label for="dt-custom-duration">Duration (seconds)</label>
-            <input type="number" id="dt-custom-duration" min="1" value="3600" />
+            <label>Duration</label>
+            <input type="number" id="dt-custom-duration" min="1" value="1" style="width:80px" />
+            <select id="dt-custom-dur-unit">
+                <option value="60">minutes</option>
+                <option value="3600" selected>hours</option>
+                <option value="86400">days</option>
+                <option value="604800">weeks</option>
+            </select>
         </div>
         <button id="dt-calc-btn" class="dt-btn">Calculate my doom</button>
     </div>
@@ -62,6 +68,7 @@
                     </div>
                     <p class="dt-more-times">more times before you die.</p>
                     <p id="dt-context" class="dt-context"></p>
+                    <p id="dt-heartbeat" class="dt-heartbeat"></p>
                 </div>
 
                 <div class="dt-viz-controls">
@@ -89,9 +96,15 @@
                 <div class="dt-sidebar-list" id="dt-sidebar-list"></div>
                 <div class="dt-sidebar-custom">
                     <p class="dt-sidebar-custom-title">Custom activity</p>
-                    <input type="text"   id="dt-sb-name" placeholder="Name" />
+                    <input type="text" id="dt-sb-name" placeholder="Name" />
                     <div class="dt-sb-dur-row">
-                        <input type="number" id="dt-sb-dur" placeholder="Seconds" min="1" value="3600" />
+                        <input type="number" id="dt-sb-dur" placeholder="Amount" min="1" value="1" />
+                        <select id="dt-sb-dur-unit">
+                            <option value="60">min</option>
+                            <option value="3600" selected>hr</option>
+                            <option value="86400">day</option>
+                            <option value="604800">wk</option>
+                        </select>
                         <button id="dt-sb-add-btn" class="dt-btn dt-btn-sm">Add</button>
                     </div>
                 </div>
@@ -219,6 +232,7 @@
 }
 .dt-more-times { font-size: 1rem; color: var(--text-secondary); margin-bottom: 0.4rem; }
 .dt-context    { font-size: 0.85rem; color: var(--text-secondary); font-style: italic; }
+.dt-heartbeat  { font-size: 0.82rem; color: var(--text-secondary); margin-top: 0.4rem; letter-spacing: 0.01em; }
 
 /* ── Viz controls ── */
 .dt-viz-controls {
@@ -418,7 +432,16 @@
     font-size: 0.85rem;
 }
 .dt-sb-dur-row { display: flex; gap: 0.4rem; align-items: center; }
-.dt-sb-dur-row input { flex: 1; min-width: 0; }
+.dt-sb-dur-row input  { flex: 1; min-width: 0; }
+.dt-sb-dur-row select {
+    padding: 0.35rem 0.3rem;
+    border: 1px solid var(--border-primary);
+    border-radius: 4px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 0.82rem;
+    flex-shrink: 0;
+}
 
 /* ── Dead ── */
 #dt-dead {
@@ -448,8 +471,18 @@ const PRESET_ACTIVITIES = [
 ];
 const EXTRA_COLORS = ['#c0392b','#7f8c8d','#d35400','#16a085','#2c3e50'];
 
+// Human-readable slug for each preset (order must match PRESET_ACTIVITIES)
+const PRESET_SLUGS = [
+    'big-mac', 'minecraft', 'titanic', 'chicago-texas',
+    'marathon', 'monopoly', 'war-and-peace', 'dark-souls',
+    'breaking-bad', 'cargo-ship',
+];
+
 // ── State ────────────────────────────────────────────────────────────────────
 const S = {
+    age:             25,
+    lifeExp:         78,
+    initialized:     false,   // true after first calculate; gates encodeHash
     secondsLeft:     0,
     primaryLabel:    '',
     primaryDuration: 0,
@@ -497,6 +530,123 @@ function calcTimes(duration) {
     return Math.max(0, S.secondsLeft / duration);
 }
 
+// ── Heartbeat ────────────────────────────────────────────────────────────────
+function updateHeartbeat() {
+    const beats = Math.round(S.secondsLeft * 70 / 60);
+    el('dt-heartbeat').textContent = '\u2764\ufe0f\u200a~\u202f' + beats.toLocaleString() + ' heartbeats remaining';
+}
+
+// ── URL hash (human-readable) ─────────────────────────────────────────────────
+// Format: #age=32&life=78&on=big-mac,marathon&custom=swim%20laps:1800|yoga:600&view=chart&feat=marathon
+function encodeHash() {
+    if (!S.initialized) return;
+    const p = new URLSearchParams();
+    p.set('age',  S.age);
+    p.set('life', S.lifeExp);
+
+    const onSlugs = PRESET_SLUGS.filter((_, i) => S.presetOn[i]);
+    if (onSlugs.length) p.set('on', onSlugs.join(','));
+
+    const onCustoms = S.customActs.filter(a => a.on);
+    if (onCustoms.length)
+        p.set('custom', onCustoms.map(a => `${encodeURIComponent(a.label)}:${a.duration}`).join('|'));
+
+    p.set('view', S.view);
+    if (!S.logScale) p.set('log', 'off');
+
+    const items = getActiveItems();
+    const feat  = items[S.featuredIdx];
+    if (feat) {
+        const pi = PRESET_ACTIVITIES.findIndex(a => a.label === feat.label);
+        p.set('feat', pi >= 0 ? PRESET_SLUGS[pi] : encodeURIComponent(feat.label));
+    }
+    history.replaceState(null, '', '#' + p.toString());
+}
+
+function decodeHash() {
+    if (!location.hash || location.hash.length <= 1) return null;
+    const p = new URLSearchParams(location.hash.slice(1));
+    const age     = parseFloat(p.get('age'));
+    const lifeExp = parseFloat(p.get('life'));
+    if (!age || !lifeExp || age <= 0 || lifeExp <= 0) return null;
+
+    const onSlugs  = p.get('on')     ? p.get('on').split(',')     : [];
+    const custStr  = p.get('custom') ? p.get('custom').split('|') : [];
+    const view     = p.get('view')   || 'chart';
+    const logScale = p.get('log')    !== 'off';
+    const featParam = p.get('feat')  || null;
+
+    const presetOn = PRESET_SLUGS.map(slug => onSlugs.includes(slug));
+    const customs  = custStr.map(s => {
+        const ci = s.lastIndexOf(':');
+        if (ci < 0) return null;
+        const label    = decodeURIComponent(s.slice(0, ci));
+        const duration = parseFloat(s.slice(ci + 1));
+        return (label && duration > 0) ? { label, duration } : null;
+    }).filter(Boolean);
+
+    return { age, lifeExp, presetOn, customs, view, logScale, featParam };
+}
+
+function applyHash(decoded) {
+    const { age, lifeExp, presetOn, customs, view, logScale, featParam } = decoded;
+    if (lifeExp - age <= 0) {
+        formEl.style.display = 'none'; resultEl.style.display = 'none'; deadEl.style.display = ''; return;
+    }
+    const usedColors = new Set(presetOn.map((on, i) => on ? PRESET_ACTIVITIES[i].color : null).filter(Boolean));
+    let nextId = 0;
+    const customActs = customs.map(({ label, duration }) => {
+        const color = EXTRA_COLORS.find(c => !usedColors.has(c)) ?? EXTRA_COLORS[0];
+        usedColors.add(color);
+        return { id: nextId++, label, duration, color, on: true };
+    });
+    runCalculate({ age, lifeExp, presetOn, customActs, nextId, view, logScale, featParam });
+}
+
+// ── Core calculate ────────────────────────────────────────────────────────────
+function runCalculate({ age, lifeExp, presetOn, customActs, nextId, view, logScale, featParam }) {
+    S.initialized = false;  // suppress encodeHash during setup
+    if (S.interval) { clearInterval(S.interval); S.interval = null; }
+    if (S.chart)    { S.chart.destroy(); S.chart = null; }
+
+    S.age         = age;
+    S.lifeExp     = lifeExp;
+    S.secondsLeft = (lifeExp - age) * 365.25 * 24 * 3600;
+    S.presetOn    = presetOn   ?? new Array(PRESET_ACTIVITIES.length).fill(false);
+    S.customActs  = customActs ?? [];
+    S.nextId      = nextId     != null ? nextId : S.customActs.length;
+    S.featuredIdx = 0;
+    S.logScale    = logScale   != null ? logScale : true;
+
+    waffleStates.clear();
+    el('dt-sidebar-list').innerHTML = '';
+    el('dt-waffle-panel').innerHTML = '';
+    formEl.style.display   = 'none';
+    resultEl.style.display = '';
+    deadEl.style.display   = 'none';
+
+    initChart();
+    buildSidebar();
+    setFeatured(0);
+    buildMultiWaffle();
+    showView(view || 'chart');
+    updateHeartbeat();
+
+    // restore featured item from hash param (after UI is built)
+    if (featParam) {
+        const items = getActiveItems();
+        const pi = PRESET_SLUGS.indexOf(featParam);
+        const fi = pi >= 0
+            ? items.findIndex(it => it.label === PRESET_ACTIVITIES[pi]?.label)
+            : items.findIndex(it => it.label === decodeURIComponent(featParam));
+        if (fi >= 0) setFeatured(fi);
+    }
+
+    S.initialized = true;
+    encodeHash();
+    S.interval = setInterval(tick, 1000);
+}
+
 // ── Featured navigation ───────────────────────────────────────────────────────
 function setFeatured(idx) {
     const items = getActiveItems();
@@ -507,6 +657,7 @@ function setFeatured(idx) {
         el('dt-count').textContent       = '—';
         el('dt-context').textContent     = '';
         updateSidebarFeatured();
+        encodeHash();
         return;
     }
     S.featuredIdx = ((idx % items.length) + items.length) % items.length;
@@ -524,6 +675,7 @@ function setFeatured(idx) {
     el('dt-feat-next').style.visibility = multi ? '' : 'hidden';
 
     updateSidebarFeatured();
+    encodeHash();
 }
 
 function updateSidebarFeatured() {
@@ -848,6 +1000,7 @@ function showView(v) {
     el('dt-tab-waffle').classList.toggle('dt-tab-active', !isChart);
     el('dt-log-toggle').style.display = isChart ? '' : 'none';
     if (isChart) updateChart();
+    encodeHash();
 }
 
 // ── Tick ──────────────────────────────────────────────────────────────────────
@@ -857,12 +1010,14 @@ function tick() {
     updateSidebarCounts();
     updateChart();
     updateMultiWaffle();
+    updateHeartbeat();
 }
 
 // ── Reset ─────────────────────────────────────────────────────────────────────
 function reset() {
     if (S.interval) { clearInterval(S.interval); S.interval = null; }
     if (S.chart)    { S.chart.destroy(); S.chart = null; }
+    S.initialized = false;
     S.presetOn    = new Array(PRESET_ACTIVITIES.length).fill(false);
     S.customActs  = [];
     S.featuredIdx = 0;
@@ -872,6 +1027,7 @@ function reset() {
     formEl.style.display   = '';
     resultEl.style.display = 'none';
     deadEl.style.display   = 'none';
+    history.replaceState(null, '', location.pathname + location.search);
 }
 
 // ── Event listeners ───────────────────────────────────────────────────────────
@@ -884,46 +1040,27 @@ el('dt-activity').addEventListener('change', function () {
 el('dt-calc-btn').addEventListener('click', () => {
     const age     = parseFloat(el('dt-age').value)      || 0;
     const lifeExp = parseFloat(el('dt-life-exp').value) || 78;
-    const years   = lifeExp - age;
-
-    if (years <= 0) {
-        formEl.style.display = 'none'; resultEl.style.display = 'none'; deadEl.style.display = ''; return;
+    if (lifeExp - age <= 0) {
+        formEl.style.display = 'none'; resultEl.style.display = 'none'; deadEl.style.display = '';
+        history.replaceState(null, '', location.pathname + location.search);
+        return;
     }
 
-    S.secondsLeft = years * 365.25 * 24 * 3600;
-    S.presetOn    = new Array(PRESET_ACTIVITIES.length).fill(false);
-    S.customActs  = [];
-    S.featuredIdx = 0;
-
+    const presetOn   = new Array(PRESET_ACTIVITIES.length).fill(false);
+    const customActs = [];
     const sel = el('dt-activity');
     if (sel.value === 'custom') {
         const label    = el('dt-custom-name').value.trim() || 'custom activity';
-        const duration = Math.max(1, parseFloat(el('dt-custom-duration').value) || 3600);
-        S.customActs.push({ id: S.nextId++, label, duration, color: EXTRA_COLORS[0], on: true });
-        S.primaryLabel    = label;
-        S.primaryDuration = duration;
+        const unit     = parseFloat(el('dt-custom-dur-unit').value) || 3600;
+        const duration = Math.max(1, (parseFloat(el('dt-custom-duration').value) || 1) * unit);
+        customActs.push({ id: 0, label, duration, color: EXTRA_COLORS[0], on: true });
     } else {
         const duration = parseFloat(sel.value);
         const idx      = PRESET_ACTIVITIES.findIndex(a => a.duration === duration);
-        if (idx >= 0) {
-            S.presetOn[idx]   = true;
-            S.primaryLabel    = PRESET_ACTIVITIES[idx].label;
-            S.primaryDuration = PRESET_ACTIVITIES[idx].duration;
-        }
+        if (idx >= 0) presetOn[idx] = true;
     }
 
-    formEl.style.display   = 'none';
-    resultEl.style.display = '';
-    deadEl.style.display   = 'none';
-
-    initChart();
-    buildSidebar();
-    setFeatured(0);
-    buildMultiWaffle();
-    showView('chart');
-
-    if (S.interval) clearInterval(S.interval);
-    S.interval = setInterval(tick, 1000);
+    runCalculate({ age, lifeExp, presetOn, customActs, nextId: customActs.length });
 });
 
 el('dt-feat-prev').addEventListener('click', () => setFeatured(S.featuredIdx - 1));
@@ -933,6 +1070,7 @@ el('dt-log-toggle').addEventListener('click', () => {
     S.logScale = !S.logScale;
     el('dt-log-toggle').textContent = 'Log scale: ' + (S.logScale ? 'ON' : 'OFF');
     updateChart();
+    encodeHash();
 });
 
 el('dt-tab-chart').addEventListener('click',  () => showView('chart'));
@@ -940,15 +1078,26 @@ el('dt-tab-waffle').addEventListener('click', () => showView('waffle'));
 
 el('dt-sb-add-btn').addEventListener('click', () => {
     const label    = el('dt-sb-name').value.trim();
-    const duration = Math.max(1, parseFloat(el('dt-sb-dur').value) || 3600);
+    const unit     = parseFloat(el('dt-sb-dur-unit').value) || 3600;
+    const duration = Math.max(1, (parseFloat(el('dt-sb-dur').value) || 1) * unit);
     if (!label) { el('dt-sb-name').focus(); return; }
     if (S.customActs.some(a => a.label === label)) return;
     addCustomActivity(label, duration);
     el('dt-sb-name').value = '';
-    el('dt-sb-dur').value  = '3600';
+    el('dt-sb-dur').value  = '1';
 });
 
 el('dt-reset-btn').addEventListener('click',  reset);
 el('dt-dead-reset').addEventListener('click', reset);
+
+// ── Hash restore on load ──────────────────────────────────────────────────────
+(function () {
+    const decoded = decodeHash();
+    if (decoded) {
+        el('dt-age').value      = decoded.age;
+        el('dt-life-exp').value = decoded.lifeExp;
+        applyHash(decoded);
+    }
+})();
 </script>
 {% endblock %}
