@@ -8,6 +8,7 @@ date: 2025-01-01
 - [LinkedIn](https://www.linkedin.com/in/henryfidelbradleypost/)
 - [personal github](https://github.com/meltingscales)
 - [work github](https://github.com/henrypost)
+- <a href="/static/Henry-Post-Resume.pdf">Henry Post's Resume as a PDF</a>
 
 ## Summary
 
