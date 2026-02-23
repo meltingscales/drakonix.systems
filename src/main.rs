@@ -1,4 +1,5 @@
 mod converter;
+mod favicon;
 mod handlers;
 mod markdown;
 mod markov;
@@ -117,6 +118,7 @@ async fn main() -> anyhow::Result<()> {
 
     // Build the application router
     let app = Router::new()
+        .route("/favicon.ico", get(favicon::favicon_ico))
         .route("/", get(handlers::index))
         .route("/posts", get(handlers::posts_list))
         .route("/posts/:slug", get(handlers::post_detail))

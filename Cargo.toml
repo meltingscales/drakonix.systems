@@ -56,6 +56,10 @@ uuid = { version = "1", features = ["v4", "serde"] }
 # Random number generation for markov chains
 rand = "0.8"
 
+# Favicon generation
+image = { version = "0.25", default-features = false, features = ["png"] }
+noise = "0.9"
+
 # Environment variables
 dotenvy = "0.15"
 
