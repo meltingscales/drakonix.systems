@@ -59,6 +59,7 @@ meshtastic
 <li><a href="https://jyn.dev/i-m-just-having-fun/">fun :)</a></li>
 <li><a href="https://neilthanedar.com/youre-not-burnt-out-youre-existentially-starving/">burnout or nihilism?</a></li>
 <li><a href="//vmfunc.re/blog/persona">vmfunc.re</a></li>
+<li><a href="https://lynndotpy.dev/posts/stoat-chat/">https://lynndotpy.dev/posts/stoat-chat/</a></li>
 </ul>
 
 Here's a list of non-personal websites that are just good alternatives to
