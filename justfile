@@ -12,12 +12,12 @@ test:
 
 # Run the web server locally (dev mode with hot reload)
 # Streams markov babble 10x faster for development
-run:
-    MARKOV_STREAM_SPEED_MULTIPLIER=10.0 cargo run --bin rust-blog
+run port="3000":
+    MARKOV_STREAM_SPEED_MULTIPLIER=10.0 PORT={{port}} cargo run --bin rust-blog
 
 # Run the web server in release mode (faster)
-run-release:
-    cargo run --release --bin rust-blog
+run-release port="3000":
+    PORT={{port}} cargo run --release --bin rust-blog
 
 # Format Rust code
 fmt:

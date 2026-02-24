@@ -59,6 +59,8 @@ const PRESET_SLUGS = [
 const S = {
   age: 25,
   lifeExp: 78,
+  bpSystolic: 120,
+  bpDiastolic: 80,
   initialized: false, // true after first calculate; gates encodeHash
   secondsLeft: 0,
   primaryLabel: "",
@@ -123,12 +125,14 @@ function updateHeartbeat() {
 }
 
 // ── URL hash (human-readable) ─────────────────────────────────────────────────
-// Format: #age=32&life=78&on=big-mac,marathon&custom=swim%20laps:1800|yoga:600&view=chart&feat=marathon
+// Format: #age=32&life=78&sys=120&dia=80&on=big-mac,marathon&custom=swim%20laps:1800|yoga:600&view=chart&feat=marathon
 function encodeHash() {
   if (!S.initialized) return;
   const p = new URLSearchParams();
   p.set("age", S.age);
   p.set("life", S.lifeExp);
+  p.set("sys", S.bpSystolic);
+  p.set("dia", S.bpDiastolic);
 
   const onSlugs = PRESET_SLUGS.filter((_, i) => S.presetOn[i]);
   if (onSlugs.length) p.set("on", onSlugs.join(","));
@@ -161,6 +165,8 @@ function decodeHash() {
   const lifeExp = parseFloat(p.get("life"));
   if (!age || !lifeExp || age <= 0 || lifeExp <= 0) return null;
 
+  const bpSystolic = parseInt(p.get("sys")) || 120;
+  const bpDiastolic = parseInt(p.get("dia")) || 80;
   const onSlugs = p.get("on") ? p.get("on").split(",") : [];
   const custStr = p.get("custom") ? p.get("custom").split("|") : [];
   const view = p.get("view") || "chart";
@@ -178,12 +184,18 @@ function decodeHash() {
     })
     .filter(Boolean);
 
-  return { age, lifeExp, presetOn, customs, view, logScale, featParam };
+  return { age, lifeExp, bpSystolic, bpDiastolic, presetOn, customs, view, logScale, featParam };
 }
 
 function applyHash(decoded) {
-  const { age, lifeExp, presetOn, customs, view, logScale, featParam } =
+  const { age, lifeExp, bpSystolic, bpDiastolic, presetOn, customs, view, logScale, featParam } =
     decoded;
+
+  // Update BP form inputs and display
+  el("dt-bp-systolic").value = bpSystolic;
+  el("dt-bp-diastolic").value = bpDiastolic;
+  updateBPDisplay();
+
   if (lifeExp - age <= 0) {
     formEl.style.display = "none";
     resultEl.style.display = "none";
@@ -205,6 +217,8 @@ function applyHash(decoded) {
   runCalculate({
     age,
     lifeExp,
+    bpSystolic,
+    bpDiastolic,
     presetOn,
     customActs,
     nextId,
@@ -218,6 +232,8 @@ function applyHash(decoded) {
 function runCalculate({
   age,
   lifeExp,
+  bpSystolic,
+  bpDiastolic,
   presetOn,
   customActs,
   nextId,
@@ -238,6 +254,8 @@ function runCalculate({
 
   S.age = age;
   S.lifeExp = lifeExp;
+  S.bpSystolic = bpSystolic ?? 120;
+  S.bpDiastolic = bpDiastolic ?? 80;
   S.secondsLeft = (lifeExp - age) * 365.25 * 24 * 3600;
   S.presetOn = presetOn ?? new Array(PRESET_ACTIVITIES.length).fill(false);
   S.customActs = customActs ?? [];
@@ -758,6 +776,40 @@ function reset() {
   history.replaceState(null, "", location.pathname + location.search);
 }
 
+// ── Blood pressure ─────────────────────────────────────────────────────────────
+function getBPCategory(systolic, diastolic) {
+  if (systolic >= 180 || diastolic >= 120)
+    return { category: "Hypertensive Crisis", class: "bp-crisis", penalty: 15 };
+  if (systolic >= 140 || diastolic >= 90)
+    return { category: "Stage 2 Hypertension", class: "bp-stage2", penalty: 8 };
+  if (systolic >= 130 || diastolic >= 80)
+    return { category: "Stage 1 Hypertension", class: "bp-stage1", penalty: 4 };
+  if (systolic >= 120 && diastolic < 80)
+    return { category: "Elevated", class: "bp-elevated", penalty: 2 };
+  return { category: "Normal", class: "bp-normal", penalty: 0 };
+}
+
+function updateBPDisplay() {
+  const systolic = parseInt(el("dt-bp-systolic").value);
+  const diastolic = parseInt(el("dt-bp-diastolic").value);
+  el("dt-bp-systolic-val").textContent = systolic;
+  el("dt-bp-diastolic-val").textContent = diastolic;
+
+  const { category, class: catClass } = getBPCategory(systolic, diastolic);
+  const catEl = el("dt-bp-category");
+  catEl.textContent = category;
+  catEl.className = "dt-hint " + catClass;
+}
+
+function adjustLifeExpectancyForBP(baseLifeExp, systolic, diastolic) {
+  const { penalty } = getBPCategory(systolic, diastolic);
+  return Math.max(1, baseLifeExp - penalty);
+}
+
+// Blood pressure slider listeners
+el("dt-bp-systolic").addEventListener("input", updateBPDisplay);
+el("dt-bp-diastolic").addEventListener("input", updateBPDisplay);
+
 // ── Event listeners ───────────────────────────────────────────────────────────
 el("dt-activity").addEventListener("change", function () {
   const c = this.value === "custom";
@@ -767,7 +819,11 @@ el("dt-activity").addEventListener("change", function () {
 
 el("dt-calc-btn").addEventListener("click", () => {
   const age = parseFloat(el("dt-age").value) || 0;
-  const lifeExp = parseFloat(el("dt-life-exp").value) || 78;
+  const baseLifeExp = parseFloat(el("dt-life-exp").value) || 78;
+  const systolic = parseInt(el("dt-bp-systolic").value) || 120;
+  const diastolic = parseInt(el("dt-bp-diastolic").value) || 80;
+  const lifeExp = adjustLifeExpectancyForBP(baseLifeExp, systolic, diastolic);
+
   if (lifeExp - age <= 0) {
     formEl.style.display = "none";
     resultEl.style.display = "none";
@@ -802,6 +858,8 @@ el("dt-calc-btn").addEventListener("click", () => {
   runCalculate({
     age,
     lifeExp,
+    bpSystolic: systolic,
+    bpDiastolic: diastolic,
     presetOn,
     customActs,
     nextId: customActs.length,
@@ -862,6 +920,10 @@ el("dt-share-btn").addEventListener("click", () => {
   if (decoded) {
     el("dt-age").value = decoded.age;
     el("dt-life-exp").value = decoded.lifeExp;
+    el("dt-bp-systolic").value = decoded.bpSystolic;
+    el("dt-bp-diastolic").value = decoded.bpDiastolic;
     applyHash(decoded);
+  } else {
+    updateBPDisplay();
   }
 })();
