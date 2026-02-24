@@ -289,6 +289,17 @@ systemd-restart:
     systemctl restart ${SERVICE_NAME}
     systemctl status ${SERVICE_NAME}
 
+# Nginx Access Logs
+# =================
+
+# Tail all vhost access logs live
+nginx-logs:
+    sudo tail -f /var/log/nginx/*drakonix.systems.access.log
+
+# Tail access logs for a specific vhost (e.g. just nginx-logs-vhost meowderall.drakonix.systems)
+nginx-logs-vhost vhost:
+    sudo tail -f /var/log/nginx/{{vhost}}.access.log
+
 # Development helpers
 # ===================
 

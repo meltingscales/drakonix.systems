@@ -58,6 +58,10 @@ cp "${SCRIPT_DIR}/${NGINX_CONF}" "/etc/nginx/conf.d/${DOMAIN}.conf"
 rm -f /etc/nginx/conf.d/default.conf
 rm -f /etc/nginx/sites-enabled/default 2>/dev/null || true
 
+# Deploy logrotate config
+cp "${SCRIPT_DIR}/logrotate-drakonix" "/etc/logrotate.d/drakonix"
+echo "Logrotate config deployed to /etc/logrotate.d/drakonix (daily, 30-day retention)."
+
 echo "Testing nginx config..."
 nginx -t
 

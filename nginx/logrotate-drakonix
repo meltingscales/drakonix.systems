@@ -1,0 +1,20 @@
+/var/log/nginx/drakonix.systems.access.log
+/var/log/nginx/donationaggregator.drakonix.systems.access.log
+/var/log/nginx/carethermometer.drakonix.systems.access.log
+/var/log/nginx/meowderall.drakonix.systems.access.log
+/var/log/nginx/digitalkhole.drakonix.systems.access.log
+{
+    daily
+    rotate 30
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 0640 www-data adm
+    sharedscripts
+    postrotate
+        if [ -f /run/nginx.pid ]; then
+            kill -USR1 $(cat /run/nginx.pid)
+        fi
+    endscript
+}
