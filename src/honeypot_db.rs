@@ -9,7 +9,7 @@ pub struct HoneypotDb {
     conn: Arc<Mutex<Connection>>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, utoipa::ToSchema)]
 pub struct HoneypotHit {
     pub id: i64,
     pub slug: String,

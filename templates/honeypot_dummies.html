@@ -5,47 +5,8 @@
         Recent hits to the markov-babble honeypot endpoint.
         Showing up to 1,000 most-recent entries (oldest auto-pruned).
     </p>
-
-    {% if hits %}
-    <p class="hp-count">{{ hits | length }} hit(s) recorded.</p>
-    <div class="hp-table-wrap">
-        <table class="hp-table">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Slug</th>
-                    <th>IP</th>
-                    <th>Timestamp</th>
-                    <th>Headers</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for hit in hits %}
-                <tr>
-                    <td class="hp-id">{{ hit.id }}</td>
-                    <td class="hp-slug">
-                        <code>{{ hit.slug }}</code>
-                    </td>
-                    <td class="hp-ip">
-                        <a href="https://ipinfo.io/{{ hit.ip }}" target="_blank" rel="noopener noreferrer">
-                            <code>{{ hit.ip }}</code>
-                        </a>
-                    </td>
-                    <td class="hp-ts">{{ hit.timestamp }}</td>
-                    <td class="hp-headers">
-                        <details>
-                            <summary>show</summary>
-                            <pre class="hp-json">{{ hit.headers }}</pre>
-                        </details>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% else %}
-    <p class="hp-empty">No hits recorded yet. The honeypot is waiting...</p>
-    {% endif %}
+    <p class="hp-count" id="hp-count"></p>
+    <div id="hp-root"></div>
 </div>
 
 <style>
@@ -104,7 +65,7 @@
         white-space: nowrap;
     }
     .hp-slug code,
-    .hp-ip code {
+    .hp-ip a code {
         font-size: 0.85rem;
     }
     .hp-ts {
@@ -134,4 +95,6 @@
         overflow-x: auto;
     }
 </style>
+
+<script src="/static/js/honeypot_dummies.js"></script>
 {% endblock %}

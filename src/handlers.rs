@@ -4,7 +4,7 @@ use crate::markov;
 use crate::models::SearchEntry;
 use crate::schizo_rng;
 use crate::timer::{StartTimerRequest, StartTimerResponse, TimerStatusResponse};
-use crate::{rss, AppState};
+use crate::{honeypot_db, rss, AppState};
 use axum::{
     body::Body,
     extract::{Multipart, Path, State},
@@ -463,6 +463,22 @@ pub async fn honeypot_dummies_dashboard(
         .render("honeypot_dummies.html", &context)
         .map_err(|e| AppError::TemplateError(e.to_string()))?;
     Ok(Html(html))
+}
+
+/// JSON API – returns the 1,000 most recent honeypot hits
+#[utoipa::path(
+    get,
+    path = "/api/honeypot/hits",
+    tag = "Fun",
+    responses(
+        (status = 200, description = "List of recent honeypot hits (newest first)", body = Vec<honeypot_db::HoneypotHit>),
+    )
+)]
+pub async fn honeypot_hits_api(
+    State(state): State<Arc<AppState>>,
+) -> Result<Json<Vec<honeypot_db::HoneypotHit>>, AppError> {
+    let hits = state.honeypot_db.get_recent_hits().await;
+    Ok(Json(hits))
 }
 
 /// Honeypot endpoint - generates markov babble text slowly to waste scraper resources

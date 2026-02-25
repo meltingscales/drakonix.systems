@@ -29,6 +29,7 @@ use utoipa_swagger_ui::SwaggerUi;
         handlers::convert_mp4_to_mp3,
         handlers::download_converted_file,
         handlers::markov_babble_honeypot,
+        handlers::honeypot_hits_api,
     ),
     components(
         schemas(
@@ -36,6 +37,7 @@ use utoipa_swagger_ui::SwaggerUi;
             timer::StartTimerResponse,
             timer::TimerStatusResponse,
             converter::ConvertResponse,
+            honeypot_db::HoneypotHit,
         )
     ),
     tags(
@@ -158,11 +160,12 @@ async fn main() -> anyhow::Result<()> {
             "/api/markov-babble/:slug/gen",
             get(handlers::markov_babble_honeypot),
         )
-        // Honeypot dashboard
+        // Honeypot dashboard + JSON API
         .route(
             "/services/honeypot-dummies",
             get(handlers::honeypot_dummies_dashboard),
         )
+        .route("/api/honeypot/hits", get(handlers::honeypot_hits_api))
         // Swagger UI for API documentation
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         // Serve static files (CSS, JS, images)

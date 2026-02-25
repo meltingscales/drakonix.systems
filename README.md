@@ -25,6 +25,7 @@ My personal website
 
 - Rust 1.70+ ([Install Rust](https://rustup.rs/))
 - just ([Install just](https://github.com/casey/just#installation))
+- Ideally 60GB or more of disk space (Rust/Cargo dependencies). 20GB is minimum.
 
 ### Development
 
