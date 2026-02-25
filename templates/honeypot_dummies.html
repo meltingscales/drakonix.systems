@@ -27,7 +27,9 @@
                         <code>{{ hit.slug }}</code>
                     </td>
                     <td class="hp-ip">
-                        <code>{{ hit.ip }}</code>
+                        <a href="https://ipinfo.io/{{ hit.ip }}" target="_blank" rel="noopener noreferrer">
+                            <code>{{ hit.ip }}</code>
+                        </a>
                     </td>
                     <td class="hp-ts">{{ hit.timestamp }}</td>
                     <td class="hp-headers">
