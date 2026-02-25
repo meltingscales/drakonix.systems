@@ -1,0 +1,135 @@
+{% extends "base.html" %} {% block content %}
+<div class="hp-container">
+    <h1>Honeypot Dummies</h1>
+    <p class="hp-subtitle">
+        Recent hits to the markov-babble honeypot endpoint.
+        Showing up to 1,000 most-recent entries (oldest auto-pruned).
+    </p>
+
+    {% if hits %}
+    <p class="hp-count">{{ hits | length }} hit(s) recorded.</p>
+    <div class="hp-table-wrap">
+        <table class="hp-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Slug</th>
+                    <th>IP</th>
+                    <th>Timestamp</th>
+                    <th>Headers</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for hit in hits %}
+                <tr>
+                    <td class="hp-id">{{ hit.id }}</td>
+                    <td class="hp-slug">
+                        <code>{{ hit.slug }}</code>
+                    </td>
+                    <td class="hp-ip">
+                        <code>{{ hit.ip }}</code>
+                    </td>
+                    <td class="hp-ts">{{ hit.timestamp }}</td>
+                    <td class="hp-headers">
+                        <details>
+                            <summary>show</summary>
+                            <pre class="hp-json">{{ hit.headers }}</pre>
+                        </details>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="hp-empty">No hits recorded yet. The honeypot is waiting...</p>
+    {% endif %}
+</div>
+
+<style>
+    .hp-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    .hp-container h1 {
+        font-size: 2rem;
+        margin-bottom: 0.4rem;
+    }
+    .hp-subtitle,
+    .hp-count {
+        color: var(--text-secondary);
+        margin-bottom: 1.2rem;
+        font-size: 0.95rem;
+    }
+    .hp-empty {
+        color: var(--text-secondary);
+        font-style: italic;
+        margin-top: 2rem;
+    }
+    .hp-table-wrap {
+        overflow-x: auto;
+    }
+    .hp-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+    }
+    .hp-table th,
+    .hp-table td {
+        padding: 0.5rem 0.75rem;
+        border: 1px solid var(--border-primary);
+        text-align: left;
+        vertical-align: top;
+    }
+    .hp-table th {
+        background: var(--bg-secondary);
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        letter-spacing: 0.05em;
+        color: var(--text-secondary);
+    }
+    .hp-table tbody tr:nth-child(even) {
+        background: var(--bg-secondary);
+    }
+    .hp-table tbody tr:hover {
+        background: var(--bg-hover);
+    }
+    .hp-id {
+        font-family: monospace;
+        color: var(--text-secondary);
+        white-space: nowrap;
+    }
+    .hp-slug code,
+    .hp-ip code {
+        font-size: 0.85rem;
+    }
+    .hp-ts {
+        white-space: nowrap;
+        font-size: 0.82rem;
+        color: var(--text-secondary);
+    }
+    .hp-headers details summary {
+        cursor: pointer;
+        font-size: 0.82rem;
+        color: var(--text-secondary);
+        user-select: none;
+    }
+    .hp-headers details summary:hover {
+        color: var(--text-primary);
+    }
+    .hp-json {
+        margin: 0.5rem 0 0;
+        padding: 0.5rem;
+        background: var(--bg-primary);
+        border: 1px solid var(--border-primary);
+        border-radius: 4px;
+        font-size: 0.75rem;
+        white-space: pre-wrap;
+        word-break: break-all;
+        max-width: 420px;
+        overflow-x: auto;
+    }
+</style>
+{% endblock %}

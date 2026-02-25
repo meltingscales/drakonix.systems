@@ -450,6 +450,21 @@ pub async fn download_converted_file(
     Ok((headers, body).into_response())
 }
 
+/// Honeypot dashboard - shows recent honeypot hits with IP, slug, timestamp, and headers
+pub async fn honeypot_dummies_dashboard(
+    State(state): State<Arc<AppState>>,
+) -> Result<Html<String>, AppError> {
+    let hits = state.honeypot_db.get_recent_hits().await;
+    let mut context = Context::new();
+    context.insert("hits", &hits);
+    context.insert("title", "Honeypot Dummies - drakonix.systems");
+    let html = state
+        .tera
+        .render("honeypot_dummies.html", &context)
+        .map_err(|e| AppError::TemplateError(e.to_string()))?;
+    Ok(Html(html))
+}
+
 /// Honeypot endpoint - generates markov babble text slowly to waste scraper resources
 /// Returns 10MB of HTML with more honeypot links at 10KB/s to trap scrapers in a loop
 /// 1/100 chance of returning chaotic encrypted garbage instead (schizo-rng mode)
@@ -473,7 +488,29 @@ pub fn _a() {}
 pub async fn markov_babble_honeypot(
     State(state): State<Arc<AppState>>,
     Path(slug): Path<String>,
+    headers: HeaderMap,
 ) -> Result<Response, AppError> {
+    // Extract IP from X-Real-IP (set by nginx), fallback to "unknown"
+    let ip = headers
+        .get("x-real-ip")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("unknown")
+        .to_string();
+
+    // Serialise headers to a JSON object for storage
+    let headers_map: std::collections::HashMap<String, String> = headers
+        .iter()
+        .filter_map(|(k, v)| v.to_str().ok().map(|s| (k.as_str().to_string(), s.to_string())))
+        .collect();
+    let headers_json = serde_json::to_string(&headers_map).unwrap_or_default();
+
+    // Log hit — fire-and-forget, does not block the response
+    let db = state.honeypot_db.clone();
+    let slug_clone = slug.clone();
+    tokio::spawn(async move {
+        db.log_hit(slug_clone, ip, headers_json).await;
+    });
+
     tracing::warn!(
         "Honeypot triggered by request to /api/markov-babble/{}/gen",
         slug

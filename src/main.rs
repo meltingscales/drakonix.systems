@@ -1,6 +1,7 @@
 mod converter;
 mod favicon;
 mod handlers;
+mod honeypot_db;
 mod markdown;
 mod markov;
 mod models;
@@ -109,11 +110,16 @@ async fn main() -> anyhow::Result<()> {
 
     let markov_generator = markov::MarkovGenerator::new();
 
+    let db_path = std::env::var("HONEYPOT_DB_PATH").unwrap_or_else(|_| "honeypot.db".to_string());
+    let honeypot_db = honeypot_db::HoneypotDb::new(&db_path)
+        .map_err(|e| anyhow::anyhow!("Failed to open honeypot DB: {}", e))?;
+
     let state = std::sync::Arc::new(AppState {
         tera,
         timer_manager,
         converter_manager,
         markov_generator,
+        honeypot_db,
     });
 
     // Build the application router
@@ -152,6 +158,11 @@ async fn main() -> anyhow::Result<()> {
             "/api/markov-babble/:slug/gen",
             get(handlers::markov_babble_honeypot),
         )
+        // Honeypot dashboard
+        .route(
+            "/services/honeypot-dummies",
+            get(handlers::honeypot_dummies_dashboard),
+        )
         // Swagger UI for API documentation
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         // Serve static files (CSS, JS, images)
@@ -182,4 +193,5 @@ pub struct AppState {
     pub timer_manager: timer::TimerManager,
     pub converter_manager: converter::ConverterManager,
     pub markov_generator: markov::MarkovGenerator,
+    pub honeypot_db: honeypot_db::HoneypotDb,
 }
