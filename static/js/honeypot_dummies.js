@@ -179,10 +179,10 @@ function buildDailyHeatmap(byDate, byDateHour) {
   if (Object.keys(byDate).length === 0) return document.createDocumentFragment();
 
   // Full continuous range: first hit date → today
-  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const todayStr = toDateStr(new Date());
   const allDates = [];
   const rangeStart = new Date(Object.keys(byDate).sort()[0] + "T12:00:00");
-  for (const d = new Date(rangeStart); d <= today; d.setDate(d.getDate() + 1))
+  for (let d = new Date(rangeStart); toDateStr(d) <= todayStr; d.setDate(d.getDate() + 1))
     allDates.push(toDateStr(d));
 
   const PAGE_SIZE = 14;
