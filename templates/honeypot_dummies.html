@@ -5,6 +5,20 @@
         Recent hits to the markov-babble honeypot endpoint.
     </p>
     <p class="hp-count" id="hp-count"></p>
+    <div class="hp-toolbar">
+        <input type="search" id="hp-filter" placeholder="Filter table by IP, slug, country…" />
+        <div class="hp-toolbar-right">
+            <span id="hp-last-updated"></span>
+            <label for="hp-refresh-select">Auto-refresh:</label>
+            <select id="hp-refresh-select">
+                <option value="0">Off</option>
+                <option value="15">15 s</option>
+                <option value="30">30 s</option>
+                <option value="60">1 min</option>
+                <option value="300">5 min</option>
+            </select>
+        </div>
+    </div>
     <div id="hp-root"></div>
 </div>
 

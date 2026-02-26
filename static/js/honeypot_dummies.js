@@ -1,54 +1,85 @@
 // ── Entry point ───────────────────────────────────────────────────────────────
 
+const _root          = document.getElementById("hp-root");
+const _countEl       = document.getElementById("hp-count");
+const _subtitleEl    = document.getElementById("hp-subtitle");
+const _filterEl      = document.getElementById("hp-filter");
+const _lastUpdatedEl = document.getElementById("hp-last-updated");
+let   _refreshTimer  = null;
+
+// Wire up filter (input persists across re-renders; table is re-queried each time)
+_filterEl.addEventListener("input", applyFilter);
+
+// Wire up auto-refresh selector
+document.getElementById("hp-refresh-select").addEventListener("change", e => {
+  clearInterval(_refreshTimer);
+  const secs = parseInt(e.target.value, 10);
+  if (secs > 0) _refreshTimer = setInterval(doRefresh, secs * 1000);
+});
+
+// Initial load: fetch config once, then render
 (async () => {
-  const root      = document.getElementById("hp-root");
-  const countEl   = document.getElementById("hp-count");
-  const subtitleEl = document.getElementById("hp-subtitle");
-
-  let hits, config;
-  try {
-    [hits, config] = await Promise.all([
-      fetch("/api/honeypot/hits").then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); }),
-      fetch("/api/honeypot/config").then(r => r.ok ? r.json() : null).catch(() => null),
-    ]);
-  } catch (err) {
-    root.innerHTML = `<p class="hp-empty">Failed to load hits: ${err.message}</p>`;
-    return;
-  }
-
+  const config = await fetch("/api/honeypot/config")
+    .then(r => r.ok ? r.json() : null).catch(() => null);
   const maxEntries = config?.max_entries;
   if (maxEntries != null) {
-    subtitleEl.textContent =
+    _subtitleEl.textContent =
       `Recent hits to the markov-babble honeypot endpoint. ` +
       `Showing up to ${maxEntries.toLocaleString()} most-recent entries (oldest auto-pruned).`;
   }
+  await doRefresh();
+})();
 
-  if (!hits || hits.length === 0) {
-    root.innerHTML = `<p class="hp-empty">No hits recorded yet. The honeypot is waiting…</p>`;
+async function doRefresh() {
+  let hits;
+  try {
+    const res = await fetch("/api/honeypot/hits");
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    hits = await res.json();
+  } catch (err) {
+    _root.innerHTML = `<p class="hp-empty">Failed to load hits: ${err.message}</p>`;
     return;
   }
 
-  countEl.textContent = `${hits.length} hit(s) recorded.`;
+  if (!hits || hits.length === 0) {
+    _root.innerHTML = `<p class="hp-empty">No hits recorded yet. The honeypot is waiting…</p>`;
+    return;
+  }
+
+  _countEl.textContent = `${hits.length} hit(s) recorded.`;
 
   // Pre-compute indices (UTC dates throughout)
-  const byDate     = {};  // "YYYY-MM-DD"   → [hit, …]
-  const byDateHour = {};  // "YYYY-MM-DD-H" → [hit, …]
+  const byDate     = {};
+  const byDateHour = {};
   for (const hit of hits) {
     const d   = hit.timestamp.slice(0, 10);
     const h   = new Date(hit.timestamp).getUTCHours();
     const key = `${d}-${h}`;
-    if (!byDate[d])     byDate[d]     = [];
+    if (!byDate[d])       byDate[d]       = [];
     if (!byDateHour[key]) byDateHour[key] = [];
     byDate[d].push(hit);
     byDateHour[key].push(hit);
   }
 
-  root.appendChild(buildWeeklyHeatmap(byDate));
-  root.appendChild(buildDailyHeatmap(byDate, byDateHour));
-  root.appendChild(buildHourlyPattern(byDateHour));
-  root.appendChild(buildTopStats(hits));
-  root.appendChild(buildTable(hits));
-})();
+  _root.innerHTML = "";
+  _root.appendChild(buildWeeklyHeatmap(byDate));
+  _root.appendChild(buildDailyHeatmap(byDate, byDateHour));
+  _root.appendChild(buildHourlyPattern(byDateHour));
+  _root.appendChild(buildTopStats(hits));
+  _root.appendChild(buildTable(hits));
+
+  applyFilter(); // re-apply any active filter to the freshly rendered table
+  _lastUpdatedEl.textContent = `Updated ${new Date().toLocaleTimeString()}`;
+}
+
+function applyFilter() {
+  const term  = (_filterEl?.value || "").toLowerCase().trim();
+  const tbody = _root.querySelector(".hp-table tbody");
+  if (!tbody) return;
+  for (const tr of tbody.querySelectorAll("tr")) {
+    tr.style.display = !term || tr.textContent.toLowerCase().includes(term) ? "" : "none";
+  }
+}
 
 // ── 52-week calendar heatmap ──────────────────────────────────────────────────
 
