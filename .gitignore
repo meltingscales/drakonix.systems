@@ -22,3 +22,4 @@ trivy-report.*
 Thumbs.db
 temp_conversions/
 *.db
+*.log
