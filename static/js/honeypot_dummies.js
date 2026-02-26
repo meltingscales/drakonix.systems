@@ -261,15 +261,19 @@ function buildHourlyPattern(byDateHour) {
 // ── Top IPs + top slugs ───────────────────────────────────────────────────────
 
 function buildTopStats(hits) {
-  const ipCounts   = {};
-  const slugCounts = {};
+  const ipCounts      = {};
+  const slugCounts    = {};
+  const countryCounts = {};
   for (const hit of hits) {
-    ipCounts[hit.ip]     = (ipCounts[hit.ip]     || 0) + 1;
-    slugCounts[hit.slug] = (slugCounts[hit.slug] || 0) + 1;
+    ipCounts[hit.ip]       = (ipCounts[hit.ip]       || 0) + 1;
+    slugCounts[hit.slug]   = (slugCounts[hit.slug]   || 0) + 1;
+    const c = hit.country || "Unknown";
+    countryCounts[c]       = (countryCounts[c]       || 0) + 1;
   }
 
-  const topIPs   = Object.entries(ipCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
-  const topSlugs = Object.entries(slugCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+  const topIPs       = Object.entries(ipCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+  const topSlugs     = Object.entries(slugCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+  const topCountries = Object.entries(countryCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
 
   const wrap = el("div", "hp-stats-grid");
   wrap.appendChild(buildBarChart("Top IPs", topIPs,
@@ -277,6 +281,9 @@ function buildTopStats(hits) {
   ));
   wrap.appendChild(buildBarChart("Top slugs", topSlugs,
     lbl => `<code>${escHtml(lbl)}</code>`
+  ));
+  wrap.appendChild(buildBarChart("Top countries", topCountries,
+    lbl => escHtml(lbl)
   ));
   return wrap;
 }
