@@ -91,3 +91,7 @@
 .hp-tt-ip     { font-family: monospace; font-size: .75rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .hp-tt-more   { font-style: italic; }
 .hp-tt-x      { color: var(--hp-heat-3); margin-left: 3px; }
+
+/* country column */
+.hp-country   { font-family: monospace; font-size: 0.85rem; white-space: nowrap; }
+.hp-unknown   { color: var(--text-secondary); }

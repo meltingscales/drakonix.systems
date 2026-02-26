@@ -4,7 +4,7 @@ use crate::markov;
 use crate::models::SearchEntry;
 use crate::schizo_rng;
 use crate::timer::{StartTimerRequest, StartTimerResponse, TimerStatusResponse};
-use crate::{constants, honeypot_db, rss, AppState};
+use crate::{constants, honeypot_db, rss, AppState, CountryCache};
 use axum::{
     body::Body,
     extract::{Multipart, Path, State},
@@ -496,6 +496,39 @@ pub async fn honeypot_config_api() -> Json<serde_json::Value> {
     }))
 }
 
+/// Look up an IP's country code via ipinfo.io, using an in-process cache so
+/// each unique IP is only ever fetched once per server lifetime.
+async fn lookup_country(
+    client: &reqwest::Client,
+    cache: &CountryCache,
+    ip: &str,
+) -> String {
+    if ip == "unknown" {
+        return String::new();
+    }
+
+    // Fast path: cache hit
+    {
+        let guard = cache.read().await;
+        if let Some(country) = guard.get(ip) {
+            return country.clone();
+        }
+    }
+
+    // Cache miss: fetch from ipinfo.io (/country returns "US\n" style plain text)
+    let country = match client
+        .get(format!("https://ipinfo.io/{}/country", ip))
+        .send()
+        .await
+    {
+        Ok(resp) => resp.text().await.unwrap_or_default().trim().to_string(),
+        Err(_) => String::new(),
+    };
+
+    cache.write().await.insert(ip.to_string(), country.clone());
+    country
+}
+
 /// Honeypot endpoint - generates markov babble text slowly to waste scraper resources
 /// Returns 10MB of HTML with more honeypot links at 10KB/s to trap scrapers in a loop
 /// 1/100 chance of returning chaotic encrypted garbage instead (schizo-rng mode)
@@ -536,10 +569,14 @@ pub async fn markov_babble_honeypot(
     let headers_json = serde_json::to_string(&headers_map).unwrap_or_default();
 
     // Log hit — fire-and-forget, does not block the response
-    let db = state.honeypot_db.clone();
-    let slug_clone = slug.clone();
+    let db             = state.honeypot_db.clone();
+    let http_client    = state.http_client.clone();
+    let country_cache  = state.country_cache.clone();
+    let slug_clone     = slug.clone();
+    let ip_clone       = ip.clone();
     tokio::spawn(async move {
-        db.log_hit(slug_clone, ip, headers_json).await;
+        let country = lookup_country(&http_client, &country_cache, &ip_clone).await;
+        db.log_hit(slug_clone, ip_clone, headers_json, country).await;
     });
 
     tracing::warn!(

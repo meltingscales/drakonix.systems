@@ -304,7 +304,7 @@ function buildTable(hits) {
   const wrap  = el("div", "hp-table-wrap");
   const table = el("table", "hp-table");
   table.innerHTML = `<thead><tr>
-    <th>#</th><th>Slug</th><th>IP</th><th>Timestamp</th><th>Headers</th>
+    <th>#</th><th>Slug</th><th>IP</th><th>Country</th><th>Timestamp</th><th>Headers</th>
   </tr></thead>`;
   const tbody = document.createElement("tbody");
   for (const hit of hits) {
@@ -315,6 +315,7 @@ function buildTable(hits) {
       <td class="hp-id">${hit.id}</td>
       <td class="hp-slug"><code>${escHtml(hit.slug)}</code></td>
       <td class="hp-ip"><a href="https://ipinfo.io/${escHtml(hit.ip)}" target="_blank" rel="noopener noreferrer"><code>${escHtml(hit.ip)}</code></a></td>
+      <td class="hp-country">${hit.country ? escHtml(hit.country) : '<span class="hp-unknown">—</span>'}</td>
       <td class="hp-ts">${escHtml(hit.timestamp)}</td>
       <td class="hp-headers"><details><summary>show</summary><pre class="hp-json">${escHtml(pretty)}</pre></details></td>`;
     tbody.appendChild(tr);
@@ -356,8 +357,10 @@ function ttDate(date, hits) {
   const ipCounts = ipCounter(hits);
   const top      = Object.entries(ipCounts).sort((a, b) => b[1] - a[1]).slice(0, 4);
   const extra    = Object.keys(ipCounts).length - top.length;
+  // Collect unique countries for the day
+  const countries = [...new Set(hits.map(h => h.country).filter(Boolean))].join(", ");
   return `<div class="hp-tt-header">${escHtml(date)}</div>` +
-         `<div class="hp-tt-count">${hits.length} hit${hits.length !== 1 ? "s" : ""}</div>` +
+         `<div class="hp-tt-count">${hits.length} hit${hits.length !== 1 ? "s" : ""}${countries ? ` &nbsp;·&nbsp; ${escHtml(countries)}` : ""}</div>` +
          (top.length ? `<div class="hp-tt-ips">${top.map(([ip, c]) =>
            `<div class="hp-tt-ip">${escHtml(ip)}${c > 1 ? ` <span class="hp-tt-x">×${c}</span>` : ""}</div>`
          ).join("")}${extra > 0 ? `<div class="hp-tt-ip hp-tt-more">…and ${extra} more</div>` : ""}</div>` : "");
@@ -369,8 +372,9 @@ function ttHour(date, hour, hits) {
   const ipCounts = ipCounter(hits);
   const top      = Object.entries(ipCounts).sort((a, b) => b[1] - a[1]).slice(0, 4);
   const extra    = Object.keys(ipCounts).length - top.length;
+  const countries = [...new Set(hits.map(h => h.country).filter(Boolean))].join(", ");
   return `<div class="hp-tt-header">${escHtml(date)} &nbsp; ${h0}:00–${h1}:00 UTC</div>` +
-         `<div class="hp-tt-count">${hits.length} hit${hits.length !== 1 ? "s" : ""}</div>` +
+         `<div class="hp-tt-count">${hits.length} hit${hits.length !== 1 ? "s" : ""}${countries ? ` &nbsp;·&nbsp; ${escHtml(countries)}` : ""}</div>` +
          (top.length ? `<div class="hp-tt-ips">${top.map(([ip, c]) =>
            `<div class="hp-tt-ip">${escHtml(ip)}${c > 1 ? ` <span class="hp-tt-x">×${c}</span>` : ""}</div>`
          ).join("")}${extra > 0 ? `<div class="hp-tt-ip hp-tt-more">…and ${extra} more</div>` : ""}</div>` : "");

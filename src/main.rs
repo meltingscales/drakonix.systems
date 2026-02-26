@@ -118,12 +118,23 @@ async fn main() -> anyhow::Result<()> {
     let honeypot_db = honeypot_db::HoneypotDb::new(&db_path)
         .map_err(|e| anyhow::anyhow!("Failed to open honeypot DB: {}", e))?;
 
+    let http_client = reqwest::Client::builder()
+        .timeout(std::time::Duration::from_secs(3))
+        .build()
+        .map_err(|e| anyhow::anyhow!("Failed to build HTTP client: {}", e))?;
+
+    let country_cache = std::sync::Arc::new(
+        tokio::sync::RwLock::new(std::collections::HashMap::<String, String>::new()),
+    );
+
     let state = std::sync::Arc::new(AppState {
         tera,
         timer_manager,
         converter_manager,
         markov_generator,
         honeypot_db,
+        http_client,
+        country_cache,
     });
 
     // Build the application router
@@ -193,6 +204,8 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
+pub type CountryCache = std::sync::Arc<tokio::sync::RwLock<std::collections::HashMap<String, String>>>;
+
 #[derive(Clone)]
 pub struct AppState {
     pub tera: tera::Tera,
@@ -200,4 +213,6 @@ pub struct AppState {
     pub converter_manager: converter::ConverterManager,
     pub markov_generator: markov::MarkovGenerator,
     pub honeypot_db: honeypot_db::HoneypotDb,
+    pub http_client: reqwest::Client,
+    pub country_cache: CountryCache,
 }
