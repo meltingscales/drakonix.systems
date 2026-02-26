@@ -20,7 +20,6 @@
   }
 
   countEl.textContent = `${hits.length} hit(s) recorded.`;
-  injectStyles();
 
   // Pre-compute indices (UTC dates throughout)
   const byDate     = {};  // "YYYY-MM-DD"   → [hit, …]
@@ -408,84 +407,3 @@ function fmtDateRow(ds) {
   return `${DAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}`;
 }
 
-// ── Styles ────────────────────────────────────────────────────────────────────
-
-function injectStyles() {
-  if (document.getElementById("hp-styles")) return;
-  const s = el("style"); s.id = "hp-styles";
-  s.textContent = `
-    :root {
-      --hp-heat-0: var(--bg-tertiary, #2d333b);
-      --hp-heat-1: #0e4429; --hp-heat-2: #006d32;
-      --hp-heat-3: #26a641; --hp-heat-4: #39d353;
-    }
-    @media (prefers-color-scheme: light) {
-      :root {
-        --hp-heat-0: #ebedf0; --hp-heat-1: #9be9a8;
-        --hp-heat-2: #40c463; --hp-heat-3: #30a14e; --hp-heat-4: #216e39;
-      }
-    }
-
-    /* shared */
-    .hp-hm-wrap,.hp-dh-wrap,.hp-hourly-wrap,.hp-stats-grid,.hp-table-wrap { margin-bottom: 2.5rem; }
-    .hp-sec-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.6rem; }
-
-    /* 52-week heatmap */
-    .hp-hm-wrap    { overflow-x: auto; }
-    .hp-hm-months  { display: flex; align-items: flex-end; margin-bottom: 3px; }
-    .hp-hm-month   { font-size: .72rem; color: var(--text-secondary); overflow: hidden; white-space: nowrap; flex-shrink: 0; }
-    .hp-hm-body    { display: flex; }
-    .hp-hm-days    { display: flex; flex-direction: column; gap: 2px; margin-right: 4px; width: 24px; flex-shrink: 0; }
-    .hp-hm-day     { font-size: .68rem; color: var(--text-secondary); height: 11px; line-height: 11px; white-space: nowrap; }
-    .hp-hm-grid    { display: flex; gap: 2px; }
-    .hp-hm-col     { display: flex; flex-direction: column; gap: 2px; }
-    .hp-hm-cell    { width: 11px; height: 11px; border-radius: 2px; flex-shrink: 0; cursor: default; }
-    .hp-hm-legend  { display: flex; align-items: center; gap: 3px; margin-top: 8px; font-size: .72rem; color: var(--text-secondary); }
-    .hp-hm-legend span { margin: 0 2px; }
-
-    /* daily heatmap */
-    .hp-dh-nav         { display: flex; align-items: center; gap: .75rem; margin-bottom: .6rem; flex-wrap: wrap; }
-    .hp-dh-btn         { padding: .3rem .8rem; border: 1px solid var(--border-primary); border-radius: 4px; background: var(--bg-secondary); color: var(--text-primary); font-size: .82rem; cursor: pointer; }
-    .hp-dh-btn:disabled { opacity: .35; cursor: default; }
-    .hp-dh-btn:not(:disabled):hover { background: var(--bg-hover); }
-    .hp-dh-nav-label   { font-size: .85rem; color: var(--text-secondary); }
-    .hp-dh-grid-wrap   { overflow-x: auto; }
-    .hp-dh-grid        { display: inline-flex; flex-direction: column; gap: 2px; }
-    .hp-dh-row         { display: flex; align-items: center; gap: 2px; }
-    .hp-dh-date-lbl    { width: 88px; font-size: .68rem; color: var(--text-secondary); flex-shrink: 0; white-space: nowrap; }
-    .hp-dh-hour-lbl    { width: 14px; height: 14px; font-size: .6rem; color: var(--text-secondary); text-align: center; line-height: 14px; flex-shrink: 0; }
-    .hp-dh-cell        { width: 14px; height: 14px; border-radius: 2px; flex-shrink: 0; cursor: default; }
-
-    /* hourly pattern */
-    .hp-hourly-wrap  { }
-    .hp-hourly-chart { display: flex; align-items: flex-end; gap: 3px; height: 100px; }
-    .hp-hourly-col   { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 3px; cursor: default; }
-    .hp-hourly-bar   { width: 20px; border-radius: 2px 2px 0 0; min-height: 2px; flex-shrink: 0; transition: opacity .1s; }
-    .hp-hourly-col:hover .hp-hourly-bar { opacity: .75; }
-    .hp-hourly-lbl   { font-size: .6rem; color: var(--text-secondary); height: 12px; line-height: 12px; }
-
-    /* top stats */
-    .hp-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
-    @media (max-width: 600px) { .hp-stats-grid { grid-template-columns: 1fr; } }
-    .hp-bar-row    { display: flex; align-items: center; gap: .5rem; margin-bottom: .35rem; font-size: .82rem; }
-    .hp-bar-label  { width: 130px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .hp-bar-track  { flex: 1; height: 12px; background: var(--bg-tertiary, #2d333b); border-radius: 2px; overflow: hidden; }
-    .hp-bar-fill   { height: 100%; background: var(--hp-heat-3); border-radius: 2px; transition: width .4s ease; }
-    .hp-bar-count  { width: 36px; text-align: right; flex-shrink: 0; color: var(--text-secondary); font-size: .78rem; }
-
-    /* tooltip */
-    .hp-tt {
-      position: fixed; pointer-events: none; z-index: 9999;
-      background: var(--bg-secondary, #1c2128); border: 1px solid var(--border-primary, #444c56);
-      border-radius: 6px; padding: .5rem .65rem; font-size: .8rem;
-      min-width: 140px; max-width: 260px; box-shadow: 0 4px 12px rgba(0,0,0,.45);
-    }
-    .hp-tt-header { font-weight: 700; margin-bottom: .2rem; white-space: nowrap; }
-    .hp-tt-count  { color: var(--hp-heat-4); font-size: .88rem; margin-bottom: .3rem; }
-    .hp-tt-ips    { display: flex; flex-direction: column; gap: 1px; }
-    .hp-tt-ip     { font-family: monospace; font-size: .75rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .hp-tt-more   { font-style: italic; }
-    .hp-tt-x      { color: var(--hp-heat-3); margin-left: 3px; }
-  `;
-  document.head.appendChild(s);
-}
