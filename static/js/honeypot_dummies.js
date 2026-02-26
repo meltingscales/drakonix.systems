@@ -1,17 +1,26 @@
 // ── Entry point ───────────────────────────────────────────────────────────────
 
 (async () => {
-  const root    = document.getElementById("hp-root");
-  const countEl = document.getElementById("hp-count");
+  const root      = document.getElementById("hp-root");
+  const countEl   = document.getElementById("hp-count");
+  const subtitleEl = document.getElementById("hp-subtitle");
 
-  let hits;
+  let hits, config;
   try {
-    const res = await fetch("/api/honeypot/hits");
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    hits = await res.json();
+    [hits, config] = await Promise.all([
+      fetch("/api/honeypot/hits").then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); }),
+      fetch("/api/honeypot/config").then(r => r.ok ? r.json() : null).catch(() => null),
+    ]);
   } catch (err) {
     root.innerHTML = `<p class="hp-empty">Failed to load hits: ${err.message}</p>`;
     return;
+  }
+
+  const maxEntries = config?.max_entries;
+  if (maxEntries != null) {
+    subtitleEl.textContent =
+      `Recent hits to the markov-babble honeypot endpoint. ` +
+      `Showing up to ${maxEntries.toLocaleString()} most-recent entries (oldest auto-pruned).`;
   }
 
   if (!hits || hits.length === 0) {

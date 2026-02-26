@@ -1,9 +1,8 @@
 {% extends "base.html" %} {% block content %}
 <div class="hp-container">
     <h1>Honeypot Dummies</h1>
-    <p class="hp-subtitle">
+    <p class="hp-subtitle" id="hp-subtitle">
         Recent hits to the markov-babble honeypot endpoint.
-        Showing up to 1,000 most-recent entries (oldest auto-pruned).
     </p>
     <p class="hp-count" id="hp-count"></p>
     <div id="hp-root"></div>
