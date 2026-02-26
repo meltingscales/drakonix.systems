@@ -556,7 +556,9 @@ footer {
 /* Anti-infinite-scroll sections */
 .scroll-trap {
     height: 500vh;
-    display: block;
+    /*display: block;*/
+    display: none; //disable scroll trap, it is not that professional
+
     position: relative;
 }
 
