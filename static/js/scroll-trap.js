@@ -1,6 +1,8 @@
 // Anti-infinite-scroll auto-scroll-up behavior
 // Only runs on homepage
-if (window.location.pathname === '/') {
+const SCROLL_TRAP_ENABLED = false;
+
+if (SCROLL_TRAP_ENABLED && window.location.pathname === '/') {
     // Generate checkered pattern for scroll-pattern elements
     function generatePattern(element) {
         const word = element.getAttribute('data-word');

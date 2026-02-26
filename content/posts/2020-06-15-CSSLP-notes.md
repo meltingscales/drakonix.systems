@@ -1,8 +1,8 @@
 ---
-layout: post
 title: "Certified Secure Software Lifecycle Professional (CSSLP) Notes"
-date: 2020-06-15
-categories: [programming, certification, security]
+draft: false
+date: 2020-06-15T12:00:00Z
+tags: ["programming", "certification", "security"]
 toc: true
 ---
 

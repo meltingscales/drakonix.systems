@@ -417,7 +417,7 @@ impl MarkdownProcessor {
             let entry = entry?;
             let path = entry.path();
 
-            if path.extension().and_then(|s| s.to_str()) == Some("md") {
+            if matches!(path.extension().and_then(|s| s.to_str()), Some("md") | Some("markdown")) {
                 match self.load_post(&path) {
                     Ok(post) if !post.draft => posts.push(post),
                     Ok(_) => {} // Skip drafts
@@ -445,7 +445,7 @@ impl MarkdownProcessor {
             let entry = entry?;
             let path = entry.path();
 
-            if path.extension().and_then(|s| s.to_str()) == Some("md") {
+            if matches!(path.extension().and_then(|s| s.to_str()), Some("md") | Some("markdown")) {
                 match self.load_page(&path) {
                     Ok(page) => pages.push(page),
                     Err(e) => tracing::warn!("Failed to load page {:?}: {}", path, e),
