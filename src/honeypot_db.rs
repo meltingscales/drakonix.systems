@@ -14,6 +14,7 @@ pub struct HoneypotHit {
     pub slug: String,
     pub ip: String,
     pub country: String, // ISO 3166-1 alpha-2, e.g. "US"
+    pub org: String,     // ASN + org name, e.g. "AS14061 DigitalOcean, LLC"
     pub timestamp: String,
     pub headers: String, // raw JSON blob
 }
@@ -30,23 +31,26 @@ impl HoneypotDb {
                 headers   TEXT NOT NULL
             );",
         )?;
-        // Migration: add country column if it doesn't exist yet
+        // Migrations: add columns introduced after initial schema
         let _ = conn.execute_batch(
             "ALTER TABLE honeypot_hits ADD COLUMN country TEXT NOT NULL DEFAULT '';",
+        );
+        let _ = conn.execute_batch(
+            "ALTER TABLE honeypot_hits ADD COLUMN org TEXT NOT NULL DEFAULT '';",
         );
         Ok(Self {
             conn: Arc::new(Mutex::new(conn)),
         })
     }
 
-    pub async fn log_hit(&self, slug: String, ip: String, headers_json: String, country: String) {
+    pub async fn log_hit(&self, slug: String, ip: String, headers_json: String, country: String, org: String) {
         let conn = Arc::clone(&self.conn);
         let timestamp = chrono::Utc::now().to_rfc3339();
         tokio::task::spawn_blocking(move || {
             let conn = conn.lock().unwrap();
             let _ = conn.execute(
-                "INSERT INTO honeypot_hits (slug, ip, country, timestamp, headers) VALUES (?1, ?2, ?3, ?4, ?5)",
-                rusqlite::params![slug, ip, country, timestamp, headers_json],
+                "INSERT INTO honeypot_hits (slug, ip, country, org, timestamp, headers) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+                rusqlite::params![slug, ip, country, org, timestamp, headers_json],
             );
             // Rotate: delete oldest rows beyond HONEYPOT_MAX_ENTRIES
             let count: usize = conn
@@ -70,7 +74,7 @@ impl HoneypotDb {
             let conn = conn.lock().unwrap();
             let mut stmt = conn
                 .prepare(
-                    "SELECT id, slug, ip, country, timestamp, headers \
+                    "SELECT id, slug, ip, country, org, timestamp, headers \
                      FROM honeypot_hits ORDER BY id DESC LIMIT ?1",
                 )
                 .ok()?;
@@ -81,8 +85,9 @@ impl HoneypotDb {
                         slug: row.get(1)?,
                         ip: row.get(2)?,
                         country: row.get(3)?,
-                        timestamp: row.get(4)?,
-                        headers: row.get(5)?,
+                        org: row.get(4)?,
+                        timestamp: row.get(5)?,
+                        headers: row.get(6)?,
                     })
                 })
                 .ok()?

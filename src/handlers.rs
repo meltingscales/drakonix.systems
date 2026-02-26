@@ -4,7 +4,7 @@ use crate::markov;
 use crate::models::SearchEntry;
 use crate::schizo_rng;
 use crate::timer::{StartTimerRequest, StartTimerResponse, TimerStatusResponse};
-use crate::{constants, honeypot_db, rss, AppState, CountryCache};
+use crate::{constants, honeypot_db, rss, AppState, CountryCache, OrgCache};
 use axum::{
     body::Body,
     extract::{Multipart, Path, State},
@@ -529,6 +529,37 @@ async fn lookup_country(
     country
 }
 
+/// Look up an IP's ASN + org via ipinfo.io with the same cache pattern as lookup_country.
+async fn lookup_org(
+    client: &reqwest::Client,
+    cache: &OrgCache,
+    ip: &str,
+) -> String {
+    if ip == "unknown" {
+        return String::new();
+    }
+
+    {
+        let guard = cache.read().await;
+        if let Some(org) = guard.get(ip) {
+            return org.clone();
+        }
+    }
+
+    // /org returns e.g. "AS14061 DigitalOcean, LLC\n"
+    let org = match client
+        .get(format!("https://ipinfo.io/{}/org", ip))
+        .send()
+        .await
+    {
+        Ok(resp) => resp.text().await.unwrap_or_default().trim().to_string(),
+        Err(_) => String::new(),
+    };
+
+    cache.write().await.insert(ip.to_string(), org.clone());
+    org
+}
+
 /// Honeypot endpoint - generates markov babble text slowly to waste scraper resources
 /// Returns 10MB of HTML with more honeypot links at 10KB/s to trap scrapers in a loop
 /// 1/100 chance of returning chaotic encrypted garbage instead (schizo-rng mode)
@@ -569,14 +600,18 @@ pub async fn markov_babble_honeypot(
     let headers_json = serde_json::to_string(&headers_map).unwrap_or_default();
 
     // Log hit — fire-and-forget, does not block the response
-    let db             = state.honeypot_db.clone();
-    let http_client    = state.http_client.clone();
-    let country_cache  = state.country_cache.clone();
-    let slug_clone     = slug.clone();
-    let ip_clone       = ip.clone();
+    let db            = state.honeypot_db.clone();
+    let http_client   = state.http_client.clone();
+    let country_cache = state.country_cache.clone();
+    let org_cache     = state.org_cache.clone();
+    let slug_clone    = slug.clone();
+    let ip_clone      = ip.clone();
     tokio::spawn(async move {
-        let country = lookup_country(&http_client, &country_cache, &ip_clone).await;
-        db.log_hit(slug_clone, ip_clone, headers_json, country).await;
+        let (country, org) = tokio::join!(
+            lookup_country(&http_client, &country_cache, &ip_clone),
+            lookup_org(&http_client, &org_cache, &ip_clone),
+        );
+        db.log_hit(slug_clone, ip_clone, headers_json, country, org).await;
     });
 
     tracing::warn!(

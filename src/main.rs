@@ -126,6 +126,9 @@ async fn main() -> anyhow::Result<()> {
     let country_cache = std::sync::Arc::new(
         tokio::sync::RwLock::new(std::collections::HashMap::<String, String>::new()),
     );
+    let org_cache = std::sync::Arc::new(
+        tokio::sync::RwLock::new(std::collections::HashMap::<String, String>::new()),
+    );
 
     let state = std::sync::Arc::new(AppState {
         tera,
@@ -135,6 +138,7 @@ async fn main() -> anyhow::Result<()> {
         honeypot_db,
         http_client,
         country_cache,
+        org_cache,
     });
 
     // Build the application router
@@ -205,6 +209,7 @@ async fn main() -> anyhow::Result<()> {
 }
 
 pub type CountryCache = std::sync::Arc<tokio::sync::RwLock<std::collections::HashMap<String, String>>>;
+pub type OrgCache     = std::sync::Arc<tokio::sync::RwLock<std::collections::HashMap<String, String>>>;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -215,4 +220,5 @@ pub struct AppState {
     pub honeypot_db: honeypot_db::HoneypotDb,
     pub http_client: reqwest::Client,
     pub country_cache: CountryCache,
+    pub org_cache: OrgCache,
 }

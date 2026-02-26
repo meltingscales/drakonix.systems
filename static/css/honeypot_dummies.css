@@ -129,6 +129,11 @@
 .hp-tt-more   { font-style: italic; }
 .hp-tt-x      { color: var(--hp-heat-3); margin-left: 3px; }
 
-/* country column */
-.hp-country   { font-family: monospace; font-size: 0.85rem; white-space: nowrap; }
+/* country / org columns */
+.hp-country   { white-space: nowrap; }
+.hp-org       { font-size: 0.78rem; color: var(--text-secondary); white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
 .hp-unknown   { color: var(--text-secondary); }
+
+/* org lines inside tooltip */
+.hp-tt-orgs   { margin-top: 0.25rem; display: flex; flex-direction: column; gap: 1px; }
+.hp-tt-org    { font-size: 0.72rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
