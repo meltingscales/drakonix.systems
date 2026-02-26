@@ -18,7 +18,7 @@ I am aggressively de-googling my life in 2025/2026.
 - <https://switch.hacks.guide/>
   - <https://github.com/nh-server/switch-guide>
   - <https://mgba.io/downloads.html>
-  - <https://github.com/Cpasjuste/pemu/releases>
+  - <https://github.com/Cpasjuste/pemu/releases> (Needs a custom XML file, annoying.)
   - <https://github.com/retroarch/retroarch> (Needs older firmware, warning.)
 
 ## Programming
