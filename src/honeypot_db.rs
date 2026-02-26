@@ -1,8 +1,7 @@
+use crate::constants::HONEYPOT_MAX_ENTRIES;
 use rusqlite::{Connection, Result};
 use serde::Serialize;
 use std::sync::{Arc, Mutex};
-
-const MAX_ENTRIES: usize = 1000;
 
 #[derive(Clone)]
 pub struct HoneypotDb {
@@ -44,15 +43,15 @@ impl HoneypotDb {
                 "INSERT INTO honeypot_hits (slug, ip, timestamp, headers) VALUES (?1, ?2, ?3, ?4)",
                 rusqlite::params![slug, ip, timestamp, headers_json],
             );
-            // Rotate: delete oldest rows beyond MAX_ENTRIES
+            // Rotate: delete oldest rows beyond HONEYPOT_MAX_ENTRIES
             let count: usize = conn
                 .query_row("SELECT COUNT(*) FROM honeypot_hits", [], |r| r.get(0))
                 .unwrap_or(0);
-            if count > MAX_ENTRIES {
+            if count > HONEYPOT_MAX_ENTRIES {
                 let _ = conn.execute(
                     "DELETE FROM honeypot_hits WHERE id IN \
                      (SELECT id FROM honeypot_hits ORDER BY id ASC LIMIT ?1)",
-                    rusqlite::params![count - MAX_ENTRIES],
+                    rusqlite::params![count - HONEYPOT_MAX_ENTRIES],
                 );
             }
         })
@@ -67,11 +66,11 @@ impl HoneypotDb {
             let mut stmt = conn
                 .prepare(
                     "SELECT id, slug, ip, timestamp, headers \
-                     FROM honeypot_hits ORDER BY id DESC LIMIT 1000",
+                     FROM honeypot_hits ORDER BY id DESC LIMIT ?1",
                 )
                 .ok()?;
             let hits = stmt
-                .query_map([], |row| {
+                .query_map(rusqlite::params![HONEYPOT_MAX_ENTRIES], |row| {
                     Ok(HoneypotHit {
                         id: row.get(0)?,
                         slug: row.get(1)?,

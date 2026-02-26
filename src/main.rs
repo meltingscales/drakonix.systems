@@ -1,3 +1,4 @@
+mod constants;
 mod converter;
 mod favicon;
 mod handlers;
@@ -30,6 +31,7 @@ use utoipa_swagger_ui::SwaggerUi;
         handlers::download_converted_file,
         handlers::markov_babble_honeypot,
         handlers::honeypot_hits_api,
+        handlers::honeypot_config_api,
     ),
     components(
         schemas(
@@ -165,7 +167,8 @@ async fn main() -> anyhow::Result<()> {
             "/services/honeypot-dummies",
             get(handlers::honeypot_dummies_dashboard),
         )
-        .route("/api/honeypot/hits", get(handlers::honeypot_hits_api))
+        .route("/api/honeypot/hits",   get(handlers::honeypot_hits_api))
+        .route("/api/honeypot/config", get(handlers::honeypot_config_api))
         // Swagger UI for API documentation
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         // Serve static files (CSS, JS, images)

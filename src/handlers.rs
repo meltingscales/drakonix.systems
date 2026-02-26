@@ -4,7 +4,7 @@ use crate::markov;
 use crate::models::SearchEntry;
 use crate::schizo_rng;
 use crate::timer::{StartTimerRequest, StartTimerResponse, TimerStatusResponse};
-use crate::{honeypot_db, rss, AppState};
+use crate::{constants, honeypot_db, rss, AppState};
 use axum::{
     body::Body,
     extract::{Multipart, Path, State},
@@ -465,7 +465,7 @@ pub async fn honeypot_dummies_dashboard(
     Ok(Html(html))
 }
 
-/// JSON API – returns the 1,000 most recent honeypot hits
+/// JSON API – returns the most recent honeypot hits (up to HONEYPOT_MAX_ENTRIES)
 #[utoipa::path(
     get,
     path = "/api/honeypot/hits",
@@ -479,6 +479,21 @@ pub async fn honeypot_hits_api(
 ) -> Result<Json<Vec<honeypot_db::HoneypotHit>>, AppError> {
     let hits = state.honeypot_db.get_recent_hits().await;
     Ok(Json(hits))
+}
+
+/// JSON API – returns the current honeypot configuration constants
+#[utoipa::path(
+    get,
+    path = "/api/honeypot/config",
+    tag = "Fun",
+    responses(
+        (status = 200, description = "Honeypot configuration constants", body = serde_json::Value),
+    )
+)]
+pub async fn honeypot_config_api() -> Json<serde_json::Value> {
+    Json(serde_json::json!({
+        "max_entries": constants::HONEYPOT_MAX_ENTRIES,
+    }))
 }
 
 /// Honeypot endpoint - generates markov babble text slowly to waste scraper resources
