@@ -20,7 +20,7 @@ I am aggressively de-googling my life in 2025/2026.
   - <https://mgba.io/downloads.html>
   - <https://github.com/Cpasjuste/pemu/releases> (Needs a custom XML file, annoying.)
   - <https://github.com/retroarch/retroarch> (Needs older firmware, warning.)
-- imgburn www.imgburn.com
+- [imgburn, cd burning](https://www.imgburn.com)
 
 ## Programming
 
