@@ -159,20 +159,31 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 
 ## Hacking links
 
-- <https://book.hacktricks.xyz/welcome/readme>
-- <https://www.revshells.com/>
-- <https://eclypsium.com/>
-- <https://ddosecrets.com/wiki/Distributed_Denial_of_Secrets>
-- <https://news.ycombinator.com/>
-- <https://https://www.darkreading.com/application-security>
-- <https://www.sans.org/newsletters/ouch/>
-- <https://www.databreachtoday.com/>
-- <https://medium.com/vmacwrites/tools-to-visualize-your-terraform-plan-d421c6255f9f>
-- <https://www.scaledagileframework.com/implementation-roadmap/>
-- <https://www.cia.gov/static/5c875f3ec660e092cf893f60b4a288df/SimpleSabotage.pdf>
-- <https://www.privacytools.io/>
-- <https://blog.openalgo.in/algorithmic-trading-roadmap-2025-from-curious-coder-to-confident-execution-0662572a7838>
-- <https://www.lesswrong.com/>
+### Dark web / anonymity
+
+- [tor](https://www.torproject.org/) - onion routing anonymity network
+- [i2p](https://geti2p.net/) - garlic routing anonymity network
+- [ahmia](https://ahmia.fi/) - clearnet Tor search engine
+- torch - Tor search engine (`.onion`)
+- dread - Reddit-like forum on Tor (`.onion`)
+- exploit.in - Russian-language cybercrime/exploit forum
+- raidforums - data leak forum (seized by law enforcement)
+- leaks - data leak aggregator
+
+- [hacktricks](https://book.hacktricks.xyz/welcome/readme) - pentesting/CTF reference book
+- [revshells](https://www.revshells.com/) - reverse shell generator
+- [eclypsium](https://eclypsium.com/) - firmware/supply chain security research
+- [ddosecrets](https://ddosecrets.com/wiki/Distributed_Denial_of_Secrets) - public interest leak repository
+- [hacker news](https://news.ycombinator.com/) - tech/security news aggregator
+- [dark reading](https://www.darkreading.com/application-security) - cybersecurity news
+- [sans ouch](https://www.sans.org/newsletters/ouch/) - SANS security awareness newsletter
+- [databreachtoday](https://www.databreachtoday.com/) - breach/incident news
+- [terraform plan visualizer](https://medium.com/vmacwrites/tools-to-visualize-your-terraform-plan-d421c6255f9f) - visualize terraform plans
+- [SAFe implementation roadmap](https://www.scaledagileframework.com/implementation-roadmap/) - scaled agile framework
+- [simple sabotage field manual](https://www.cia.gov/static/5c875f3ec660e092cf893f60b4a288df/SimpleSabotage.pdf) - declassified CIA doc
+- [privacytools](https://www.privacytools.io/) - privacy-focused software recommendations
+- [algorithmic trading roadmap](https://blog.openalgo.in/algorithmic-trading-roadmap-2025-from-curious-coder-to-confident-execution-0662572a7838) - algo trading guide
+- [lesswrong](https://www.lesswrong.com/) - rationalism/AI safety community
 
 ### Hacking tools
 
@@ -192,8 +203,8 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 
 #### To investigate
 
-- <https://deepnet.store/products/dn_key-pro-experimental>
+- [deepnet DN Key Pro](https://deepnet.store/products/dn_key-pro-experimental) - experimental hardware key
 - Proxgrind
-- <https://proxmark.com/> icopy-x
-- Bash Bunny
-- <https://github.com/I-Am-Jakoby/Flipper-Zero-BadUSB/tree/main/Payloads>
+- [proxmark / icopy-x](https://proxmark.com/) - RFID/NFC research hardware
+- Bash Bunny - USB attack platform by Hak5
+- [Flipper Zero BadUSB payloads](https://github.com/I-Am-Jakoby/Flipper-Zero-BadUSB/tree/main/Payloads)
