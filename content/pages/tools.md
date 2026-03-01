@@ -14,10 +14,10 @@ I am aggressively de-googling my life in 2025/2026.
 - immich: google photos clone, self-hosted
 - navidrome: youtube music clone, self-hosted
 - more to come? :)
-- <https://vesktop.dev/>
-- <https://switch.hacks.guide/>
-  - <https://github.com/nh-server/switch-guide>
-  - <https://mgba.io/downloads.html>
+- [vesktop](https://vesktop.dev/) - lightweight Discord client fork
+- [switch.hacks.guide](https://switch.hacks.guide/) - comprehensive Nintendo Switch homebrew/CFW guide
+  - [nh-server/switch-guide](https://github.com/nh-server/switch-guide) - GitHub source for the above guide
+  - [mGBA](https://mgba.io/downloads.html) - GBA emulator for Switch homebrew
   - <https://github.com/Cpasjuste/pemu/releases> (Needs a custom XML file, annoying.)
   - <https://github.com/retroarch/retroarch> (Needs older firmware, warning.)
 - [imgburn, cd burning](https://www.imgburn.com)
@@ -82,7 +82,7 @@ i highly recommend never using windows, for [many](https://en.wikipedia.org/wiki
 I run various cheap laptops and a few HEPC (High-End Personal Computer) setups.
 Only Linux, except for a Windows computer I use for piano playing/DAW/Frooty Loops.
 
-- https://pcpartpicker.com/user/henryfbp/saved/
+- [pcpartpicker saved builds](https://pcpartpicker.com/user/henryfbp/saved/) - my saved PC part lists
 
 ## AI
 
@@ -189,22 +189,22 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 
 #### Used
 
-- kali linux
-- parrotos
+- kali linux - penetration testing distro by Offensive Security
+- parrotos - security/privacy-focused Linux distro
 
-- dirb
-- nmap
-- rustscan
-- ftp
+- dirb - web content scanner / directory brute-forcer
+- nmap - network mapper and port scanner
+- rustscan - fast Rust-based port scanner, feeds into nmap
+- ftp - file transfer protocol CLI client
 - some python idk lol
-- searchsploit
-- msfconsole
-- msfvenom
+- searchsploit - offline CLI search for exploit-db
+- msfconsole - Metasploit Framework interactive console
+- msfvenom - Metasploit payload and shellcode generator
 
 #### To investigate
 
 - [deepnet DN Key Pro](https://deepnet.store/products/dn_key-pro-experimental) - experimental hardware key
-- Proxgrind
+- Proxgrind - NFC/RFID tool
 - [proxmark / icopy-x](https://proxmark.com/) - RFID/NFC research hardware
 - Bash Bunny - USB attack platform by Hak5
-- [Flipper Zero BadUSB payloads](https://github.com/I-Am-Jakoby/Flipper-Zero-BadUSB/tree/main/Payloads)
+- [Flipper Zero BadUSB payloads](https://github.com/I-Am-Jakoby/Flipper-Zero-BadUSB/tree/main/Payloads) - HID injection scripts for Flipper Zero
