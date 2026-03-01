@@ -18,8 +18,8 @@ I am aggressively de-googling my life in 2025/2026.
 - [switch.hacks.guide](https://switch.hacks.guide/) - comprehensive Nintendo Switch homebrew/CFW guide
   - [nh-server/switch-guide](https://github.com/nh-server/switch-guide) - GitHub source for the above guide
   - [mGBA](https://mgba.io/downloads.html) - GBA emulator for Switch homebrew
-  - <https://github.com/Cpasjuste/pemu/releases> (Needs a custom XML file, annoying.)
-  - <https://github.com/retroarch/retroarch> (Needs older firmware, warning.)
+  - [pemu](https://github.com/Cpasjuste/pemu/releases) - multi-system emulator frontend (needs a custom XML file, annoying)
+  - [retroarch](https://github.com/retroarch/retroarch) - multi-system emulator frontend (needs older firmware, warning)
 - [imgburn, cd burning](https://www.imgburn.com)
 
 ## Programming
@@ -39,8 +39,8 @@ I am aggressively de-googling my life in 2025/2026.
 
 ### Text Editing
 
-- windsurf: bloated, use zeditor
-- cursor: bloated, use zeditor
+- windsurf: bloated, use zed
+- cursor: bloated, use zed
 - vscode - bloated, only use if you absolutely need to. It's slow and used to be my favorite, but...
 
 - [zed](https://zed.dev/) - Fast and simple text editor. Rust backend.
@@ -56,11 +56,19 @@ I am aggressively de-googling my life in 2025/2026.
 - github runners
   - (literally just docker containers w/ some yaml command runner. its all the same pattern.)
   - can also do self hosted
-- <https://www.openstatus.dev/> (uptime/health, can self host)
+- [openstatus](https://www.openstatus.dev/) - uptime/health monitoring, can self host
 
 ## OS
 
 i highly recommend never using windows, for [many](https://en.wikipedia.org/wiki/The_Shadow_Brokers), [many](https://en.wikipedia.org/wiki/Edward_Snowden) [reasons](https://en.wikipedia.org/wiki/Server_Message_Block)
+
+### Linux distros
+
+- ubuntu - server OS
+- nixos - server/desktop OS
+- cachyOS - easy arch based OS, fast. bleeding edge so stuff breaks. avoid if u value ur time or are new to linux.
+- TrueNAS CORE - freebsd based NAS OS that uses ZFS, ZFS is superior for use as a NAS for many reasons
+  - AVOID hardware based RAID. if ur card dies and u cant replace it, kiss your data goodbye. software based raid does not suffer from this issue.
 
 ### Windows utilities
 
@@ -70,12 +78,6 @@ i highly recommend never using windows, for [many](https://en.wikipedia.org/wiki
 - [7-zip](https://www.7-zip.org/) - archive tool
 - `mmsys.cpl` - sound settings (run dialog)
 - `appwiz.cpl` - add/remove programs (run dialog)
-
-- ubuntu - server OS
-- nixos - server/desktop OS
-- cachyOS - easy arch based OS, fast. bleeding edge so stuff breaks. avoid if u value ur time or are new to linux.
-- TrueNAS CORE - freebsd based NAS OS that uses ZFS, ZFS is superior for use as a NAS for many reasons
-  - AVOID hardware based RAID. if ur card dies and u cant replace it, kiss your data goodbye. software based raid does not suffer from this issue.
 
 ## Hardware
 
@@ -88,7 +90,7 @@ Only Linux, except for a Windows computer I use for piano playing/DAW/Frooty Loo
 
 My current AI stack is here. I used to use ollama but it has issues with ROCm drivers on AMD GPUs, so I switched to `llama.cpp`!
 
-<https://github.com/meltingscales/cachyos-whitedragon-ai-lab>
+[cachyos-whitedragon-ai-lab](https://github.com/meltingscales/cachyos-whitedragon-ai-lab)
 
 Current working stack:
 - [lm studio](https://lmstudio.ai/): easy GUI for running local LLMs
@@ -97,7 +99,7 @@ Current working stack:
 - openwebui: frontend for LLM interaction (TBD)
 - comfyui: image/video/audio generation (TBD)
 - stablediffusion: image generation (TBD)
-- [goose: Claude CLI clone, seems very formidable.](//github.com/block/goose)
+- [goose](https://github.com/block/goose) - Claude CLI clone, seems very formidable
 
 ### Corpo AI for coding
 
@@ -123,8 +125,7 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 
 ### Anti AI/Anti Slop
 
-- https://zadzmo.org/code/nepenthes/
-  - Markov chain babble generator. Waste the time/CPU of scrapers.
+- [nepenthes](https://zadzmo.org/code/nepenthes/) - Markov chain babble generator, wastes the time/CPU of scrapers
 
 ## Infra
 
@@ -144,7 +145,6 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 - yt-dlp: youtube downloader, before youtube killed it with session cookie enforcement.
 - transmission: torrent client
 - jellyfin: media server
-- immich: self hosted google photos clone
 - romm: emulation ROM/retro game database
 - [seanime: anime media server](https://seanime.rahim.app/)
   - extensions: TODO
