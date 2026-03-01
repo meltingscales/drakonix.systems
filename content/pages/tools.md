@@ -43,7 +43,7 @@ I am aggressively de-googling my life in 2025/2026.
 - cursor: bloated, use zeditor
 - vscode - bloated, only use if you absolutely need to. It's slow and used to be my favorite, but...
 
-- zeditor - Fast and simple text editor. Rust backend.
+- [zed](https://zed.dev/) - Fast and simple text editor. Rust backend.
 - nano - command line editor
 
 ## CICD
@@ -61,6 +61,15 @@ I am aggressively de-googling my life in 2025/2026.
 ## OS
 
 i highly recommend never using windows, for [many](https://en.wikipedia.org/wiki/The_Shadow_Brokers), [many](https://en.wikipedia.org/wiki/Edward_Snowden) [reasons](https://en.wikipedia.org/wiki/Server_Message_Block)
+
+### Windows utilities
+
+- [crystaldiskinfo](https://crystalmark.info/en/software/crystaldiskinfo/) - disk health monitor
+- [windirstat](https://windirstat.net/) - disk usage visualizer
+- [minitool partition wizard](https://www.minitool.com/partition-manager/) - partition manager
+- [7-zip](https://www.7-zip.org/) - archive tool
+- `mmsys.cpl` - sound settings (run dialog)
+- `appwiz.cpl` - add/remove programs (run dialog)
 
 - ubuntu - server OS
 - nixos - server/desktop OS
@@ -82,6 +91,7 @@ My current AI stack is here. I used to use ollama but it has issues with ROCm dr
 <https://github.com/meltingscales/cachyos-whitedragon-ai-lab>
 
 Current working stack:
+- [lm studio](https://lmstudio.ai/): easy GUI for running local LLMs
 - llama.cpp: text generation backend (works with ROCm)
 - koboldcpp: easier to setup than llama.cpp.
 - openwebui: frontend for LLM interaction (TBD)
@@ -144,6 +154,8 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 
 - handy.computer - offline text transcription
 - sshx.io - share terminal (dangerous)
+- <https://pomofocus.io/> - pomodoro timer
+- [obsidian](https://obsidian.md/) - markdown note-taking / personal knowledge base
 
 ## Hacking links
 
