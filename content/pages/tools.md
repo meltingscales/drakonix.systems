@@ -173,7 +173,7 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 - [hacktricks](https://book.hacktricks.xyz/welcome/readme) - pentesting/CTF reference book
 - [revshells](https://www.revshells.com/) - reverse shell generator
 - [eclypsium](https://eclypsium.com/) - firmware/supply chain security research
-- [ddosecrets](https://ddosecrets.com/wiki/Distributed_Denial_of_Secrets) - public interest leak repository
+- [ddosecrets](https://ddosecrets.org/) - public interest leak repository
 - [hacker news](https://news.ycombinator.com/) - tech/security news aggregator
 - [dark reading](https://www.darkreading.com/application-security) - cybersecurity news
 - [sans ouch](https://www.sans.org/newsletters/ouch/) - SANS security awareness newsletter
