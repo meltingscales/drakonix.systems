@@ -342,7 +342,7 @@ function buildTable(hits) {
   const wrap  = el("div", "hp-table-wrap");
   const table = el("table", "hp-table");
   table.innerHTML = `<thead><tr>
-    <th>#</th><th>Slug</th><th>IP</th><th>Country</th><th>Org</th><th>Timestamp</th><th>Headers</th>
+    <th>#</th><th>Slug</th><th>IP</th><th>Country</th><th>Org</th><th>Timestamp</th><th>Headers</th><th>Body</th>
   </tr></thead>`;
   const tbody = document.createElement("tbody");
   for (const hit of hits) {
@@ -356,7 +356,8 @@ function buildTable(hits) {
       <td class="hp-country">${hit.country ? `${countryFlag(hit.country)} ${escHtml(hit.country)}` : '<span class="hp-unknown">—</span>'}</td>
       <td class="hp-org">${hit.org ? escHtml(hit.org) : '<span class="hp-unknown">—</span>'}</td>
       <td class="hp-ts">${escHtml(hit.timestamp)}</td>
-      <td class="hp-headers"><details><summary>show</summary><pre class="hp-json">${escHtml(pretty)}</pre></details></td>`;
+      <td class="hp-headers"><details><summary>show</summary><pre class="hp-json">${escHtml(pretty)}</pre></details></td>
+      <td class="hp-body">${hit.body ? `<details><summary>show</summary><pre class="hp-json">${escHtml(hit.body)}</pre></details>` : '<span class="hp-unknown">—</span>'}</td>`;
     tbody.appendChild(tr);
   }
   table.appendChild(tbody);
