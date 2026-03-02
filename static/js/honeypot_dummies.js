@@ -24,7 +24,7 @@ document.getElementById("hp-refresh-select").addEventListener("change", e => {
   const maxEntries = config?.max_entries;
   if (maxEntries != null) {
     _subtitleEl.textContent =
-      `Recent hits to the markov-babble honeypot endpoint. ` +
+      `Recent hits to the markov-babble honeypot and catch-all 404 endpoints. ` +
       `Showing up to ${maxEntries.toLocaleString()} most-recent entries (oldest auto-pruned).`;
   }
   await doRefresh();
