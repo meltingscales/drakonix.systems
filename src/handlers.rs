@@ -8,7 +8,7 @@ use crate::{constants, honeypot_db, rss, AppState, CountryCache, OrgCache};
 use axum::{
     body::Body,
     extract::{Multipart, Path, State},
-    http::{HeaderMap, StatusCode},
+    http::{HeaderMap, StatusCode, Uri},
     response::{Html, IntoResponse, Response},
     Json,
 };
@@ -741,4 +741,42 @@ pub async fn markov_babble_honeypot(
     );
 
     Ok((headers, body).into_response())
+}
+
+/// Catch-all fallback — logs any unmatched path as a honeypot hit and returns 404.
+pub async fn catch_all_honeypot(
+    State(state): State<Arc<AppState>>,
+    uri: Uri,
+    headers: HeaderMap,
+) -> impl IntoResponse {
+    let slug = uri.path().to_string();
+
+    let ip = headers
+        .get("x-real-ip")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("unknown")
+        .to_string();
+
+    let headers_map: std::collections::HashMap<String, String> = headers
+        .iter()
+        .filter_map(|(k, v)| v.to_str().ok().map(|s| (k.as_str().to_string(), s.to_string())))
+        .collect();
+    let headers_json = serde_json::to_string(&headers_map).unwrap_or_default();
+
+    let db            = state.honeypot_db.clone();
+    let http_client   = state.http_client.clone();
+    let country_cache = state.country_cache.clone();
+    let org_cache     = state.org_cache.clone();
+    let ip_clone      = ip.clone();
+    tokio::spawn(async move {
+        let (country, org) = tokio::join!(
+            lookup_country(&http_client, &country_cache, &ip_clone),
+            lookup_org(&http_client, &org_cache, &ip_clone),
+        );
+        db.log_hit(slug, ip_clone, headers_json, country, org).await;
+    });
+
+    tracing::warn!("Catch-all honeypot hit: {} from {}", uri.path(), ip);
+
+    StatusCode::NOT_FOUND
 }
