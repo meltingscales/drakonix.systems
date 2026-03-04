@@ -75,7 +75,9 @@ i highly recommend never using windows, for [many](https://en.wikipedia.org/wiki
 - [crystaldiskinfo](https://crystalmark.info/en/software/crystaldiskinfo/) - disk health monitor
 - [windirstat](https://windirstat.net/) - disk usage visualizer
 - [minitool partition wizard](https://www.minitool.com/partition-manager/) - partition manager
+- [minitool shadowmaker](https://www.minitool.com/backup/minitool-shadowmaker-free.html) - disk backup/cloning/imaging tool
 - [7-zip](https://www.7-zip.org/) - archive tool
+- [imagemagick](https://community.chocolatey.org/packages/imagemagick.app) - image conversion/manipulation CLI tool (install via chocolatey)
 - `mmsys.cpl` - sound settings (run dialog)
 - `appwiz.cpl` - add/remove programs (run dialog)
 
@@ -98,7 +100,10 @@ Current working stack:
 - koboldcpp: easier to setup than llama.cpp.
 - openwebui: frontend for LLM interaction (TBD)
 - comfyui: image/video/audio generation (TBD)
+  - [ComfyUI-Zluda](https://github.com/patientx/ComfyUI-Zluda) - ComfyUI with ZLUDA for AMD GPUs on Windows
 - stablediffusion: image generation (TBD)
+  - [stable-diffusion-webui-amdgpu](https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu) - SD WebUI fork with AMD GPU support
+    - [setup guide (YouTube)](https://www.youtube.com/watch?v=g3XSZo6ewSQ)
 - [goose](https://github.com/block/goose) - Claude CLI clone, seems very formidable
 
 ### Corpo AI for coding
