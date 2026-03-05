@@ -289,6 +289,15 @@ systemd-restart:
     systemctl restart ${SERVICE_NAME}
     systemctl status ${SERVICE_NAME}
 
+# Nginx Config Management
+# =======================
+
+# Install/update nginx config and reload nginx (requires sudo)
+nginx-install:
+    sudo cp nginx/drakonix.systems.conf /etc/nginx/conf.d/drakonix.systems.conf
+    sudo nginx -t
+    sudo systemctl reload nginx
+
 # Nginx Access Logs
 # =================
 
