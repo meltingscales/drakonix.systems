@@ -150,8 +150,7 @@ function buildWeeklyHeatmap(byDate) {
       const cell = el("div", "hp-hm-cell");
       cell.style.backgroundColor = heatColor(day.count, maxCount);
       const dayHits = byDate[day.date] || [];
-      cell.addEventListener("mouseenter", e => showTooltip(e, ttDate(day.date, dayHits)));
-      cell.addEventListener("mouseleave", hideTooltip);
+      addTooltipEvents(cell, () => ttDate(day.date, dayHits));
       col.appendChild(cell);
     }
     grid.appendChild(col);
@@ -240,8 +239,7 @@ function buildDailyHeatmap(byDate, byDateHour) {
         const cellHits = byDateHour[`${date}-${h}`] || [];
         const cell = el("div", "hp-dh-cell");
         cell.style.backgroundColor = heatColor(cellHits.length, maxCount);
-        cell.addEventListener("mouseenter", e => showTooltip(e, ttHour(date, h, cellHits)));
-        cell.addEventListener("mouseleave", hideTooltip);
+        addTooltipEvents(cell, () => ttHour(date, h, cellHits));
         row.appendChild(cell);
       }
       grid.appendChild(row);
@@ -279,8 +277,7 @@ function buildHourlyPattern(byDateHour) {
     lbl.textContent = h % 6 === 0 ? String(h).padStart(2, "0") : "";
     const html = `<div class="hp-tt-header">${String(h).padStart(2,"0")}:00 UTC</div>` +
                  `<div class="hp-tt-count">${count} hit${count !== 1 ? "s" : ""}</div>`;
-    col.addEventListener("mouseenter", e => showTooltip(e, html));
-    col.addEventListener("mouseleave", hideTooltip);
+    addTooltipEvents(col, () => html);
     col.appendChild(bar);
     col.appendChild(lbl);
     chart.appendChild(col);
@@ -382,16 +379,36 @@ function getTooltip() {
     _tt.style.left = x + "px";
     _tt.style.top  = (e.clientY + 14) + "px";
   });
+  // Dismiss on touch outside the tooltip
+  document.addEventListener("touchstart", e => {
+    if (_tt && _tt.style.display !== "none" && !_tt.contains(e.target)) hideTooltip();
+  }, { passive: true });
   return _tt;
 }
 function showTooltip(e, html) {
   const tt = getTooltip();
   tt.innerHTML = html;
   tt.style.display = "block";
-  tt.style.left = (e.clientX + 14) + "px";
+  // Clamp to viewport
+  const tw = tt.offsetWidth || 200;
+  const x  = e.clientX + 14 + tw > window.innerWidth
+               ? e.clientX - tw - 6 : e.clientX + 14;
+  tt.style.left = x + "px";
   tt.style.top  = (e.clientY + 14) + "px";
 }
 function hideTooltip() { getTooltip().style.display = "none"; }
+
+// Attach both mouse-hover and touch-tap tooltip events
+function addTooltipEvents(target, htmlFn) {
+  target.addEventListener("mouseenter", e => showTooltip(e, htmlFn()));
+  target.addEventListener("mouseleave", hideTooltip);
+  target.addEventListener("touchstart", e => {
+    e.preventDefault();
+    e.stopPropagation();
+    const touch = e.changedTouches[0];
+    showTooltip({ clientX: touch.clientX, clientY: touch.clientY }, htmlFn());
+  }, { passive: false });
+}
 
 function ttDate(date, hits) {
   const ipCounts = ipCounter(hits);

@@ -137,3 +137,25 @@
 /* org lines inside tooltip */
 .hp-tt-orgs   { margin-top: 0.25rem; display: flex; flex-direction: column; gap: 1px; }
 .hp-tt-org    { font-size: 0.72rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* hourly chart: always scrollable (24 bars × ~23px overflows small screens) */
+.hp-hourly-wrap  { overflow-x: auto; }
+.hp-hourly-chart { min-width: max-content; }
+
+/* ── Mobile ──────────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  /* toolbar: stack search + controls vertically */
+  .hp-toolbar { flex-direction: column; align-items: stretch; }
+  #hp-filter  { min-width: unset; width: 100%; }
+  .hp-toolbar-right { justify-content: space-between; }
+
+  /* stats: single column, narrower bar label */
+  .hp-stats-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+  .hp-bar-label  { width: 90px; }
+
+  /* table: hide ID (#) and Org columns to free up horizontal space */
+  .hp-table thead th:nth-child(1),
+  .hp-table tbody td:nth-child(1),
+  .hp-table thead th:nth-child(5),
+  .hp-table tbody td:nth-child(5) { display: none; }
+}
