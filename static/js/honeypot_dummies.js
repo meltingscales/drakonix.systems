@@ -6,6 +6,7 @@ const _subtitleEl    = document.getElementById("hp-subtitle");
 const _filterEl      = document.getElementById("hp-filter");
 const _lastUpdatedEl = document.getElementById("hp-last-updated");
 let   _refreshTimer  = null;
+let   _dt            = null;
 
 // Wire up filter (input persists across re-renders; table is re-queried each time)
 _filterEl.addEventListener("input", applyFilter);
@@ -61,6 +62,7 @@ async function doRefresh() {
     byDateHour[key].push(hit);
   }
 
+  if (_dt) { _dt.destroy(); _dt = null; }
   _root.innerHTML = "";
   _root.appendChild(buildWeeklyHeatmap(byDate));
   _root.appendChild(buildDailyHeatmap(byDate, byDateHour));
@@ -68,17 +70,32 @@ async function doRefresh() {
   _root.appendChild(buildTopStats(hits));
   _root.appendChild(buildTable(hits));
 
-  applyFilter(); // re-apply any active filter to the freshly rendered table
+  _dt = new DataTable(_root.querySelector(".hp-table"), {
+    layout: {
+      topStart:    "info",
+      topEnd:      null,
+      bottomStart: "pageLength",
+      bottomEnd:   "paging",
+    },
+    pageLength: 50,
+    lengthMenu: [[25, 50, 100, -1], ["25", "50", "100", "All"]],
+    order:      [[5, "desc"]],
+    columnDefs: [{ orderable: false, targets: [6, 7] }],
+    language: {
+      info:         "Showing _START_–_END_ of _TOTAL_ hits",
+      infoFiltered: " (filtered from _MAX_)",
+      lengthMenu:   "Show _MENU_ rows",
+    },
+  });
+
+  applyFilter(); // re-apply any active search term to the fresh DataTable
   _lastUpdatedEl.textContent = `Updated ${new Date().toLocaleTimeString()}`;
 }
 
 function applyFilter() {
-  const term  = (_filterEl?.value || "").toLowerCase().trim();
-  const tbody = _root.querySelector(".hp-table tbody");
-  if (!tbody) return;
-  for (const tr of tbody.querySelectorAll("tr")) {
-    tr.style.display = !term || tr.textContent.toLowerCase().includes(term) ? "" : "none";
-  }
+  if (!_dt) return;
+  const term = (_filterEl?.value || "").trim();
+  _dt.search(term).draw();
 }
 
 // ── 52-week calendar heatmap ──────────────────────────────────────────────────

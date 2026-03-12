@@ -142,6 +142,108 @@
 .hp-hourly-wrap  { overflow-x: auto; }
 .hp-hourly-chart { min-width: max-content; }
 
+/* ── DataTables 2.x theme ────────────────────────────────────────────────── */
+
+/* layout rows (info top-left, length/paging bottom) */
+.dt-layout-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.6rem 0;
+}
+.dt-layout-cell { flex: 0 0 auto; }
+
+/* info text */
+.dt-info {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* length selector */
+.dt-length {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+.dt-length select {
+  padding: 0.25rem 0.4rem;
+  border: 1px solid var(--border-primary);
+  border-radius: 4px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  margin: 0 0.25rem;
+  cursor: pointer;
+}
+
+/* pagination */
+.dt-paging { display: flex; align-items: center; gap: 2px; }
+button.dt-paging-button {
+  padding: 0.25rem 0.55rem;
+  border: 1px solid var(--border-primary);
+  border-radius: 4px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  cursor: pointer;
+  line-height: 1.4;
+}
+button.dt-paging-button:not(.disabled):hover { background: var(--bg-hover); }
+button.dt-paging-button.current {
+  background: var(--hp-heat-3);
+  border-color: var(--hp-heat-3);
+  color: #fff;
+  font-weight: 600;
+}
+button.dt-paging-button.disabled { opacity: 0.35; cursor: default; }
+
+/* sort indicators on th */
+table.dataTable thead th.dt-orderable-asc span.dt-column-order,
+table.dataTable thead th.dt-orderable-desc span.dt-column-order {
+  position: relative;
+  display: inline-block;
+  width: 1rem;
+  height: 0;
+  text-indent: -9999px;
+  overflow: hidden;
+  vertical-align: middle;
+  margin-left: 4px;
+  user-select: none;
+}
+table.dataTable thead th.dt-orderable-asc  span.dt-column-order::before,
+table.dataTable thead th.dt-orderable-desc span.dt-column-order::before,
+table.dataTable thead th.dt-orderable-asc  span.dt-column-order::after,
+table.dataTable thead th.dt-orderable-desc span.dt-column-order::after {
+  position: absolute;
+  display: block;
+  text-indent: 0;
+  font-size: 0.65em;
+  line-height: 8px;
+  height: 8px;
+  overflow: hidden;
+}
+table.dataTable thead th.dt-orderable-asc  span.dt-column-order::before,
+table.dataTable thead th.dt-orderable-desc span.dt-column-order::before {
+  bottom: 0;
+  content: "▲";
+  color: var(--text-secondary);
+  opacity: 0.4;
+}
+table.dataTable thead th.dt-orderable-asc  span.dt-column-order::after,
+table.dataTable thead th.dt-orderable-desc span.dt-column-order::after {
+  top: 0;
+  content: "▼";
+  color: var(--text-secondary);
+  opacity: 0.4;
+}
+table.dataTable thead th.dt-ordering-asc  span.dt-column-order::before { opacity: 1; color: var(--text-primary); }
+table.dataTable thead th.dt-ordering-desc span.dt-column-order::after  { opacity: 1; color: var(--text-primary); }
+
+/* cursor on sortable headers */
+table.dataTable thead th.dt-orderable-asc,
+table.dataTable thead th.dt-orderable-desc { cursor: pointer; }
+
 /* ── Mobile ──────────────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
   /* toolbar: stack search + controls vertically */
