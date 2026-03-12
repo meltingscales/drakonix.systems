@@ -450,6 +450,19 @@ pub async fn download_converted_file(
     Ok((headers, body).into_response())
 }
 
+/// Honeypot map timeline - animated world map of honeypot hits
+pub async fn honeypot_map_timeline_dashboard(
+    State(state): State<Arc<AppState>>,
+) -> Result<Html<String>, AppError> {
+    let mut context = Context::new();
+    context.insert("title", "Honeypot Map Timeline - drakonix.systems");
+    let html = state
+        .tera
+        .render("honeypot_map_timeline.html", &context)
+        .map_err(|e| AppError::TemplateError(e.to_string()))?;
+    Ok(Html(html))
+}
+
 /// Honeypot dashboard - shows recent honeypot hits with IP, slug, timestamp, and headers
 pub async fn honeypot_dummies_dashboard(
     State(state): State<Arc<AppState>>,

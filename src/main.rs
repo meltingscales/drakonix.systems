@@ -182,6 +182,10 @@ async fn main() -> anyhow::Result<()> {
             "/services/honeypot-dummies",
             get(handlers::honeypot_dummies_dashboard),
         )
+        .route(
+            "/services/honeypot-dummies-map-timeline",
+            get(handlers::honeypot_map_timeline_dashboard),
+        )
         .route("/api/honeypot/hits",   get(handlers::honeypot_hits_api))
         .route("/api/honeypot/config", get(handlers::honeypot_config_api))
         // Swagger UI for API documentation
