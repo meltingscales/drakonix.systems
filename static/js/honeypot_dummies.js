@@ -73,10 +73,11 @@ async function doRefresh() {
   _dt = new DataTable(_root.querySelector(".hp-table"), {
     layout: {
       topStart:    "info",
-      topEnd:      null,
+      topEnd:      "buttons",
       bottomStart: "pageLength",
       bottomEnd:   "paging",
     },
+    buttons: [{ extend: "colvis", text: "Columns ▾" }],
     pageLength: 50,
     lengthMenu: [[25, 50, 100, -1], ["25", "50", "100", "All"]],
     order:      [[5, "desc"]],

@@ -240,6 +240,50 @@ table.dataTable thead th.dt-orderable-desc span.dt-column-order::after {
 table.dataTable thead th.dt-ordering-asc  span.dt-column-order::before { opacity: 1; color: var(--text-primary); }
 table.dataTable thead th.dt-ordering-desc span.dt-column-order::after  { opacity: 1; color: var(--text-primary); }
 
+/* column visibility button */
+div.dt-buttons { display: flex; gap: 4px; }
+button.dt-button {
+  padding: 0.25rem 0.65rem;
+  border: 1px solid var(--border-primary);
+  border-radius: 4px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  cursor: pointer;
+  line-height: 1.4;
+}
+button.dt-button:hover { background: var(--bg-hover); }
+
+/* colvis dropdown panel */
+.dt-button-collection {
+  position: absolute;
+  z-index: 2000;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: 6px;
+  padding: 0.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 140px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+.dt-button-collection button.dt-button {
+  width: 100%;
+  text-align: left;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.82rem;
+}
+.dt-button-collection button.dt-button:hover { background: var(--bg-hover); }
+.dt-button-collection button.dt-button.dt-button-active::before {
+  content: "✓ ";
+  color: var(--hp-heat-3);
+  font-weight: 700;
+}
+
 /* cursor on sortable headers */
 table.dataTable thead th.dt-orderable-asc,
 table.dataTable thead th.dt-orderable-desc { cursor: pointer; }
