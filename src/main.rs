@@ -9,6 +9,7 @@ mod models;
 mod rss;
 mod schizo_rng;
 mod timer;
+mod twitch_icon_gen;
 
 use axum::{
     extract::DefaultBodyLimit,
@@ -29,6 +30,8 @@ use utoipa_swagger_ui::SwaggerUi;
         handlers::timer_status,
         handlers::convert_mp4_to_mp3,
         handlers::download_converted_file,
+        handlers::generate_twitch_icons,
+        handlers::download_twitch_icon_pack,
         handlers::markov_babble_honeypot,
         handlers::honeypot_hits_api,
         handlers::honeypot_config_api,
@@ -39,12 +42,15 @@ use utoipa_swagger_ui::SwaggerUi;
             timer::StartTimerResponse,
             timer::TimerStatusResponse,
             converter::ConvertResponse,
+            twitch_icon_gen::IconGenResponse,
+            twitch_icon_gen::IconResult,
             honeypot_db::HoneypotHit,
         )
     ),
     tags(
         (name = "Timer", description = "Kitchen timer API endpoints"),
         (name = "Converter", description = "Media conversion API endpoints"),
+        (name = "Twitch", description = "Twitch sub badge icon pack generator"),
         (name = "Fun", description = "its fun lol")
     ),
     info(
@@ -111,6 +117,8 @@ async fn main() -> anyhow::Result<()> {
     let timer_manager = timer::TimerManager::new();
     let converter_manager = converter::ConverterManager::new()
         .map_err(|e| anyhow::anyhow!("Failed to initialize converter: {}", e))?;
+    let twitch_icon_gen_manager = twitch_icon_gen::TwitchIconGenManager::new()
+        .map_err(|e| anyhow::anyhow!("Failed to initialize twitch icon gen: {}", e))?;
 
     let markov_generator = markov::MarkovGenerator::new();
 
@@ -134,6 +142,7 @@ async fn main() -> anyhow::Result<()> {
         tera,
         timer_manager,
         converter_manager,
+        twitch_icon_gen_manager,
         markov_generator,
         honeypot_db,
         http_client,
@@ -171,6 +180,19 @@ async fn main() -> anyhow::Result<()> {
         .route(
             "/api/convert/download/:file_id",
             get(handlers::download_converted_file),
+        )
+        // Twitch sub badge icon generator service
+        .route(
+            "/services/twitch-sub-icon-gen",
+            get(handlers::twitch_icon_gen_page),
+        )
+        .route(
+            "/api/twitch-icons/generate",
+            post(handlers::generate_twitch_icons).layer(DefaultBodyLimit::max(50 * 1024 * 1024)), // 50MB limit
+        )
+        .route(
+            "/api/twitch-icons/download/:job_id",
+            get(handlers::download_twitch_icon_pack),
         )
         // Honeypot endpoint - slow markov babble to trap scrapers
         .route(
@@ -221,6 +243,7 @@ pub struct AppState {
     pub tera: tera::Tera,
     pub timer_manager: timer::TimerManager,
     pub converter_manager: converter::ConverterManager,
+    pub twitch_icon_gen_manager: twitch_icon_gen::TwitchIconGenManager,
     pub markov_generator: markov::MarkovGenerator,
     pub honeypot_db: honeypot_db::HoneypotDb,
     pub http_client: reqwest::Client,

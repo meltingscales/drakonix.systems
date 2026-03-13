@@ -67,6 +67,9 @@ dotenvy = "0.15"
 utoipa = { version = "5", features = ["axum_extras"] }
 utoipa-swagger-ui = { version = "8", features = ["axum"] }
 
+# ZIP archive creation for icon packs
+zip = "2"
+
 # SQLite for honeypot hit logging
 rusqlite = { version = "0.32", features = ["bundled"] }
 
