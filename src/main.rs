@@ -188,7 +188,7 @@ async fn main() -> anyhow::Result<()> {
         )
         .route(
             "/api/twitch-icons/generate",
-            post(handlers::generate_twitch_icons).layer(DefaultBodyLimit::max(50 * 1024 * 1024)), // 50MB limit
+            post(handlers::generate_twitch_icons).layer(DefaultBodyLimit::max(500 * 1024 * 1024)), // 500MB limit
         )
         .route(
             "/api/twitch-icons/download/:job_id",

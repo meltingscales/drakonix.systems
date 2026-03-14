@@ -475,13 +475,13 @@ pub async fn twitch_icon_gen_page(
     tag = "Twitch",
     request_body(
         content = String,
-        description = "Multipart form with one or more 'images[]' fields (JPG/PNG, max 50MB total). Each image is processed at 18×18, 36×36, and 72×72 px with transparent background.",
+        description = "Multipart form with one or more 'images[]' fields (JPG/PNG, max 500MB total). Each image is processed at 18×18, 36×36, and 72×72 px with transparent background.",
         content_type = "multipart/form-data"
     ),
     responses(
         (status = 200, description = "Icons generated; download ZIP via job_id", body = IconGenResponse),
         (status = 400, description = "No images provided"),
-        (status = 413, description = "Upload too large (max 50MB)"),
+        (status = 413, description = "Upload too large (max 500MB)"),
         (status = 500, description = "Internal server error")
     )
 )]
