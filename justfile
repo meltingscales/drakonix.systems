@@ -196,6 +196,34 @@ gcp-setup-drakonix-www:
         --platform managed \
         --project {{GCP_PROJECT}}
 
+# VM Maintenance
+# ==============
+
+# Create and enable a 4GB swapfile (helps with Rust release builds OOMing)
+# Run with sudo
+swapon-4gb:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [[ $EUID -ne 0 ]]; then
+        echo "Error: This recipe must be run as root (use sudo)."
+        exit 1
+    fi
+    if swapon --show | grep -q /swapfile; then
+        echo "Swapfile already active."
+        swapon --show
+        exit 0
+    fi
+    fallocate -l 4G /swapfile
+    chmod 600 /swapfile
+    mkswap /swapfile
+    swapon /swapfile
+    if ! grep -q '/swapfile' /etc/fstab; then
+        echo '/swapfile none swap sw 0 0' >> /etc/fstab
+        echo "Added /swapfile to /etc/fstab (persistent across reboots)."
+    fi
+    echo "Done."
+    swapon --show
+
 # Systemd Service Setup (for GCP VM)
 # ====================================
 

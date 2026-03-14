@@ -199,18 +199,22 @@ impl From<anyhow::Error> for AppError {
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         let (status, message) = match self {
-            AppError::NotFound => (StatusCode::NOT_FOUND, "Not Found"),
+            AppError::NotFound => (StatusCode::NOT_FOUND, "Not found".to_string()),
             AppError::TemplateError(ref e) => {
-                tracing::error!("Template error: Failed to render 'index.html': {:#?}", e);
-                (StatusCode::INTERNAL_SERVER_ERROR, "Template Error")
+                tracing::error!("Template error: {:#?}", e);
+                (StatusCode::INTERNAL_SERVER_ERROR, format!("Template error: {}", e))
             }
             AppError::InternalError(ref e) => {
                 tracing::error!("Internal error: {:?}", e);
-                (StatusCode::INTERNAL_SERVER_ERROR, "Internal Server Error")
+                (StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
             }
         };
 
-        (status, message).into_response()
+        (
+            status,
+            axum::Json(serde_json::json!({ "error": message })),
+        )
+            .into_response()
     }
 }
 
