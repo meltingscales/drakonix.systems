@@ -21,6 +21,8 @@ I am aggressively de-googling my life in 2025/2026.
   - [pemu](https://github.com/Cpasjuste/pemu/releases) - multi-system emulator frontend (needs a custom XML file, annoying)
   - [retroarch](https://github.com/retroarch/retroarch) - multi-system emulator frontend (needs older firmware, warning)
 - [imgburn, cd burning](https://www.imgburn.com)
+- [canirun.ai](https://www.canirun.ai/) - can I run this game checker
+- [Xbox Emulator Files](https://github.com/K3V1991/Xbox-Emulator-Files) - Xbox emulator files collection
 
 ## Programming
 
@@ -87,6 +89,8 @@ I run various cheap laptops and a few HEPC (High-End Personal Computer) setups.
 Only Linux, except for a Windows computer I use for piano playing/DAW/Frooty Loops.
 
 - [pcpartpicker saved builds](https://pcpartpicker.com/user/henryfbp/saved/) - my saved PC part lists
+- [framework](https://frame.work) - modular/repairable laptops
+- [framework keyboard](https://keyboard.frame.work/) - framework's mechanical keyboard
 
 ## AI
 
