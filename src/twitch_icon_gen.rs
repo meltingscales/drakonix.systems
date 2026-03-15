@@ -92,7 +92,7 @@ impl TwitchIconGenManager {
                 let out_filename = format!("{}_{}x{}.png", stem, size, size);
                 let out_path = job_dir.join(&out_filename);
 
-                let output = Command::new("magick")
+                let output = Command::new("convert")
                     .arg(&input_path)
                     .arg("-resize")
                     .arg(format!("{}x{}", size, size))
@@ -111,11 +111,11 @@ impl TwitchIconGenManager {
                     .arg(&out_path)
                     .output()
                     .await
-                    .map_err(|e| format!("Failed to spawn magick: {}", e))?;
+                    .map_err(|e| format!("Failed to spawn convert: {}", e))?;
 
                 if !output.status.success() {
                     let err = String::from_utf8_lossy(&output.stderr);
-                    tracing::warn!("magick failed for {}: {}", out_filename, err.trim());
+                    tracing::warn!("convert failed for {}: {}", out_filename, err.trim());
                     results.push(IconResult {
                         filename: original_name.clone(),
                         size,
