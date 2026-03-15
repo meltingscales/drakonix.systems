@@ -4,10 +4,11 @@ use crate::markov;
 use crate::models::SearchEntry;
 use crate::schizo_rng;
 use crate::timer::{StartTimerRequest, StartTimerResponse, TimerStatusResponse};
+use crate::twitch_icon_gen::IconGenResponse;
 use crate::{constants, honeypot_db, rss, AppState, CountryCache, OrgCache};
 use axum::{
     body::Body,
-    extract::{Multipart, Path, State},
+    extract::{Multipart, Path, Request, State},
     http::{HeaderMap, StatusCode},
     response::{Html, IntoResponse, Response},
     Json,
@@ -198,18 +199,22 @@ impl From<anyhow::Error> for AppError {
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         let (status, message) = match self {
-            AppError::NotFound => (StatusCode::NOT_FOUND, "Not Found"),
+            AppError::NotFound => (StatusCode::NOT_FOUND, "Not found".to_string()),
             AppError::TemplateError(ref e) => {
-                tracing::error!("Template error: Failed to render 'index.html': {:#?}", e);
-                (StatusCode::INTERNAL_SERVER_ERROR, "Template Error")
+                tracing::error!("Template error: {:#?}", e);
+                (StatusCode::INTERNAL_SERVER_ERROR, format!("Template error: {}", e))
             }
             AppError::InternalError(ref e) => {
                 tracing::error!("Internal error: {:?}", e);
-                (StatusCode::INTERNAL_SERVER_ERROR, "Internal Server Error")
+                (StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
             }
         };
 
-        (status, message).into_response()
+        (
+            status,
+            axum::Json(serde_json::json!({ "error": message })),
+        )
+            .into_response()
     }
 }
 
@@ -450,6 +455,154 @@ pub async fn download_converted_file(
     Ok((headers, body).into_response())
 }
 
+/// Twitch sub badge icon generator page
+pub async fn twitch_icon_gen_page(
+    State(state): State<Arc<AppState>>,
+) -> Result<Html<String>, AppError> {
+    let mut context = Context::new();
+    add_honeypot_urls(&mut context);
+    let html = state
+        .tera
+        .render("twitch_sub_icon_gen.html", &context)
+        .map_err(|e| AppError::TemplateError(e.to_string()))?;
+    Ok(Html(html))
+}
+
+/// API endpoint to generate Twitch sub badge icon pack from uploaded images
+#[utoipa::path(
+    post,
+    path = "/api/twitch-icons/generate",
+    tag = "Twitch",
+    request_body(
+        content = String,
+        description = "Multipart form with one or more 'images[]' fields (JPG/PNG, max 500MB total). Each image is processed at 18×18, 36×36, and 72×72 px with transparent background.",
+        content_type = "multipart/form-data"
+    ),
+    responses(
+        (status = 200, description = "Icons generated; download ZIP via job_id", body = IconGenResponse),
+        (status = 400, description = "No images provided"),
+        (status = 413, description = "Upload too large (max 500MB)"),
+        (status = 500, description = "Internal server error")
+    )
+)]
+pub async fn generate_twitch_icons(
+    State(state): State<Arc<AppState>>,
+    mut multipart: Multipart,
+) -> Result<Json<IconGenResponse>, AppError> {
+    let mut images: Vec<(String, Vec<u8>)> = Vec::new();
+    let mut sizes: Vec<u32> = Vec::new();
+
+    while let Some(field) = multipart
+        .next_field()
+        .await
+        .map_err(|e| AppError::InternalError(anyhow::anyhow!("Multipart error: {}", e)))?
+    {
+        let name = field.name().unwrap_or("").to_string();
+        match name.as_str() {
+            "images[]" | "images" => {
+                let filename = field.file_name().unwrap_or("image.png").to_string();
+                let data = field.bytes().await.map_err(|e| {
+                    AppError::InternalError(anyhow::anyhow!("File read error: {}", e))
+                })?;
+                if !data.is_empty() {
+                    images.push((filename, data.to_vec()));
+                }
+            }
+            "sizes[]" | "sizes" => {
+                let val = field.text().await.map_err(|e| {
+                    AppError::InternalError(anyhow::anyhow!("Sizes read error: {}", e))
+                })?;
+                if let Ok(n) = val.trim().parse::<u32>() {
+                    if matches!(n, 18 | 36 | 72) {
+                        sizes.push(n);
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+
+    if images.is_empty() {
+        return Err(AppError::InternalError(anyhow::anyhow!(
+            "No images provided"
+        )));
+    }
+
+    // Default to all three sizes if none specified
+    if sizes.is_empty() {
+        sizes = vec![18, 36, 72];
+    }
+    sizes.sort_unstable();
+    sizes.dedup();
+
+    let (job_id, results) = state
+        .twitch_icon_gen_manager
+        .generate_icon_pack(images, sizes)
+        .await
+        .map_err(|e| AppError::InternalError(anyhow::anyhow!("Icon generation error: {}", e)))?;
+
+    Ok(Json(IconGenResponse { job_id, results }))
+}
+
+/// API endpoint to download a generated Twitch icon pack ZIP
+#[utoipa::path(
+    get,
+    path = "/api/twitch-icons/download/{job_id}",
+    tag = "Twitch",
+    params(
+        ("job_id" = String, Path, description = "Job identifier returned from the generate endpoint")
+    ),
+    responses(
+        (status = 200, description = "Returns the icon pack as a ZIP archive", content_type = "application/zip"),
+        (status = 404, description = "Job not found or expired (10-minute TTL)"),
+        (status = 500, description = "Internal server error")
+    )
+)]
+pub async fn download_twitch_icon_pack(
+    State(state): State<Arc<AppState>>,
+    Path(job_id): Path<String>,
+) -> Result<Response, AppError> {
+    let zip_path = state
+        .twitch_icon_gen_manager
+        .get_zip_file(&job_id)
+        .await
+        .ok_or(AppError::NotFound)?;
+
+    let file = File::open(&zip_path)
+        .await
+        .map_err(|e| AppError::InternalError(anyhow::anyhow!("File open error: {}", e)))?;
+
+    let stream = ReaderStream::new(file);
+    let body = Body::from_stream(stream);
+
+    let mut headers = HeaderMap::new();
+    headers.insert(
+        axum::http::header::CONTENT_TYPE,
+        "application/zip".parse().unwrap(),
+    );
+    headers.insert(
+        axum::http::header::CONTENT_DISPOSITION,
+        format!("attachment; filename=\"twitch-badges-{}.zip\"", &job_id[..8])
+            .parse()
+            .unwrap(),
+    );
+
+    Ok((headers, body).into_response())
+}
+
+/// Honeypot map timeline - animated world map of honeypot hits
+pub async fn honeypot_map_timeline_dashboard(
+    State(state): State<Arc<AppState>>,
+) -> Result<Html<String>, AppError> {
+    let mut context = Context::new();
+    context.insert("title", "Honeypot Map Timeline - drakonix.systems");
+    let html = state
+        .tera
+        .render("honeypot_map_timeline.html", &context)
+        .map_err(|e| AppError::TemplateError(e.to_string()))?;
+    Ok(Html(html))
+}
+
 /// Honeypot dashboard - shows recent honeypot hits with IP, slug, timestamp, and headers
 pub async fn honeypot_dummies_dashboard(
     State(state): State<Arc<AppState>>,
@@ -611,7 +764,7 @@ pub async fn markov_babble_honeypot(
             lookup_country(&http_client, &country_cache, &ip_clone),
             lookup_org(&http_client, &org_cache, &ip_clone),
         );
-        db.log_hit(slug_clone, ip_clone, headers_json, country, org).await;
+        db.log_hit(slug_clone, ip_clone, headers_json, String::new(), country, org).await;
     });
 
     tracing::warn!(
@@ -741,4 +894,49 @@ pub async fn markov_babble_honeypot(
     );
 
     Ok((headers, body).into_response())
+}
+
+/// Catch-all fallback — logs any unmatched path (+ query string + body) as a honeypot hit and returns 404.
+pub async fn catch_all_honeypot(
+    State(state): State<Arc<AppState>>,
+    request: Request,
+) -> impl IntoResponse {
+    let (parts, body) = request.into_parts();
+
+    let slug = parts.uri.path_and_query()
+        .map(|pq| pq.as_str().to_string())
+        .unwrap_or_else(|| parts.uri.path().to_string());
+
+    let ip = parts.headers
+        .get("x-real-ip")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("unknown")
+        .to_string();
+
+    let headers_map: std::collections::HashMap<String, String> = parts.headers
+        .iter()
+        .filter_map(|(k, v)| v.to_str().ok().map(|s| (k.as_str().to_string(), s.to_string())))
+        .collect();
+    let headers_json = serde_json::to_string(&headers_map).unwrap_or_default();
+
+    // Read up to 64 KB of body; silently truncate anything larger.
+    let body_bytes = axum::body::to_bytes(body, 64 * 1024).await.unwrap_or_default();
+    let body_str = String::from_utf8_lossy(&body_bytes).into_owned();
+
+    tracing::warn!("Catch-all honeypot hit: {} from {}", slug, ip);
+
+    let db            = state.honeypot_db.clone();
+    let http_client   = state.http_client.clone();
+    let country_cache = state.country_cache.clone();
+    let org_cache     = state.org_cache.clone();
+    let ip_clone      = ip.clone();
+    tokio::spawn(async move {
+        let (country, org) = tokio::join!(
+            lookup_country(&http_client, &country_cache, &ip_clone),
+            lookup_org(&http_client, &org_cache, &ip_clone),
+        );
+        db.log_hit(slug, ip_clone, headers_json, body_str, country, org).await;
+    });
+
+    StatusCode::NOT_FOUND
 }

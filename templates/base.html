@@ -69,11 +69,12 @@
                                 >
                             </li>
                             <li role="none">
-                                <a
+                                a ghost
+                                <!--<a
                                     href="//digitalkhole.drakonix.systems/"
                                     role="menuitem"
                                     >digitalkhole.drakonix.systems</a
-                                >
+                                >-->
                             </li>
                         </ul>
                     </li>
@@ -82,7 +83,26 @@
                             >find / -name "*social media*"</a
                         >
                     </li>
-                    <li><a href="/pages/projects">~/projects</a></li>
+                    <li class="dropdown">
+                        <span
+                            class="dropdown-toggle"
+                            role="button"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                            tabindex="0"
+                            >~/projects</span
+                        >
+                        <ul class="dropdown-menu" role="menu">
+                            <li role="none">
+                                <a href="/pages/projects" role="menuitem"
+                                    >./projects</a
+                                >
+                            </li>
+                            <li role="none">
+                                <a href="/pages/ctfs" role="menuitem">./ctfs</a>
+                            </li>
+                        </ul>
+                    </li>
                     <li><a href="/pages/webring">~/webring</a></li>
                     <li><a href="/pages/tools">~/tools</a></li>
                     <li class="dropdown">
@@ -108,6 +128,13 @@
                                 >
                             </li>
                             <li role="none">
+                                <a
+                                    href="/services/twitch-sub-icon-gen"
+                                    role="menuitem"
+                                    >./twitch-sub-icon-gen</a
+                                >
+                            </li>
+                            <li role="none">
                                 <a href="/services/death-timer" role="menuitem"
                                     >./death-timer</a
                                 >
@@ -117,6 +144,13 @@
                                     href="/services/honeypot-dummies"
                                     role="menuitem"
                                     >./honeypot-dummies</a
+                                >
+                            </li>
+                            <li role="none">
+                                <a
+                                    href="/services/honeypot-dummies-map-timeline"
+                                    role="menuitem"
+                                    >./honeypot-dummies-map-timeline</a
                                 >
                             </li>
                             <li role="none">
@@ -152,6 +186,13 @@
                                     href="//donationaggregator.drakonix.systems/"
                                     role="menuitem"
                                     >donationaggregator.drakonix.systems</a
+                                >
+                            </li>
+                            <li role="none">
+                                <a
+                                    href="//carerabiesstats.drakonix.systems/"
+                                    role="menuitem"
+                                    >carerabiesstats.drakonix.systems</a
                                 >
                             </li>
                         </ul>

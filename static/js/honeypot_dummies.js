@@ -6,6 +6,7 @@ const _subtitleEl    = document.getElementById("hp-subtitle");
 const _filterEl      = document.getElementById("hp-filter");
 const _lastUpdatedEl = document.getElementById("hp-last-updated");
 let   _refreshTimer  = null;
+let   _dt            = null;
 
 // Wire up filter (input persists across re-renders; table is re-queried each time)
 _filterEl.addEventListener("input", applyFilter);
@@ -24,7 +25,7 @@ document.getElementById("hp-refresh-select").addEventListener("change", e => {
   const maxEntries = config?.max_entries;
   if (maxEntries != null) {
     _subtitleEl.textContent =
-      `Recent hits to the markov-babble honeypot endpoint. ` +
+      `Recent hits to the markov-babble honeypot and catch-all 404 endpoints. ` +
       `Showing up to ${maxEntries.toLocaleString()} most-recent entries (oldest auto-pruned).`;
   }
   await doRefresh();
@@ -61,6 +62,7 @@ async function doRefresh() {
     byDateHour[key].push(hit);
   }
 
+  if (_dt) { _dt.destroy(); _dt = null; }
   _root.innerHTML = "";
   _root.appendChild(buildWeeklyHeatmap(byDate));
   _root.appendChild(buildDailyHeatmap(byDate, byDateHour));
@@ -68,17 +70,33 @@ async function doRefresh() {
   _root.appendChild(buildTopStats(hits));
   _root.appendChild(buildTable(hits));
 
-  applyFilter(); // re-apply any active filter to the freshly rendered table
+  _dt = new DataTable(_root.querySelector(".hp-table"), {
+    layout: {
+      topStart:    "info",
+      topEnd:      "buttons",
+      bottomStart: "pageLength",
+      bottomEnd:   "paging",
+    },
+    buttons: [{ extend: "colvis", text: "Columns" }],
+    pageLength: 50,
+    lengthMenu: [[25, 50, 100, -1], ["25", "50", "100", "All"]],
+    order:      [[5, "desc"]],
+    columnDefs: [{ orderable: false, targets: [6, 7] }],
+    language: {
+      info:         "Showing _START_–_END_ of _TOTAL_ hits",
+      infoFiltered: " (filtered from _MAX_)",
+      lengthMenu:   "Show _MENU_ rows",
+    },
+  });
+
+  applyFilter(); // re-apply any active search term to the fresh DataTable
   _lastUpdatedEl.textContent = `Updated ${new Date().toLocaleTimeString()}`;
 }
 
 function applyFilter() {
-  const term  = (_filterEl?.value || "").toLowerCase().trim();
-  const tbody = _root.querySelector(".hp-table tbody");
-  if (!tbody) return;
-  for (const tr of tbody.querySelectorAll("tr")) {
-    tr.style.display = !term || tr.textContent.toLowerCase().includes(term) ? "" : "none";
-  }
+  if (!_dt) return;
+  const term = (_filterEl?.value || "").trim();
+  _dt.search(term).draw();
 }
 
 // ── 52-week calendar heatmap ──────────────────────────────────────────────────
@@ -150,8 +168,7 @@ function buildWeeklyHeatmap(byDate) {
       const cell = el("div", "hp-hm-cell");
       cell.style.backgroundColor = heatColor(day.count, maxCount);
       const dayHits = byDate[day.date] || [];
-      cell.addEventListener("mouseenter", e => showTooltip(e, ttDate(day.date, dayHits)));
-      cell.addEventListener("mouseleave", hideTooltip);
+      addTooltipEvents(cell, () => ttDate(day.date, dayHits));
       col.appendChild(cell);
     }
     grid.appendChild(col);
@@ -240,8 +257,7 @@ function buildDailyHeatmap(byDate, byDateHour) {
         const cellHits = byDateHour[`${date}-${h}`] || [];
         const cell = el("div", "hp-dh-cell");
         cell.style.backgroundColor = heatColor(cellHits.length, maxCount);
-        cell.addEventListener("mouseenter", e => showTooltip(e, ttHour(date, h, cellHits)));
-        cell.addEventListener("mouseleave", hideTooltip);
+        addTooltipEvents(cell, () => ttHour(date, h, cellHits));
         row.appendChild(cell);
       }
       grid.appendChild(row);
@@ -279,8 +295,7 @@ function buildHourlyPattern(byDateHour) {
     lbl.textContent = h % 6 === 0 ? String(h).padStart(2, "0") : "";
     const html = `<div class="hp-tt-header">${String(h).padStart(2,"0")}:00 UTC</div>` +
                  `<div class="hp-tt-count">${count} hit${count !== 1 ? "s" : ""}</div>`;
-    col.addEventListener("mouseenter", e => showTooltip(e, html));
-    col.addEventListener("mouseleave", hideTooltip);
+    addTooltipEvents(col, () => html);
     col.appendChild(bar);
     col.appendChild(lbl);
     chart.appendChild(col);
@@ -342,7 +357,7 @@ function buildTable(hits) {
   const wrap  = el("div", "hp-table-wrap");
   const table = el("table", "hp-table");
   table.innerHTML = `<thead><tr>
-    <th>#</th><th>Slug</th><th>IP</th><th>Country</th><th>Org</th><th>Timestamp</th><th>Headers</th>
+    <th>#</th><th>Slug</th><th>IP</th><th>Country</th><th>Org</th><th>Timestamp</th><th>Headers</th><th>Body</th>
   </tr></thead>`;
   const tbody = document.createElement("tbody");
   for (const hit of hits) {
@@ -356,7 +371,8 @@ function buildTable(hits) {
       <td class="hp-country">${hit.country ? `${countryFlag(hit.country)} ${escHtml(hit.country)}` : '<span class="hp-unknown">—</span>'}</td>
       <td class="hp-org">${hit.org ? escHtml(hit.org) : '<span class="hp-unknown">—</span>'}</td>
       <td class="hp-ts">${escHtml(hit.timestamp)}</td>
-      <td class="hp-headers"><details><summary>show</summary><pre class="hp-json">${escHtml(pretty)}</pre></details></td>`;
+      <td class="hp-headers"><details><summary>show</summary><pre class="hp-json">${escHtml(pretty)}</pre></details></td>
+      <td class="hp-body">${hit.body ? `<details><summary>show</summary><pre class="hp-json">${escHtml(hit.body)}</pre></details>` : '<span class="hp-unknown">—</span>'}</td>`;
     tbody.appendChild(tr);
   }
   table.appendChild(tbody);
@@ -381,16 +397,36 @@ function getTooltip() {
     _tt.style.left = x + "px";
     _tt.style.top  = (e.clientY + 14) + "px";
   });
+  // Dismiss on touch outside the tooltip
+  document.addEventListener("touchstart", e => {
+    if (_tt && _tt.style.display !== "none" && !_tt.contains(e.target)) hideTooltip();
+  }, { passive: true });
   return _tt;
 }
 function showTooltip(e, html) {
   const tt = getTooltip();
   tt.innerHTML = html;
   tt.style.display = "block";
-  tt.style.left = (e.clientX + 14) + "px";
+  // Clamp to viewport
+  const tw = tt.offsetWidth || 200;
+  const x  = e.clientX + 14 + tw > window.innerWidth
+               ? e.clientX - tw - 6 : e.clientX + 14;
+  tt.style.left = x + "px";
   tt.style.top  = (e.clientY + 14) + "px";
 }
 function hideTooltip() { getTooltip().style.display = "none"; }
+
+// Attach both mouse-hover and touch-tap tooltip events
+function addTooltipEvents(target, htmlFn) {
+  target.addEventListener("mouseenter", e => showTooltip(e, htmlFn()));
+  target.addEventListener("mouseleave", hideTooltip);
+  target.addEventListener("touchstart", e => {
+    e.preventDefault();
+    e.stopPropagation();
+    const touch = e.changedTouches[0];
+    showTooltip({ clientX: touch.clientX, clientY: touch.clientY }, htmlFn());
+  }, { passive: false });
+}
 
 function ttDate(date, hits) {
   const ipCounts = ipCounter(hits);

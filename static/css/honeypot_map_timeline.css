@@ -1,0 +1,289 @@
+/* ── Theme vars ───────────────────────────────────────────────────────────── */
+:root {
+  --hmt-country-base: var(--bg-tertiary, #2d333b);
+  --hmt-water:        #10151c;
+  --hmt-border:       var(--border-primary, #444c56);
+  --hmt-flash:        #ffffff;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --hmt-country-base: #d0d7de;
+    --hmt-water:        #aac8e8;
+    --hmt-border:       #8c959f;
+    --hmt-flash:        #ffffff;
+  }
+}
+
+/* ── Full-bleed override ─────────────────────────────────────────────────── */
+main:has(#hmt-page) {
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* ── Loading state ───────────────────────────────────────────────────────── */
+#hmt-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+/* ── Page shell ──────────────────────────────────────────────────────────── */
+#hmt-page {
+  display: none; /* shown by JS after load */
+  flex-direction: column;
+  height: calc(100vh - 56px); /* subtract approx header height */
+  min-height: 500px;
+  overflow: hidden;
+}
+
+/* ── Controls bar ────────────────────────────────────────────────────────── */
+.hmt-controls {
+  flex-shrink: 0;
+  padding: 0.6rem 1rem;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.hmt-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.hmt-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.hmt-btn {
+  padding: 0.28rem 0.7rem;
+  border: 1px solid var(--border-primary);
+  border-radius: 4px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  cursor: pointer;
+  line-height: 1.4;
+}
+.hmt-btn:hover { background: var(--bg-hover); }
+.hmt-btn-primary {
+  background: var(--hp-heat-3, #26a641);
+  border-color: var(--hp-heat-3, #26a641);
+  color: #fff;
+  font-weight: 600;
+  min-width: 90px;
+}
+.hmt-btn-primary:hover { opacity: 0.85; }
+
+.hmt-speed-group {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.hmt-speed-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+.hmt-speed { font-size: 0.78rem; padding: 0.22rem 0.5rem; }
+.hmt-speed-active {
+  background: var(--hp-heat-2, #006d32);
+  border-color: var(--hp-heat-2, #006d32);
+  color: #fff;
+}
+
+/* ── Scrubber row ────────────────────────────────────────────────────────── */
+.hmt-scrubber-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.hmt-time-label {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  min-width: 90px;
+}
+.hmt-time-label:last-child { text-align: right; }
+
+#hmt-scrubber {
+  flex: 1;
+  height: 4px;
+  accent-color: var(--hp-heat-3, #26a641);
+  cursor: pointer;
+}
+
+#hmt-current-time {
+  font-size: 0.78rem;
+  color: var(--hp-heat-4, #39d353);
+  font-family: monospace;
+  text-align: center;
+  letter-spacing: 0.03em;
+}
+
+/* ── Body: map + panel ───────────────────────────────────────────────────── */
+.hmt-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ── Map ─────────────────────────────────────────────────────────────────── */
+#hmt-map-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: var(--hmt-water);
+}
+
+#hmt-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.hmt-country {
+  transition: fill 0.08s ease;
+}
+.hmt-country:hover {
+  opacity: 0.75;
+  cursor: crosshair;
+}
+
+/* ── Tooltip ─────────────────────────────────────────────────────────────── */
+#hmt-tooltip {
+  display: none;
+  position: absolute;
+  pointer-events: none;
+  z-index: 100;
+  background: var(--bg-secondary, #1c2128);
+  border: 1px solid var(--border-primary, #444c56);
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.82rem;
+  min-width: 110px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+  line-height: 1.5;
+}
+.hmt-tt-flag { font-size: 1rem; }
+.hmt-tt-count { color: var(--hp-heat-4, #39d353); font-size: 0.78rem; }
+
+/* ── Data panel ──────────────────────────────────────────────────────────── */
+.hmt-panel {
+  width: 270px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  border-left: 1px solid var(--border-primary);
+  background: var(--bg-secondary);
+  display: flex;
+  flex-direction: column;
+}
+
+.hmt-panel-section {
+  padding: 0.75rem 0.9rem;
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.hmt-panel-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+/* Stats */
+.hmt-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+  color: var(--text-secondary);
+}
+.hmt-stat-row strong {
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Top countries */
+.hmt-top-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.3rem;
+  font-size: 0.8rem;
+}
+.hmt-top-flag { font-size: 0.9rem; flex-shrink: 0; }
+.hmt-top-name { width: 30px; flex-shrink: 0; color: var(--text-secondary); font-size: 0.75rem; }
+.hmt-top-track {
+  flex: 1;
+  height: 10px;
+  background: var(--bg-tertiary, #2d333b);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.hmt-top-fill {
+  height: 100%;
+  background: var(--hp-heat-3, #26a641);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+.hmt-top-count {
+  width: 32px;
+  text-align: right;
+  flex-shrink: 0;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Feed */
+.hmt-feed-section { flex: 1; }
+.hmt-feed-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.22rem 0;
+  border-bottom: 1px solid var(--border-primary);
+  font-size: 0.78rem;
+}
+.hmt-feed-item:last-child { border-bottom: none; }
+.hmt-feed-flag { font-size: 0.85rem; flex-shrink: 0; }
+.hmt-feed-ip {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+}
+.hmt-feed-time {
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────────────── */
+@media (max-width: 700px) {
+  #hmt-page { height: auto; overflow: visible; }
+  .hmt-body { flex-direction: column; overflow: visible; }
+  #hmt-map-wrap { height: 55vw; min-height: 260px; }
+  .hmt-panel { width: 100%; border-left: none; border-top: 1px solid var(--border-primary); }
+  .hmt-time-label { min-width: 60px; font-size: 0.65rem; }
+  .hmt-title { font-size: 0.9rem; }
+}

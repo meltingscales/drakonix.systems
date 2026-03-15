@@ -487,6 +487,7 @@ footer {
         transition: transform 0.3s ease-in-out;
         box-shadow: -2px 0 10px var(--shadow-nav);
         z-index: 9;
+        overflow-y: auto;
     }
 
     header nav > ul.nav-menu.active {

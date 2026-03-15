@@ -17,18 +17,22 @@ on a live dashboard.
    instead of HTML.
 4. Every hit is logged asynchronously (fire-and-forget) — the response to
    the bot is never delayed by logging.
+5. A **catch-all fallback** catches every other unmatched path (e.g.
+   `/wp-login.php`, `/.env`, `/phpmyadmin/`) — logs the full URL string
+   (path + query string) and request body, then returns a plain 404.
 
 ---
 
 ## Architecture
 
-### Endpoint
+### Endpoints
 
 ```
-GET /api/markov-babble/:slug/gen
+GET /api/markov-babble/:slug/gen   — slow markov stream (trap loop)
+ANY /*                             — catch-all fallback (log + 404)
 ```
 
-Handled by `markov_babble_honeypot` in `src/handlers.rs`.
+`markov_babble_honeypot` and `catch_all_honeypot` in `src/handlers.rs`.
 
 On each hit it spawns a background task that:
 1. Calls `ipinfo.io/{ip}/country` and `ipinfo.io/{ip}/org` **concurrently**
@@ -42,12 +46,13 @@ SQLite file at `honeypot.db` (override with `HONEYPOT_DB_PATH` env var).
 ```sql
 CREATE TABLE honeypot_hits (
     id        INTEGER PRIMARY KEY AUTOINCREMENT,
-    slug      TEXT NOT NULL,
+    slug      TEXT NOT NULL,             -- markov slug OR full path+query for catch-all hits
     ip        TEXT NOT NULL,
     country   TEXT NOT NULL DEFAULT '',  -- ISO 3166-1 alpha-2, e.g. "US"
     org       TEXT NOT NULL DEFAULT '',  -- ASN + name, e.g. "AS14061 DigitalOcean, LLC"
     timestamp TEXT NOT NULL,             -- RFC 3339 UTC
-    headers   TEXT NOT NULL              -- JSON object of request headers
+    headers   TEXT NOT NULL,             -- JSON object of request headers
+    body      TEXT NOT NULL DEFAULT ''   -- raw request body, up to 64 KB (empty for GETs)
 );
 ```
 
@@ -84,7 +89,8 @@ All endpoints are Swagger-documented at `/swagger-ui/`.
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `GET` | `/api/markov-babble/:slug/gen` | Honeypot stream endpoint |
+| `GET` | `/api/markov-babble/:slug/gen` | Honeypot stream endpoint (markov babble trap) |
+| `ANY` | `/*` | Catch-all fallback — logs path+query+body, returns 404 |
 | `GET` | `/api/honeypot/hits` | Up to 50,000 most-recent hits as JSON |
 | `GET` | `/api/honeypot/config` | Configuration constants (e.g. `max_entries`) |
 
@@ -110,7 +116,7 @@ server-side templating — pure client-side JS.
 | **Top IPs** | Horizontal bar chart, top 10, linked to ipinfo.io. |
 | **Top slugs** | Horizontal bar chart, top 10. |
 | **Top countries** | Horizontal bar chart, top 10. |
-| **Hits table** | Full scrollable table with live filter and collapsible header JSON. |
+| **Hits table** | Full scrollable table with live filter, collapsible header JSON, and collapsible body. |
 
 ### Controls
 

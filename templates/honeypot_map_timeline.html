@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div id="hmt-loading">Loading map data…</div>
+
+<div id="hmt-page">
+
+  <!-- Controls bar -->
+  <div class="hmt-controls">
+    <div class="hmt-controls-row">
+      <h1 class="hmt-title">Honeypot Map Timeline</h1>
+      <button id="hmt-playpause" class="hmt-btn hmt-btn-primary">▶ Play</button>
+      <button id="hmt-restart"   class="hmt-btn">⏮ Restart</button>
+      <div class="hmt-speed-group">
+        <span class="hmt-speed-label">Speed:</span>
+        <button class="hmt-btn hmt-speed" data-speed="0.25">¼×</button>
+        <button class="hmt-btn hmt-speed" data-speed="0.5">½×</button>
+        <button class="hmt-btn hmt-speed hmt-speed-active" data-speed="1">1×</button>
+        <button class="hmt-btn hmt-speed" data-speed="2">2×</button>
+        <button class="hmt-btn hmt-speed" data-speed="10">10×</button>
+        <button class="hmt-btn hmt-speed" data-speed="100">100×</button>
+        <button class="hmt-btn hmt-speed" data-speed="1000">1000×</button>
+      </div>
+    </div>
+    <div class="hmt-scrubber-row">
+      <span id="hmt-time-start" class="hmt-time-label">—</span>
+      <input type="range" id="hmt-scrubber" min="0" max="1000" value="0" />
+      <span id="hmt-time-end" class="hmt-time-label">—</span>
+    </div>
+    <div id="hmt-current-time">—</div>
+  </div>
+
+  <!-- Map + panel -->
+  <div class="hmt-body">
+    <div id="hmt-map-wrap">
+      <svg id="hmt-svg"></svg>
+      <div id="hmt-tooltip"></div>
+    </div>
+
+    <aside class="hmt-panel">
+      <div class="hmt-panel-section">
+        <div class="hmt-panel-title">Stats</div>
+        <div class="hmt-stat-row"><span>Hits shown</span><strong id="hmt-stat-hits">0</strong></div>
+        <div class="hmt-stat-row"><span>Countries hit</span><strong id="hmt-stat-countries">0</strong></div>
+      </div>
+      <div class="hmt-panel-section">
+        <div class="hmt-panel-title">Top Countries</div>
+        <div id="hmt-top-countries"></div>
+      </div>
+      <div class="hmt-panel-section hmt-feed-section">
+        <div class="hmt-panel-title">Recent Hits</div>
+        <div id="hmt-feed"></div>
+      </div>
+    </aside>
+  </div>
+
+</div>
+
+<link rel="stylesheet" href="/static/css/honeypot_map_timeline.css" />
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+<script src="/static/js/honeypot_map_timeline.js"></script>
+{% endblock %}

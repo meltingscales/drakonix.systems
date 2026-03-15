@@ -14,12 +14,15 @@ I am aggressively de-googling my life in 2025/2026.
 - immich: google photos clone, self-hosted
 - navidrome: youtube music clone, self-hosted
 - more to come? :)
-- <https://vesktop.dev/>
-- <https://switch.hacks.guide/>
-  - <https://github.com/nh-server/switch-guide>
-  - <https://mgba.io/downloads.html>
-  - <https://github.com/Cpasjuste/pemu/releases> (Needs a custom XML file, annoying.)
-  - <https://github.com/retroarch/retroarch> (Needs older firmware, warning.)
+- [vesktop](https://vesktop.dev/) - lightweight Discord client fork
+- [switch.hacks.guide](https://switch.hacks.guide/) - comprehensive Nintendo Switch homebrew/CFW guide
+  - [nh-server/switch-guide](https://github.com/nh-server/switch-guide) - GitHub source for the above guide
+  - [mGBA](https://mgba.io/downloads.html) - GBA emulator for Switch homebrew
+  - [pemu](https://github.com/Cpasjuste/pemu/releases) - multi-system emulator frontend (needs a custom XML file, annoying)
+  - [retroarch](https://github.com/retroarch/retroarch) - multi-system emulator frontend (needs older firmware, warning)
+- [imgburn, cd burning](https://www.imgburn.com)
+- [canirun.ai](https://www.canirun.ai/) - can I run this game checker
+- [Xbox Emulator Files](https://github.com/K3V1991/Xbox-Emulator-Files) - Xbox emulator files collection
 
 ## Programming
 
@@ -38,11 +41,11 @@ I am aggressively de-googling my life in 2025/2026.
 
 ### Text Editing
 
-- windsurf: bloated, use zeditor
-- cursor: bloated, use zeditor
+- windsurf: bloated, use zed
+- cursor: bloated, use zed
 - vscode - bloated, only use if you absolutely need to. It's slow and used to be my favorite, but...
 
-- zeditor - Fast and simple text editor. Rust backend.
+- [zed](https://zed.dev/) - Fast and simple text editor. Rust backend.
 - nano - command line editor
 
 ## CICD
@@ -55,11 +58,13 @@ I am aggressively de-googling my life in 2025/2026.
 - github runners
   - (literally just docker containers w/ some yaml command runner. its all the same pattern.)
   - can also do self hosted
-- <https://www.openstatus.dev/> (uptime/health, can self host)
+- [openstatus](https://www.openstatus.dev/) - uptime/health monitoring, can self host
 
 ## OS
 
 i highly recommend never using windows, for [many](https://en.wikipedia.org/wiki/The_Shadow_Brokers), [many](https://en.wikipedia.org/wiki/Edward_Snowden) [reasons](https://en.wikipedia.org/wiki/Server_Message_Block)
+
+### Linux distros
 
 - ubuntu - server OS
 - nixos - server/desktop OS
@@ -67,27 +72,44 @@ i highly recommend never using windows, for [many](https://en.wikipedia.org/wiki
 - TrueNAS CORE - freebsd based NAS OS that uses ZFS, ZFS is superior for use as a NAS for many reasons
   - AVOID hardware based RAID. if ur card dies and u cant replace it, kiss your data goodbye. software based raid does not suffer from this issue.
 
+### Windows utilities
+
+- [crystaldiskinfo](https://crystalmark.info/en/software/crystaldiskinfo/) - disk health monitor
+- [windirstat](https://windirstat.net/) - disk usage visualizer
+- [minitool partition wizard](https://www.minitool.com/partition-manager/) - partition manager
+- [minitool shadowmaker](https://www.minitool.com/backup/minitool-shadowmaker-free.html) - disk backup/cloning/imaging tool
+- [7-zip](https://www.7-zip.org/) - archive tool
+- [imagemagick](https://community.chocolatey.org/packages/imagemagick.app) - image conversion/manipulation CLI tool (install via chocolatey)
+- `mmsys.cpl` - sound settings (run dialog)
+- `appwiz.cpl` - add/remove programs (run dialog)
+
 ## Hardware
 
 I run various cheap laptops and a few HEPC (High-End Personal Computer) setups.
 Only Linux, except for a Windows computer I use for piano playing/DAW/Frooty Loops.
 
-- https://pcpartpicker.com/user/henryfbp/saved/
+- [pcpartpicker saved builds](https://pcpartpicker.com/user/henryfbp/saved/) - my saved PC part lists
+- [framework](https://frame.work) - modular/repairable laptops
+- [framework keyboard](https://keyboard.frame.work/) - framework's mechanical keyboard
 
 ## AI
 
 My current AI stack is here. I used to use ollama but it has issues with ROCm drivers on AMD GPUs, so I switched to `llama.cpp`!
 
-<https://github.com/meltingscales/cachyos-whitedragon-ai-lab>
+[cachyos-whitedragon-ai-lab](https://github.com/meltingscales/cachyos-whitedragon-ai-lab)
 
 Current working stack:
+- [lm studio](https://lmstudio.ai/): easy GUI for running local LLMs
 - llama.cpp: text generation backend (works with ROCm)
 - koboldcpp: easier to setup than llama.cpp.
 - openwebui: frontend for LLM interaction (TBD)
 - comfyui: image/video/audio generation (TBD)
+  - [ComfyUI-Zluda](https://github.com/patientx/ComfyUI-Zluda) - ComfyUI with ZLUDA for AMD GPUs on Windows
 - stablediffusion: image generation (TBD)
 - [goose: Claude CLI clone, seems very formidable.](//github.com/block/goose)
 - [llmfit: Hardware-aware LLM model finder. Detects your RAM/CPU/GPU and recommends models that will actually run well on your hardware. Supports multi-GPU, MoE architectures, and integrates with Ollama/llama.cpp/MLX.](https://github.com/AlexsJones/llmfit)
+  - [stable-diffusion-webui-amdgpu](https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu) - SD WebUI fork with AMD GPU support
+    - [setup guide (YouTube)](https://www.youtube.com/watch?v=g3XSZo6ewSQ)
 
 ### Corpo AI for coding
 
@@ -113,8 +135,7 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 
 ### Anti AI/Anti Slop
 
-- https://zadzmo.org/code/nepenthes/
-  - Markov chain babble generator. Waste the time/CPU of scrapers.
+- [nepenthes](https://zadzmo.org/code/nepenthes/) - Markov chain babble generator, wastes the time/CPU of scrapers
 
 ## Infra
 
@@ -134,7 +155,6 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 - yt-dlp: youtube downloader, before youtube killed it with session cookie enforcement.
 - transmission: torrent client
 - jellyfin: media server
-- immich: self hosted google photos clone
 - romm: emulation ROM/retro game database
 - [seanime: anime media server](https://seanime.rahim.app/)
   - extensions: TODO
@@ -145,44 +165,57 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 
 - handy.computer - offline text transcription
 - sshx.io - share terminal (dangerous)
+- <https://pomofocus.io/> - pomodoro timer
+- [obsidian](https://obsidian.md/) - markdown note-taking / personal knowledge base
 
 ## Hacking links
 
-- <https://book.hacktricks.xyz/welcome/readme>
-- <https://www.revshells.com/>
-- <https://eclypsium.com/>
-- <https://ddosecrets.com/wiki/Distributed_Denial_of_Secrets>
-- <https://news.ycombinator.com/>
-- <https://https://www.darkreading.com/application-security>
-- <https://www.sans.org/newsletters/ouch/>
-- <https://www.databreachtoday.com/>
-- <https://medium.com/vmacwrites/tools-to-visualize-your-terraform-plan-d421c6255f9f>
-- <https://www.scaledagileframework.com/implementation-roadmap/>
-- <https://www.cia.gov/static/5c875f3ec660e092cf893f60b4a288df/SimpleSabotage.pdf>
-- <https://www.privacytools.io/>
-- <https://blog.openalgo.in/algorithmic-trading-roadmap-2025-from-curious-coder-to-confident-execution-0662572a7838>
-- <https://www.lesswrong.com/>
+### Dark web / anonymity
+
+- [tor](https://www.torproject.org/) - onion routing anonymity network
+- [i2p](https://geti2p.net/) - garlic routing anonymity network
+- [ahmia](https://ahmia.fi/) - clearnet Tor search engine
+- torch - Tor search engine (`.onion`)
+- dread - Reddit-like forum on Tor (`.onion`)
+- exploit.in - Russian-language cybercrime/exploit forum
+- raidforums - data leak forum (seized by law enforcement)
+- leaks - data leak aggregator
+
+- [hacktricks](https://book.hacktricks.xyz/welcome/readme) - pentesting/CTF reference book
+- [revshells](https://www.revshells.com/) - reverse shell generator
+- [eclypsium](https://eclypsium.com/) - firmware/supply chain security research
+- [ddosecrets](https://ddosecrets.org/) - public interest leak repository
+- [hacker news](https://news.ycombinator.com/) - tech/security news aggregator
+- [dark reading](https://www.darkreading.com/application-security) - cybersecurity news
+- [sans ouch](https://www.sans.org/newsletters/ouch/) - SANS security awareness newsletter
+- [databreachtoday](https://www.databreachtoday.com/) - breach/incident news
+- [terraform plan visualizer](https://medium.com/vmacwrites/tools-to-visualize-your-terraform-plan-d421c6255f9f) - visualize terraform plans
+- [SAFe implementation roadmap](https://www.scaledagileframework.com/implementation-roadmap/) - scaled agile framework
+- [simple sabotage field manual](https://www.cia.gov/static/5c875f3ec660e092cf893f60b4a288df/SimpleSabotage.pdf) - declassified CIA doc
+- [privacytools](https://www.privacytools.io/) - privacy-focused software recommendations
+- [algorithmic trading roadmap](https://blog.openalgo.in/algorithmic-trading-roadmap-2025-from-curious-coder-to-confident-execution-0662572a7838) - algo trading guide
+- [lesswrong](https://www.lesswrong.com/) - rationalism/AI safety community
 
 ### Hacking tools
 
 #### Used
 
-- kali linux
-- parrotos
+- kali linux - penetration testing distro by Offensive Security
+- parrotos - security/privacy-focused Linux distro
 
-- dirb
-- nmap
-- rustscan
-- ftp
+- dirb - web content scanner / directory brute-forcer
+- nmap - network mapper and port scanner
+- rustscan - fast Rust-based port scanner, feeds into nmap
+- ftp - file transfer protocol CLI client
 - some python idk lol
-- searchsploit
-- msfconsole
-- msfvenom
+- searchsploit - offline CLI search for exploit-db
+- msfconsole - Metasploit Framework interactive console
+- msfvenom - Metasploit payload and shellcode generator
 
 #### To investigate
 
-- <https://deepnet.store/products/dn_key-pro-experimental>
-- Proxgrind
-- <https://proxmark.com/> icopy-x
-- Bash Bunny
-- <https://github.com/I-Am-Jakoby/Flipper-Zero-BadUSB/tree/main/Payloads>
+- [deepnet DN Key Pro](https://deepnet.store/products/dn_key-pro-experimental) - experimental hardware key
+- Proxgrind - NFC/RFID tool
+- [proxmark / icopy-x](https://proxmark.com/) - RFID/NFC research hardware
+- Bash Bunny - USB attack platform by Hak5
+- [Flipper Zero BadUSB payloads](https://github.com/I-Am-Jakoby/Flipper-Zero-BadUSB/tree/main/Payloads) - HID injection scripts for Flipper Zero

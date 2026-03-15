@@ -2,7 +2,7 @@
 <div class="hp-container">
     <h1>Honeypot Dummies</h1>
     <p class="hp-subtitle" id="hp-subtitle">
-        Recent hits to the markov-babble honeypot endpoint.
+        Recent hits to the markov-babble honeypot and catch-all 404 endpoints.
     </p>
     <p class="hp-count" id="hp-count"></p>
     <div class="hp-toolbar">
@@ -107,8 +107,20 @@
         max-width: 420px;
         overflow-x: auto;
     }
+    @media (max-width: 640px) {
+        .hp-container {
+            padding: 1rem;
+        }
+        .hp-container h1 {
+            font-size: 1.5rem;
+        }
+    }
 </style>
 
 <link rel="stylesheet" href="/static/css/honeypot_dummies.css" />
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.2/js/buttons.colVis.min.js"></script>
 <script src="/static/js/honeypot_dummies.js"></script>
 {% endblock %}
