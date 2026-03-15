@@ -87,6 +87,7 @@ Current working stack:
 - comfyui: image/video/audio generation (TBD)
 - stablediffusion: image generation (TBD)
 - [goose: Claude CLI clone, seems very formidable.](//github.com/block/goose)
+- [llmfit: Hardware-aware LLM model finder. Detects your RAM/CPU/GPU and recommends models that will actually run well on your hardware. Supports multi-GPU, MoE architectures, and integrates with Ollama/llama.cpp/MLX.](https://github.com/AlexsJones/llmfit)
 
 ### Corpo AI for coding
 
@@ -138,6 +139,7 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 - [seanime: anime media server](https://seanime.rahim.app/)
   - extensions: TODO
 - [gallery-dl: image downloader](https://github.com/mikf/gallery-dl)
+- [veadotube mini: Lightweight PNGTuber app for streaming. Easy setup, supports GIFs/APNGs, eye blinking, shake/jump effects, unlimited expression states controlled via keyboard/mouse/gamepad/MIDI/WebSocket.](https://olmewe.itch.io/veadotube-mini)
 
 ## Other
 
