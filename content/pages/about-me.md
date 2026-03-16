@@ -7,7 +7,7 @@ date: 2025-01-01
 
 - site: drakonix.systems
 - email: see resume (anti bot measure)
-- alt email: WIP.
+- alt email: `umbralstack@proton.me`
 - meatspace: I love IRL meetups. Just email me!
 
 ## Summary
