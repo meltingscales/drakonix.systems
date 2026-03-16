@@ -11,6 +11,8 @@ A list of tools I use.
 
 I am aggressively de-googling my life in 2025/2026.
 
+- [protonmail](https://protonmail.com) - encrypted email, Swiss privacy laws
+- [duckduckgo](https://duckduckgo.com) - privacy-respecting search engine
 - immich: google photos clone, self-hosted
 - navidrome: youtube music clone, self-hosted
 - more to come? :)
@@ -71,6 +73,10 @@ i highly recommend never using windows, for [many](https://en.wikipedia.org/wiki
 - cachyOS - easy arch based OS, fast. bleeding edge so stuff breaks. avoid if u value ur time or are new to linux.
 - TrueNAS CORE - freebsd based NAS OS that uses ZFS, ZFS is superior for use as a NAS for many reasons
   - AVOID hardware based RAID. if ur card dies and u cant replace it, kiss your data goodbye. software based raid does not suffer from this issue.
+
+### Dotfiles
+
+- [chezmoi](https://www.chezmoi.io/) - dotfile manager, handles templating/secrets/multi-machine setups
 
 ### Windows utilities
 
@@ -219,6 +225,7 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 
 #### To investigate
 
+- [evilginx2](https://github.com/kgretzky/evilginx2) - adversary-in-the-middle phishing framework, bypasses 2FA by proxying real login pages and capturing session cookies
 - [deepnet DN Key Pro](https://deepnet.store/products/dn_key-pro-experimental) - experimental hardware key
 - Proxgrind - NFC/RFID tool
 - [proxmark / icopy-x](https://proxmark.com/) - RFID/NFC research hardware
