@@ -108,6 +108,7 @@ Current working stack:
 - [lm studio](https://lmstudio.ai/): easy GUI for running local LLMs
 - llama.cpp: text generation backend (works with ROCm)
 - koboldcpp: easier to setup than llama.cpp.
+- [exo](https://github.com/exo-explore/exo) - run your own AI cluster across multiple devices (phones, laptops, etc.), no specialized hardware needed
 - openwebui: frontend for LLM interaction (TBD)
 - comfyui: image/video/audio generation (TBD)
   - [ComfyUI-Zluda](https://github.com/patientx/ComfyUI-Zluda) - ComfyUI with ZLUDA for AMD GPUs on Windows
