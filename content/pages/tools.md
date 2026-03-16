@@ -106,9 +106,10 @@ Current working stack:
 - comfyui: image/video/audio generation (TBD)
   - [ComfyUI-Zluda](https://github.com/patientx/ComfyUI-Zluda) - ComfyUI with ZLUDA for AMD GPUs on Windows
 - stablediffusion: image generation (TBD)
+- [goose: Claude CLI clone, seems very formidable.](//github.com/block/goose)
+- [llmfit: Hardware-aware LLM model finder. Detects your RAM/CPU/GPU and recommends models that will actually run well on your hardware. Supports multi-GPU, MoE architectures, and integrates with Ollama/llama.cpp/MLX.](https://github.com/AlexsJones/llmfit)
   - [stable-diffusion-webui-amdgpu](https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu) - SD WebUI fork with AMD GPU support
     - [setup guide (YouTube)](https://www.youtube.com/watch?v=g3XSZo6ewSQ)
-- [goose](https://github.com/block/goose) - Claude CLI clone, seems very formidable
 
 ### Corpo AI for coding
 
@@ -158,6 +159,12 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 - [seanime: anime media server](https://seanime.rahim.app/)
   - extensions: TODO
 - [gallery-dl: image downloader](https://github.com/mikf/gallery-dl)
+
+### Streaming
+
+- [OBS Studio](https://obsproject.com/)
+- [veadotube mini: Lightweight PNGTuber app for streaming. Easy setup, supports GIFs/APNGs, eye blinking, shake/jump effects, unlimited expression states controlled via keyboard/mouse/gamepad/MIDI/WebSocket.](https://olmewe.itch.io/veadotube-mini)
+- [OBS Studio Input Overlay](https://github.com/univrsal/input-overlay)
 
 ## Other
 
