@@ -223,10 +223,9 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 - searchsploit - offline CLI search for exploit-db
 - msfconsole - Metasploit Framework interactive console
 - msfvenom - Metasploit payload and shellcode generator
+- [evilginx2](https://github.com/meltingscales/evilginx2/tree/restored) - adversary-in-the-middle phishing framework, bypasses 2FA by proxying real login pages and capturing session cookies
 
 #### To investigate
-
-- [evilginx2](https://github.com/kgretzky/evilginx2) - adversary-in-the-middle phishing framework, bypasses 2FA by proxying real login pages and capturing session cookies
 - [deepnet DN Key Pro](https://deepnet.store/products/dn_key-pro-experimental) - experimental hardware key
 - Proxgrind - NFC/RFID tool
 - [proxmark / icopy-x](https://proxmark.com/) - RFID/NFC research hardware
