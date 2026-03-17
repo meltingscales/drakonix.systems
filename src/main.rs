@@ -13,6 +13,7 @@ mod twitch_icon_gen;
 
 use axum::{
     extract::DefaultBodyLimit,
+    response::Redirect,
     routing::{get, post},
     Router,
 };
@@ -181,9 +182,14 @@ async fn main() -> anyhow::Result<()> {
             "/api/convert/download/:file_id",
             get(handlers::download_converted_file),
         )
-        // Twitch sub badge icon generator service
+        // Redirect old sub-badge URL to generic endpoint
         .route(
             "/services/twitch-sub-icon-gen",
+            get(|| async { Redirect::permanent("/services/twitch-icon-gen-generic") }),
+        )
+        // Twitch icon generator service
+        .route(
+            "/services/twitch-icon-gen-generic",
             get(handlers::twitch_icon_gen_page),
         )
         .route(

@@ -463,7 +463,7 @@ pub async fn twitch_icon_gen_page(
     add_honeypot_urls(&mut context);
     let html = state
         .tera
-        .render("twitch_sub_icon_gen.html", &context)
+        .render("twitch_icon_gen_generic.html", &context)
         .map_err(|e| AppError::TemplateError(e.to_string()))?;
     Ok(Html(html))
 }
