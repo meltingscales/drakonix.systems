@@ -73,11 +73,17 @@
         performSearch(e.target.value);
     });
 
+    let mousedownOnResults = false;
+    resultsContainer.addEventListener('mousedown', () => {
+        mousedownOnResults = true;
+    });
+
     searchInput.addEventListener('blur', () => {
-        // Delay hiding to allow clicking on results
-        setTimeout(() => {
-            resultsContainer.style.display = 'none';
-        }, 200);
+        if (mousedownOnResults) {
+            mousedownOnResults = false;
+            return;
+        }
+        resultsContainer.style.display = 'none';
     });
 
     searchInput.addEventListener('focus', (e) => {
