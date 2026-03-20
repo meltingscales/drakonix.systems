@@ -9,6 +9,7 @@ date: 2025-01-01
 - email: see resume (anti bot measure)
 - alt email: `umbralstack@proton.me`
 - meatspace: I love IRL meetups. Just email me!
+- github: https://github.com/meltingscales
 
 ## Summary
 
