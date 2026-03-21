@@ -3,20 +3,62 @@
 {% block title %}Bifurcation Diagram Viewer{% endblock %}
 
 {% block content %}
-<div class="bifurcation-container">
-    <h1>Bifurcation Diagram Viewer</h1>
-    <p>
-        The logistic map <code>x<sub>n+1</sub> = r &middot; x<sub>n</sub>(1 &minus; x<sub>n</sub>)</code>
-        models population dynamics. As <em>r</em> increases, the long-term population
-        transitions from a stable fixed point into period-doubling cascades and chaos.
-        The Mandelbrot set shares the same parameter axis via <code>c = r/2 &minus; r²/4</code>.
-        Drag to zoom. Double-click to reset.
-    </p>
+<div class="bifurcation-container" id="bif-container">
+    <div class="page-header">
+        <h1>Bifurcation Diagram Viewer</h1>
+        <p>
+            The logistic map <code>x<sub>n+1</sub> = r &middot; x<sub>n</sub>(1 &minus; x<sub>n</sub>)</code>
+            models population dynamics. As <em>r</em> increases, the long-term population
+            transitions from a stable fixed point into period-doubling cascades and chaos.
+            The Mandelbrot set shares the same parameter axis via <code>c = r/2 &minus; r²/4</code>.
+            Drag to zoom. Double-click to reset.
+        </p>
+    </div>
 
     <div class="controls">
         <button id="reset-btn" class="btn btn-secondary">Reset View</button>
+        <button id="fullscreen-btn" class="btn btn-secondary">Fullscreen</button>
         <button id="render-btn" class="btn btn-primary" disabled>Rendering...</button>
         <span id="coords-display" class="coords"></span>
+    </div>
+
+    <div class="sliders-section">
+        <div class="slider-group">
+            <div class="slider-row">
+                <label>r min</label>
+                <input type="range" id="slider-rmin" min="0" max="4" step="0.0001" value="2.5">
+                <span id="sv-rmin" class="slider-val">2.5000</span>
+            </div>
+            <div class="slider-row">
+                <label>r max</label>
+                <input type="range" id="slider-rmax" min="0" max="4" step="0.0001" value="4.0">
+                <span id="sv-rmax" class="slider-val">4.0000</span>
+            </div>
+        </div>
+        <div class="slider-group">
+            <div class="slider-row">
+                <label>x min</label>
+                <input type="range" id="slider-xmin" min="0" max="1" step="0.001" value="0.0">
+                <span id="sv-xmin" class="slider-val">0.0000</span>
+            </div>
+            <div class="slider-row">
+                <label>x max</label>
+                <input type="range" id="slider-xmax" min="0" max="1" step="0.001" value="1.0">
+                <span id="sv-xmax" class="slider-val">1.0000</span>
+            </div>
+        </div>
+        <div class="slider-group">
+            <div class="slider-row">
+                <label>Im min</label>
+                <input type="range" id="slider-immin" min="-2.5" max="2.5" step="0.001" value="-1.5">
+                <span id="sv-immin" class="slider-val">-1.5000</span>
+            </div>
+            <div class="slider-row">
+                <label>Im max</label>
+                <input type="range" id="slider-immax" min="-2.5" max="2.5" step="0.001" value="1.5">
+                <span id="sv-immax" class="slider-val">1.5000</span>
+            </div>
+        </div>
     </div>
 
     <div class="panel-label">Logistic Map — Bifurcation Diagram</div>
@@ -64,7 +106,7 @@
 .controls {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.75rem;
     margin-bottom: 0.75rem;
     flex-wrap: wrap;
 }
@@ -78,36 +120,69 @@
     font-weight: 600;
 }
 
-.btn-primary {
-    background: #007bff;
-    color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-    background: #0056b3;
-}
-
-.btn-secondary {
-    background: #6c757d;
-    color: white;
-}
-
-.btn-secondary:hover:not(:disabled) {
-    background: #545b62;
-}
-
-.btn:disabled {
-    opacity: 0.6;
-    cursor: default;
-}
+.btn-primary { background: #007bff; color: white; }
+.btn-primary:hover:not(:disabled) { background: #0056b3; }
+.btn-secondary { background: #6c757d; color: white; }
+.btn-secondary:hover:not(:disabled) { background: #545b62; }
+.btn:disabled { opacity: 0.6; cursor: default; }
 
 .coords {
     font-family: 'Courier New', monospace;
     font-size: 0.85rem;
     color: var(--text-muted, #555);
-    min-width: 240px;
+    min-width: 300px;
 }
 
+/* Sliders */
+.sliders-section {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.9rem;
+    padding: 0.6rem 0.75rem;
+    background: var(--bg-secondary, #f5f5f5);
+    border-radius: 6px;
+    border: 1px solid var(--border-color, #ddd);
+}
+
+.slider-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 220px;
+    flex: 1;
+}
+
+.slider-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.slider-row label {
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    color: var(--text-muted, #555);
+    width: 3.8rem;
+    flex-shrink: 0;
+}
+
+.slider-row input[type="range"] {
+    flex: 1;
+    accent-color: #007bff;
+    cursor: pointer;
+}
+
+.slider-val {
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    color: var(--text-muted, #555);
+    width: 5.5rem;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+/* Panel labels */
 .panel-label {
     font-size: 0.85rem;
     font-weight: 600;
@@ -117,6 +192,7 @@
     text-transform: uppercase;
 }
 
+/* Canvas wrappers */
 .canvas-wrapper {
     position: relative;
     width: 100%;
@@ -127,41 +203,89 @@
     cursor: crosshair;
 }
 
-#diagram {
+#diagram, #mandelbrot {
     display: block;
     width: 100%;
     height: auto;
 }
 
-#overlay {
+#overlay, #mandelbrot-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-#mandelbrot {
-    display: block;
-    width: 100%;
-    height: auto;
-}
-
-#mandelbrot-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     pointer-events: none;
 }
 
 .param-display {
-    margin-top: 0.5rem;
+    margin-top: 0.4rem;
     font-family: 'Courier New', monospace;
     font-size: 0.85rem;
     color: var(--text-muted, #555);
+}
+
+/* ── Fullscreen mode ── */
+.bif-fullscreen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    max-width: none;
+    margin: 0;
+    padding: 0.4rem 0.6rem;
+    background: #111;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.bif-fullscreen .page-header {
+    display: none;
+}
+
+.bif-fullscreen .sliders-section {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.12);
+    padding: 0.4rem 0.6rem;
+    margin-bottom: 0.4rem;
+    gap: 1rem;
+}
+
+.bif-fullscreen .slider-row label,
+.bif-fullscreen .slider-val {
+    color: #aaa;
+}
+
+.bif-fullscreen .panel-label {
+    color: #888;
+    margin-bottom: 0.2rem;
+}
+
+.bif-fullscreen .param-display {
+    color: #888;
+    margin-top: 0.15rem;
+    font-size: 0.78rem;
+}
+
+.bif-fullscreen .controls {
+    margin-bottom: 0.4rem;
+}
+
+.bif-fullscreen .coords {
+    color: #aaa;
+}
+
+.bif-fullscreen .canvas-wrapper {
+    flex: 1;
+    min-height: 0;
+    border-color: #333;
+}
+
+.bif-fullscreen #diagram,
+.bif-fullscreen #mandelbrot {
+    width: auto;
+    height: 100%;
+    max-width: 100%;
+    display: block;
+    margin: 0 auto;
 }
 </style>
 
@@ -171,84 +295,90 @@
     const SAMPLES = 300;
     const MAX_ITER = 200;
 
-    // Bifurcation view state
     let view = { rMin: 2.5, rMax: 4.0, xMin: 0.0, xMax: 1.0 };
-    // Mandelbrot imaginary range (real axis follows bifurcation r via c = r/2 - r²/4)
     let mImMin = -1.5, mImMax = 1.5;
 
-    // Canvas dimensions
     const W = 1200, H = 800;
     const W_M = 1200, H_M = 600;
 
-    // Bifurcation canvases
-    const diagramCanvas = document.getElementById('diagram');
-    const overlayCanvas = document.getElementById('overlay');
-    const wrapper = document.getElementById('canvas-wrapper');
-
-    diagramCanvas.width = W;
-    diagramCanvas.height = H;
-    overlayCanvas.width = W;
-    overlayCanvas.height = H;
-
-    const ctx = diagramCanvas.getContext('2d');
-    const octx = overlayCanvas.getContext('2d');
-
-    // Mandelbrot canvases
+    // Canvases
+    const diagramCanvas    = document.getElementById('diagram');
+    const overlayCanvas    = document.getElementById('overlay');
+    const wrapper          = document.getElementById('canvas-wrapper');
     const mandelbrotCanvas = document.getElementById('mandelbrot');
     const mandelbrotOverlay = document.getElementById('mandelbrot-overlay');
-    const mWrapper = document.getElementById('mandelbrot-wrapper');
+    const mWrapper         = document.getElementById('mandelbrot-wrapper');
+    const container        = document.getElementById('bif-container');
 
-    mandelbrotCanvas.width = W_M;
-    mandelbrotCanvas.height = H_M;
-    mandelbrotOverlay.width = W_M;
-    mandelbrotOverlay.height = H_M;
+    diagramCanvas.width  = W;    diagramCanvas.height  = H;
+    overlayCanvas.width  = W;    overlayCanvas.height  = H;
+    mandelbrotCanvas.width  = W_M; mandelbrotCanvas.height  = H_M;
+    mandelbrotOverlay.width = W_M; mandelbrotOverlay.height = H_M;
 
-    const mctx = mandelbrotCanvas.getContext('2d');
+    const ctx   = diagramCanvas.getContext('2d');
+    const octx  = overlayCanvas.getContext('2d');
+    const mctx  = mandelbrotCanvas.getContext('2d');
     const moctx = mandelbrotOverlay.getContext('2d');
 
-    // UI elements
-    const resetBtn = document.getElementById('reset-btn');
-    const renderBtn = document.getElementById('render-btn');
+    // UI
+    const resetBtn      = document.getElementById('reset-btn');
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    const renderBtn     = document.getElementById('render-btn');
     const coordsDisplay = document.getElementById('coords-display');
 
-    const rMinDisplay = document.getElementById('r-min-display');
-    const rMaxDisplay = document.getElementById('r-max-display');
-    const xMinDisplay = document.getElementById('x-min-display');
-    const xMaxDisplay = document.getElementById('x-max-display');
-
-    const cRealLeftDisplay = document.getElementById('c-real-left-display');
+    const rMinDisplay       = document.getElementById('r-min-display');
+    const rMaxDisplay       = document.getElementById('r-max-display');
+    const xMinDisplay       = document.getElementById('x-min-display');
+    const xMaxDisplay       = document.getElementById('x-max-display');
+    const cRealLeftDisplay  = document.getElementById('c-real-left-display');
     const cRealRightDisplay = document.getElementById('c-real-right-display');
-    const cImagMinDisplay = document.getElementById('c-imag-min-display');
-    const cImagMaxDisplay = document.getElementById('c-imag-max-display');
+    const cImagMinDisplay   = document.getElementById('c-imag-min-display');
+    const cImagMaxDisplay   = document.getElementById('c-imag-max-display');
+
+    // Sliders
+    const sliderRMin  = document.getElementById('slider-rmin');
+    const sliderRMax  = document.getElementById('slider-rmax');
+    const sliderXMin  = document.getElementById('slider-xmin');
+    const sliderXMax  = document.getElementById('slider-xmax');
+    const sliderImMin = document.getElementById('slider-immin');
+    const sliderImMax = document.getElementById('slider-immax');
+
+    const svRMin  = document.getElementById('sv-rmin');
+    const svRMax  = document.getElementById('sv-rmax');
+    const svXMin  = document.getElementById('sv-xmin');
+    const svXMax  = document.getElementById('sv-xmax');
+    const svImMin = document.getElementById('sv-immin');
+    const svImMax = document.getElementById('sv-immax');
 
     let renderHandle = null;
     let mRenderHandle = null;
+    let sliderTimer = null;
 
-    function fmt(n) { return n.toFixed(6); }
-
+    function fmt(n) { return n.toFixed(4); }
+    function fmt6(n) { return n.toFixed(6); }
     function rToC(r) { return r / 2 - (r * r) / 4; }
 
     function updateParamDisplay() {
-        rMinDisplay.textContent = fmt(view.rMin);
-        rMaxDisplay.textContent = fmt(view.rMax);
-        xMinDisplay.textContent = fmt(view.xMin);
-        xMaxDisplay.textContent = fmt(view.xMax);
-
-        // c_real at left pixel = c(rMin), at right pixel = c(rMax)
-        // Note: c decreases as r increases, so left side has higher c_real
-        cRealLeftDisplay.textContent = fmt(rToC(view.rMin));
-        cRealRightDisplay.textContent = fmt(rToC(view.rMax));
-        cImagMinDisplay.textContent = fmt(mImMin);
-        cImagMaxDisplay.textContent = fmt(mImMax);
+        rMinDisplay.textContent = fmt6(view.rMin);
+        rMaxDisplay.textContent = fmt6(view.rMax);
+        xMinDisplay.textContent = fmt6(view.xMin);
+        xMaxDisplay.textContent = fmt6(view.xMax);
+        cRealLeftDisplay.textContent  = fmt6(rToC(view.rMin));
+        cRealRightDisplay.textContent = fmt6(rToC(view.rMax));
+        cImagMinDisplay.textContent = fmt6(mImMin);
+        cImagMaxDisplay.textContent = fmt6(mImMax);
+        // Sync sliders
+        sliderRMin.value = view.rMin;  svRMin.textContent = fmt(view.rMin);
+        sliderRMax.value = view.rMax;  svRMax.textContent = fmt(view.rMax);
+        sliderXMin.value = view.xMin;  svXMin.textContent = fmt(view.xMin);
+        sliderXMax.value = view.xMax;  svXMax.textContent = fmt(view.xMax);
+        sliderImMin.value = mImMin;    svImMin.textContent = fmt(mImMin);
+        sliderImMax.value = mImMax;    svImMax.textContent = fmt(mImMax);
     }
 
     // --- Bifurcation render ---
     function render() {
-        if (renderHandle !== null) {
-            cancelAnimationFrame(renderHandle);
-            renderHandle = null;
-        }
-
+        if (renderHandle !== null) { cancelAnimationFrame(renderHandle); renderHandle = null; }
         renderBtn.disabled = true;
         renderBtn.textContent = 'Rendering...';
 
@@ -258,7 +388,6 @@
         const { rMin, rMax, xMin, xMax } = view;
         const rRange = rMax - rMin;
         const xRange = xMax - xMin;
-
         let col = 0;
         const CHUNK = 40;
 
@@ -267,31 +396,22 @@
             for (let px = col; px < end; px++) {
                 const r = rMin + (px / W) * rRange;
                 let x = 0.5;
-                for (let i = 0; i < WARMUP; i++) {
-                    x = r * x * (1 - x);
-                }
+                for (let i = 0; i < WARMUP; i++) x = r * x * (1 - x);
                 for (let i = 0; i < SAMPLES; i++) {
                     x = r * x * (1 - x);
                     if (x >= xMin && x <= xMax) {
                         const py = Math.floor(H - ((x - xMin) / xRange) * H);
                         if (py >= 0 && py < H) {
                             const t = (r - 2.5) / 1.5;
-                            const red   = Math.floor(50 + t * 200);
-                            const green = Math.floor(200 - t * 100);
-                            const blue  = Math.floor(220 - t * 180);
-                            ctx.fillStyle = `rgb(${red},${green},${blue})`;
+                            ctx.fillStyle = `rgb(${Math.floor(50+t*200)},${Math.floor(200-t*100)},${Math.floor(220-t*180)})`;
                             ctx.fillRect(px, py, 1, 1);
                         }
                     }
                 }
             }
             col = end;
-            if (col < W) {
-                renderHandle = requestAnimationFrame(renderChunk);
-            } else {
-                renderHandle = null;
-                checkAllDone();
-            }
+            if (col < W) { renderHandle = requestAnimationFrame(renderChunk); }
+            else { renderHandle = null; checkAllDone(); }
         }
 
         renderHandle = requestAnimationFrame(renderChunk);
@@ -299,19 +419,14 @@
 
     // --- Mandelbrot render ---
     function renderMandelbrot() {
-        if (mRenderHandle !== null) {
-            cancelAnimationFrame(mRenderHandle);
-            mRenderHandle = null;
-        }
+        if (mRenderHandle !== null) { cancelAnimationFrame(mRenderHandle); mRenderHandle = null; }
 
         const imageData = mctx.createImageData(W_M, H_M);
         const data = imageData.data;
-        // Pre-set alpha to 255
         for (let i = 3; i < data.length; i += 4) data[i] = 255;
 
         const { rMin, rMax } = view;
         const imRange = mImMax - mImMin;
-
         let row = 0;
         const CHUNK_ROWS = 10;
 
@@ -320,10 +435,8 @@
             for (let py = row; py < endRow; py++) {
                 const c_imag = mImMax - (py / H_M) * imRange;
                 for (let px = 0; px < W_M; px++) {
-                    // Map pixel x to r, then r to c_real via c = r/2 - r²/4
                     const r_val = rMin + (px / W_M) * (rMax - rMin);
                     const c_real = r_val / 2 - (r_val * r_val) / 4;
-
                     let zx = 0, zy = 0, iter = 0;
                     while (iter < MAX_ITER) {
                         const zx2 = zx * zx, zy2 = zy * zy;
@@ -332,28 +445,21 @@
                         zx = zx2 - zy2 + c_real;
                         iter++;
                     }
-
-                    const idx = (py * W_M + px) * 4;
                     if (iter < MAX_ITER) {
-                        // Smooth escape time coloring
                         const zMod2 = zx * zx + zy * zy;
                         const smooth = iter + 1 - Math.log(Math.log(Math.sqrt(zMod2))) / Math.LN2;
                         const t = smooth * 0.04;
-                        data[idx]     = Math.max(0, Math.min(255, Math.floor(128 + 127 * Math.sin(t * Math.PI * 2))));
-                        data[idx + 1] = Math.max(0, Math.min(255, Math.floor(128 + 127 * Math.sin(t * Math.PI * 2 + 2.094))));
-                        data[idx + 2] = Math.max(0, Math.min(255, Math.floor(128 + 127 * Math.sin(t * Math.PI * 2 + 4.189))));
+                        const idx = (py * W_M + px) * 4;
+                        data[idx]   = Math.max(0, Math.min(255, Math.floor(128 + 127 * Math.sin(t * Math.PI * 2))));
+                        data[idx+1] = Math.max(0, Math.min(255, Math.floor(128 + 127 * Math.sin(t * Math.PI * 2 + 2.094))));
+                        data[idx+2] = Math.max(0, Math.min(255, Math.floor(128 + 127 * Math.sin(t * Math.PI * 2 + 4.189))));
                     }
-                    // else: remains 0,0,0,255 (black = in the set)
                 }
             }
             mctx.putImageData(imageData, 0, 0);
             row = endRow;
-            if (row < H_M) {
-                mRenderHandle = requestAnimationFrame(renderMChunk);
-            } else {
-                mRenderHandle = null;
-                checkAllDone();
-            }
+            if (row < H_M) { mRenderHandle = requestAnimationFrame(renderMChunk); }
+            else { mRenderHandle = null; checkAllDone(); }
         }
 
         mRenderHandle = requestAnimationFrame(renderMChunk);
@@ -366,196 +472,171 @@
         }
     }
 
-    function renderAll() {
-        render();
-        renderMandelbrot();
+    function renderAll() { render(); renderMandelbrot(); }
+
+    function resetView() {
+        view = { rMin: 2.5, rMax: 4.0, xMin: 0.0, xMax: 1.0 };
+        mImMin = -1.5; mImMax = 1.5;
+        updateParamDisplay();
+        renderAll();
     }
 
-    // --- Bifurcation zoom (drag on top canvas) ---
-    let dragStart = null;
-    let dragRect = null;
+    // --- Sliders ---
+    function onSliderInput() {
+        svRMin.textContent  = fmt(parseFloat(sliderRMin.value));
+        svRMax.textContent  = fmt(parseFloat(sliderRMax.value));
+        svXMin.textContent  = fmt(parseFloat(sliderXMin.value));
+        svXMax.textContent  = fmt(parseFloat(sliderXMax.value));
+        svImMin.textContent = fmt(parseFloat(sliderImMin.value));
+        svImMax.textContent = fmt(parseFloat(sliderImMax.value));
+        clearTimeout(sliderTimer);
+        sliderTimer = setTimeout(() => {
+            view.rMin = parseFloat(sliderRMin.value);
+            view.rMax = parseFloat(sliderRMax.value);
+            view.xMin = parseFloat(sliderXMin.value);
+            view.xMax = parseFloat(sliderXMax.value);
+            mImMin    = parseFloat(sliderImMin.value);
+            mImMax    = parseFloat(sliderImMax.value);
+            updateParamDisplay();
+            renderAll();
+        }, 180);
+    }
 
+    [sliderRMin, sliderRMax, sliderXMin, sliderXMax, sliderImMin, sliderImMax]
+        .forEach(s => s.addEventListener('input', onSliderInput));
+
+    // --- Fullscreen toggle ---
+    fullscreenBtn.addEventListener('click', () => {
+        const fs = container.classList.toggle('bif-fullscreen');
+        fullscreenBtn.textContent = fs ? 'Exit Fullscreen' : 'Fullscreen';
+        // scroll container to top when entering fullscreen
+        if (fs) container.scrollTop = 0;
+    });
+
+    // --- Canvas drag-to-zoom helpers ---
     function canvasPos(e, canvas) {
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
         const scaleY = canvas.height / rect.height;
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        return {
-            x: (clientX - rect.left) * scaleX,
-            y: (clientY - rect.top) * scaleY,
-        };
+        return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
     }
 
     function pixelToView(px, py) {
-        const r = view.rMin + (px / W) * (view.rMax - view.rMin);
-        const x = view.xMax - (py / H) * (view.xMax - view.xMin);
-        return { r, x };
+        return {
+            r: view.rMin + (px / W) * (view.rMax - view.rMin),
+            x: view.xMax - (py / H) * (view.xMax - view.xMin),
+        };
     }
+
+    function mPixelToView(px, py) {
+        return {
+            r:  view.rMin + (px / W_M) * (view.rMax - view.rMin),
+            im: mImMax - (py / H_M) * (mImMax - mImMin),
+        };
+    }
+
+    // --- Bifurcation drag ---
+    let dragStart = null, dragRect = null;
 
     wrapper.addEventListener('mousedown', e => {
         if (e.button !== 0) return;
-        dragStart = canvasPos(e, diagramCanvas);
-        dragRect = null;
-        e.preventDefault();
+        dragStart = canvasPos(e, diagramCanvas); dragRect = null; e.preventDefault();
     });
 
     wrapper.addEventListener('mousemove', e => {
         const pos = canvasPos(e, diagramCanvas);
         const { r, x } = pixelToView(pos.x, pos.y);
-        coordsDisplay.textContent = `r = ${fmt(r)}  x = ${fmt(x)}  c = ${fmt(rToC(r))}`;
-
+        coordsDisplay.textContent = `r = ${fmt6(r)}  x = ${fmt6(x)}  c = ${fmt6(rToC(r))}`;
         if (dragStart) {
-            dragRect = {
-                x: Math.min(dragStart.x, pos.x),
-                y: Math.min(dragStart.y, pos.y),
-                w: Math.abs(pos.x - dragStart.x),
-                h: Math.abs(pos.y - dragStart.y),
-            };
+            dragRect = { x: Math.min(dragStart.x, pos.x), y: Math.min(dragStart.y, pos.y),
+                         w: Math.abs(pos.x - dragStart.x), h: Math.abs(pos.y - dragStart.y) };
             drawOverlay();
         }
     });
 
     wrapper.addEventListener('mouseleave', () => {
         coordsDisplay.textContent = '';
-        if (dragStart) {
-            dragStart = null;
-            dragRect = null;
-            clearOverlay();
-        }
+        if (dragStart) { dragStart = null; dragRect = null; clearOverlay(); }
     });
 
     wrapper.addEventListener('mouseup', e => {
         if (!dragStart) return;
         const pos = canvasPos(e, diagramCanvas);
-        const MIN_DRAG = 5;
-        if (Math.abs(pos.x - dragStart.x) > MIN_DRAG && Math.abs(pos.y - dragStart.y) > MIN_DRAG) {
+        if (Math.abs(pos.x - dragStart.x) > 5 && Math.abs(pos.y - dragStart.y) > 5) {
             const a = pixelToView(Math.min(dragStart.x, pos.x), Math.max(dragStart.y, pos.y));
             const b = pixelToView(Math.max(dragStart.x, pos.x), Math.min(dragStart.y, pos.y));
             view = { rMin: a.r, rMax: b.r, xMin: a.x, xMax: b.x };
-            updateParamDisplay();
-            renderAll();
+            updateParamDisplay(); renderAll();
         }
-        dragStart = null;
-        dragRect = null;
-        clearOverlay();
+        dragStart = null; dragRect = null; clearOverlay();
     });
 
-    // --- Mandelbrot drag-to-zoom (imaginary axis independent) ---
-    let mDragStart = null;
-    let mDragRect = null;
-
-    function mPixelToView(px, py) {
-        const r = view.rMin + (px / W_M) * (view.rMax - view.rMin);
-        const im = mImMax - (py / H_M) * (mImMax - mImMin);
-        return { r, im };
-    }
+    // --- Mandelbrot drag ---
+    let mDragStart = null, mDragRect = null;
 
     mWrapper.addEventListener('mousedown', e => {
         if (e.button !== 0) return;
-        mDragStart = canvasPos(e, mandelbrotCanvas);
-        mDragRect = null;
-        e.preventDefault();
+        mDragStart = canvasPos(e, mandelbrotCanvas); mDragRect = null; e.preventDefault();
     });
 
     mWrapper.addEventListener('mousemove', e => {
         const pos = canvasPos(e, mandelbrotCanvas);
         const { r, im } = mPixelToView(pos.x, pos.y);
-        coordsDisplay.textContent = `r = ${fmt(r)}  c = ${fmt(rToC(r))} + ${fmt(im)}i`;
-
+        coordsDisplay.textContent = `r = ${fmt6(r)}  c = ${fmt6(rToC(r))} + ${fmt6(im)}i`;
         if (mDragStart) {
-            mDragRect = {
-                x: Math.min(mDragStart.x, pos.x),
-                y: Math.min(mDragStart.y, pos.y),
-                w: Math.abs(pos.x - mDragStart.x),
-                h: Math.abs(pos.y - mDragStart.y),
-            };
+            mDragRect = { x: Math.min(mDragStart.x, pos.x), y: Math.min(mDragStart.y, pos.y),
+                          w: Math.abs(pos.x - mDragStart.x), h: Math.abs(pos.y - mDragStart.y) };
             drawMOverlay();
         }
     });
 
     mWrapper.addEventListener('mouseleave', () => {
         coordsDisplay.textContent = '';
-        if (mDragStart) {
-            mDragStart = null;
-            mDragRect = null;
-            clearMOverlay();
-        }
+        if (mDragStart) { mDragStart = null; mDragRect = null; clearMOverlay(); }
     });
 
     mWrapper.addEventListener('mouseup', e => {
         if (!mDragStart) return;
         const pos = canvasPos(e, mandelbrotCanvas);
-        const MIN_DRAG = 5;
-        if (Math.abs(pos.x - mDragStart.x) > MIN_DRAG && Math.abs(pos.y - mDragStart.y) > MIN_DRAG) {
+        if (Math.abs(pos.x - mDragStart.x) > 5 && Math.abs(pos.y - mDragStart.y) > 5) {
             const a = mPixelToView(Math.min(mDragStart.x, pos.x), Math.max(mDragStart.y, pos.y));
             const b = mPixelToView(Math.max(mDragStart.x, pos.x), Math.min(mDragStart.y, pos.y));
-            // Zoom bifurcation r range from Mandelbrot drag
-            view.rMin = a.r;
-            view.rMax = b.r;
-            // Zoom Mandelbrot imaginary range
-            mImMin = a.im;
-            mImMax = b.im;
-            updateParamDisplay();
-            renderAll();
+            view.rMin = a.r; view.rMax = b.r;
+            mImMin = a.im;   mImMax = b.im;
+            updateParamDisplay(); renderAll();
         }
-        mDragStart = null;
-        mDragRect = null;
-        clearMOverlay();
+        mDragStart = null; mDragRect = null; clearMOverlay();
     });
 
-    // Double-click resets both views
-    wrapper.addEventListener('dblclick', () => {
-        view = { rMin: 2.5, rMax: 4.0, xMin: 0.0, xMax: 1.0 };
-        mImMin = -1.5; mImMax = 1.5;
-        updateParamDisplay();
-        renderAll();
-    });
-
-    mWrapper.addEventListener('dblclick', () => {
-        view = { rMin: 2.5, rMax: 4.0, xMin: 0.0, xMax: 1.0 };
-        mImMin = -1.5; mImMax = 1.5;
-        updateParamDisplay();
-        renderAll();
-    });
-
-    resetBtn.addEventListener('click', () => {
-        view = { rMin: 2.5, rMax: 4.0, xMin: 0.0, xMax: 1.0 };
-        mImMin = -1.5; mImMax = 1.5;
-        updateParamDisplay();
-        renderAll();
-    });
+    // Double-click resets both
+    wrapper.addEventListener('dblclick', resetView);
+    mWrapper.addEventListener('dblclick', resetView);
+    resetBtn.addEventListener('click', resetView);
 
     // --- Overlay drawing ---
     function drawOverlay() {
         clearOverlay();
         if (!dragRect) return;
-        octx.strokeStyle = 'rgba(255, 255, 100, 0.9)';
-        octx.lineWidth = 1.5;
-        octx.setLineDash([6, 3]);
+        octx.strokeStyle = 'rgba(255,255,100,0.9)'; octx.lineWidth = 1.5;
+        octx.setLineDash([6,3]);
         octx.strokeRect(dragRect.x, dragRect.y, dragRect.w, dragRect.h);
-        octx.fillStyle = 'rgba(255, 255, 100, 0.08)';
+        octx.fillStyle = 'rgba(255,255,100,0.08)';
         octx.fillRect(dragRect.x, dragRect.y, dragRect.w, dragRect.h);
     }
-
-    function clearOverlay() {
-        octx.clearRect(0, 0, W, H);
-    }
+    function clearOverlay() { octx.clearRect(0, 0, W, H); }
 
     function drawMOverlay() {
         clearMOverlay();
         if (!mDragRect) return;
-        moctx.strokeStyle = 'rgba(255, 255, 100, 0.9)';
-        moctx.lineWidth = 1.5;
-        moctx.setLineDash([6, 3]);
+        moctx.strokeStyle = 'rgba(255,255,100,0.9)'; moctx.lineWidth = 1.5;
+        moctx.setLineDash([6,3]);
         moctx.strokeRect(mDragRect.x, mDragRect.y, mDragRect.w, mDragRect.h);
-        moctx.fillStyle = 'rgba(255, 255, 100, 0.08)';
+        moctx.fillStyle = 'rgba(255,255,100,0.08)';
         moctx.fillRect(mDragRect.x, mDragRect.y, mDragRect.w, mDragRect.h);
     }
-
-    function clearMOverlay() {
-        moctx.clearRect(0, 0, W_M, H_M);
-    }
+    function clearMOverlay() { moctx.clearRect(0, 0, W_M, H_M); }
 
     // Initial render
     updateParamDisplay();
