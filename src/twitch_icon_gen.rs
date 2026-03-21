@@ -108,6 +108,9 @@ impl TwitchIconGenManager {
                     .arg("center")
                     .arg("-extent")
                     .arg(format!("{}x{}", size, size))
+                    .arg("-strip")
+                    .arg("-define")
+                    .arg("png:compression-level=9")
                     .arg(&out_path)
                     .output()
                     .await
@@ -125,7 +128,7 @@ impl TwitchIconGenManager {
                     continue;
                 }
 
-                let png_data = match fs::read(&out_path).await {
+                let mut png_data = match fs::read(&out_path).await {
                     Ok(d) => d,
                     Err(e) => {
                         results.push(IconResult {
@@ -137,12 +140,39 @@ impl TwitchIconGenManager {
                         continue;
                     }
                 };
+
+                // If still over the limit after stripping metadata, reduce the colour
+                // palette in steps until it fits (extremely unlikely for ≤72×72 PNGs).
+                if png_data.len() as u64 > MAX_SIZE_BYTES {
+                    for &colors in &[256u32, 128, 64, 32, 16] {
+                        let reduce = Command::new("convert")
+                            .arg(&out_path)
+                            .arg("-colors")
+                            .arg(colors.to_string())
+                            .arg("-strip")
+                            .arg("-define")
+                            .arg("png:compression-level=9")
+                            .arg(&out_path)
+                            .output()
+                            .await
+                            .map_err(|e| format!("Failed to spawn convert for reduction: {}", e))?;
+                        if reduce.status.success() {
+                            if let Ok(d) = fs::read(&out_path).await {
+                                png_data = d;
+                                if png_data.len() as u64 <= MAX_SIZE_BYTES {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
                 let _ = fs::remove_file(&out_path).await;
 
                 let size_bytes = png_data.len() as u64;
                 let warning = if size_bytes > MAX_SIZE_BYTES {
                     Some(format!(
-                        "{}KB exceeds Twitch's 25KB badge limit",
+                        "{}KB exceeds Twitch's 25KB badge limit after compression",
                         (size_bytes + 1023) / 1024
                     ))
                 } else {
