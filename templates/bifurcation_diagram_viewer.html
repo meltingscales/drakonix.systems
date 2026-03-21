@@ -16,6 +16,7 @@
     </div>
 
     <div class="controls">
+        <button id="zoom-out-btn" class="btn btn-secondary">Zoom Out</button>
         <button id="reset-btn" class="btn btn-secondary">Reset View</button>
         <button id="fix-ar-btn" class="btn btn-secondary">Fix Aspect Ratio</button>
         <button id="fullscreen-btn" class="btn btn-secondary">Fullscreen</button>
@@ -288,6 +289,15 @@
     display: block;
     margin: 0 auto;
 }
+
+.bif-fullscreen #overlay,
+.bif-fullscreen #mandelbrot-overlay {
+    width: auto;
+    height: 100%;
+    max-width: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+}
 </style>
 
 <script>
@@ -322,6 +332,7 @@
     const moctx = mandelbrotOverlay.getContext('2d');
 
     // UI
+    const zoomOutBtn    = document.getElementById('zoom-out-btn');
     const resetBtn      = document.getElementById('reset-btn');
     const fixArBtn      = document.getElementById('fix-ar-btn');
     const fullscreenBtn = document.getElementById('fullscreen-btn');
@@ -631,9 +642,28 @@
         renderAll();
     }
 
+    function zoomOut() {
+        const FACTOR = 2;
+        const rCenter = (view.rMin + view.rMax) / 2;
+        const xCenter = (view.xMin + view.xMax) / 2;
+        const imCenter = (mImMin + mImMax) / 2;
+        const rRange = (view.rMax - view.rMin) * FACTOR;
+        const xRange = (view.xMax - view.xMin) * FACTOR;
+        const imRange = (mImMax - mImMin) * FACTOR;
+        view.rMin = Math.max(0, rCenter - rRange / 2);
+        view.rMax = Math.min(4, rCenter + rRange / 2);
+        view.xMin = Math.max(0, xCenter - xRange / 2);
+        view.xMax = Math.min(1, xCenter + xRange / 2);
+        mImMin = Math.max(-2.5, imCenter - imRange / 2);
+        mImMax = Math.min(2.5, imCenter + imRange / 2);
+        updateParamDisplay();
+        renderAll();
+    }
+
     // Double-click resets both
     wrapper.addEventListener('dblclick', resetView);
     mWrapper.addEventListener('dblclick', resetView);
+    zoomOutBtn.addEventListener('click', zoomOut);
     resetBtn.addEventListener('click', resetView);
     fixArBtn.addEventListener('click', fixAspectRatio);
 
