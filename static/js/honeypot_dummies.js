@@ -32,6 +32,8 @@ document.getElementById("hp-refresh-select").addEventListener("change", e => {
 })();
 
 async function doRefresh() {
+  _root.innerHTML = '<p class="hp-loading">Loading…</p>';
+  _countEl.textContent = '';
   let hits;
   try {
     const res = await fetch("/api/honeypot/hits");
