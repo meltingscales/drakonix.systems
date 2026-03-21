@@ -395,13 +395,13 @@
 
     wrapper.addEventListener('mousedown', e => {
         if (e.button !== 0) return;
-        dragStart = canvasPos(e, wrapper);
+        dragStart = canvasPos(e, diagramCanvas);
         dragRect = null;
         e.preventDefault();
     });
 
     wrapper.addEventListener('mousemove', e => {
-        const pos = canvasPos(e, wrapper);
+        const pos = canvasPos(e, diagramCanvas);
         const { r, x } = pixelToView(pos.x, pos.y);
         coordsDisplay.textContent = `r = ${fmt(r)}  x = ${fmt(x)}  c = ${fmt(rToC(r))}`;
 
@@ -427,7 +427,7 @@
 
     wrapper.addEventListener('mouseup', e => {
         if (!dragStart) return;
-        const pos = canvasPos(e, wrapper);
+        const pos = canvasPos(e, diagramCanvas);
         const MIN_DRAG = 5;
         if (Math.abs(pos.x - dragStart.x) > MIN_DRAG && Math.abs(pos.y - dragStart.y) > MIN_DRAG) {
             const a = pixelToView(Math.min(dragStart.x, pos.x), Math.max(dragStart.y, pos.y));
@@ -453,13 +453,13 @@
 
     mWrapper.addEventListener('mousedown', e => {
         if (e.button !== 0) return;
-        mDragStart = canvasPos(e, mWrapper);
+        mDragStart = canvasPos(e, mandelbrotCanvas);
         mDragRect = null;
         e.preventDefault();
     });
 
     mWrapper.addEventListener('mousemove', e => {
-        const pos = canvasPos(e, mWrapper);
+        const pos = canvasPos(e, mandelbrotCanvas);
         const { r, im } = mPixelToView(pos.x, pos.y);
         coordsDisplay.textContent = `r = ${fmt(r)}  c = ${fmt(rToC(r))} + ${fmt(im)}i`;
 
@@ -485,7 +485,7 @@
 
     mWrapper.addEventListener('mouseup', e => {
         if (!mDragStart) return;
-        const pos = canvasPos(e, mWrapper);
+        const pos = canvasPos(e, mandelbrotCanvas);
         const MIN_DRAG = 5;
         if (Math.abs(pos.x - mDragStart.x) > MIN_DRAG && Math.abs(pos.y - mDragStart.y) > MIN_DRAG) {
             const a = mPixelToView(Math.min(mDragStart.x, pos.x), Math.max(mDragStart.y, pos.y));
