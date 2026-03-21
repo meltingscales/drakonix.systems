@@ -1,0 +1,332 @@
+{% extends "base.html" %}
+
+{% block title %}Bifurcation Diagram Viewer{% endblock %}
+
+{% block content %}
+<div class="bifurcation-container">
+    <h1>Bifurcation Diagram Viewer</h1>
+    <p>
+        The logistic map <code>x<sub>n+1</sub> = r &middot; x<sub>n</sub>(1 &minus; x<sub>n</sub>)</code>
+        models population dynamics. As <em>r</em> increases, the long-term population
+        transitions from a stable fixed point into period-doubling cascades and chaos.
+        Drag to select a zoom region. Double-click to reset.
+    </p>
+
+    <div class="controls">
+        <button id="reset-btn" class="btn btn-secondary">Reset View</button>
+        <button id="render-btn" class="btn btn-primary" disabled>Rendering...</button>
+        <span id="coords-display" class="coords"></span>
+    </div>
+
+    <div class="canvas-wrapper" id="canvas-wrapper">
+        <canvas id="diagram" tabindex="0" aria-label="Bifurcation diagram canvas"></canvas>
+        <canvas id="overlay" tabindex="-1" aria-hidden="true"></canvas>
+    </div>
+
+    <div class="param-display">
+        <span>r: [<span id="r-min-display">2.5</span>, <span id="r-max-display">4.0</span>]</span>
+        &nbsp;&nbsp;
+        <span>x: [<span id="x-min-display">0.0</span>, <span id="x-max-display">1.0</span>]</span>
+    </div>
+</div>
+
+<style>
+.bifurcation-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+.bifurcation-container h1 {
+    margin-bottom: 0.5rem;
+}
+
+.bifurcation-container p {
+    margin-bottom: 1rem;
+    color: var(--text-muted, #666);
+    font-size: 0.95rem;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 0.5rem 1.2rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-primary {
+    background: #007bff;
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #0056b3;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: #545b62;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.coords {
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: var(--text-muted, #555);
+    min-width: 240px;
+}
+
+.canvas-wrapper {
+    position: relative;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #000;
+    cursor: crosshair;
+}
+
+#diagram {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+#overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.param-display {
+    margin-top: 0.5rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: var(--text-muted, #555);
+}
+</style>
+
+<script>
+(function () {
+    const WARMUP = 300;
+    const SAMPLES = 300;
+
+    // View state
+    let view = { rMin: 2.5, rMax: 4.0, xMin: 0.0, xMax: 1.0 };
+
+    const diagramCanvas = document.getElementById('diagram');
+    const overlayCanvas = document.getElementById('overlay');
+    const wrapper = document.getElementById('canvas-wrapper');
+    const resetBtn = document.getElementById('reset-btn');
+    const renderBtn = document.getElementById('render-btn');
+    const coordsDisplay = document.getElementById('coords-display');
+    const rMinDisplay = document.getElementById('r-min-display');
+    const rMaxDisplay = document.getElementById('r-max-display');
+    const xMinDisplay = document.getElementById('x-min-display');
+    const xMaxDisplay = document.getElementById('x-max-display');
+
+    const W = 1200;
+    const H = 800;
+    diagramCanvas.width = W;
+    diagramCanvas.height = H;
+    overlayCanvas.width = W;
+    overlayCanvas.height = H;
+
+    const ctx = diagramCanvas.getContext('2d');
+    const octx = overlayCanvas.getContext('2d');
+
+    let renderHandle = null;
+
+    function fmt(n) { return n.toFixed(6); }
+
+    function updateParamDisplay() {
+        rMinDisplay.textContent = fmt(view.rMin);
+        rMaxDisplay.textContent = fmt(view.rMax);
+        xMinDisplay.textContent = fmt(view.xMin);
+        xMaxDisplay.textContent = fmt(view.xMax);
+    }
+
+    function render() {
+        if (renderHandle !== null) {
+            cancelAnimationFrame(renderHandle);
+            renderHandle = null;
+        }
+
+        renderBtn.disabled = true;
+        renderBtn.textContent = 'Rendering...';
+
+        ctx.fillStyle = '#0a0a0a';
+        ctx.fillRect(0, 0, W, H);
+
+        const { rMin, rMax, xMin, xMax } = view;
+        const rRange = rMax - rMin;
+        const xRange = xMax - xMin;
+
+        // Render column by column using rAF chunks to stay responsive
+        let col = 0;
+        const CHUNK = 40;
+
+        function renderChunk() {
+            const end = Math.min(col + CHUNK, W);
+            for (let px = col; px < end; px++) {
+                const r = rMin + (px / W) * rRange;
+                let x = 0.5;
+                // Warmup
+                for (let i = 0; i < WARMUP; i++) {
+                    x = r * x * (1 - x);
+                }
+                // Sample
+                for (let i = 0; i < SAMPLES; i++) {
+                    x = r * x * (1 - x);
+                    if (x >= xMin && x <= xMax) {
+                        const py = Math.floor(H - ((x - xMin) / xRange) * H);
+                        if (py >= 0 && py < H) {
+                            // Color by r position: cyan tint in ordered region, orange in chaos
+                            const t = (r - 2.5) / 1.5; // 0..1 across interesting range
+                            const red   = Math.floor(50 + t * 200);
+                            const green = Math.floor(200 - t * 100);
+                            const blue  = Math.floor(220 - t * 180);
+                            ctx.fillStyle = `rgb(${red},${green},${blue})`;
+                            ctx.fillRect(px, py, 1, 1);
+                        }
+                    }
+                }
+            }
+            col = end;
+            if (col < W) {
+                renderHandle = requestAnimationFrame(renderChunk);
+            } else {
+                renderHandle = null;
+                renderBtn.disabled = false;
+                renderBtn.textContent = 'Rendered';
+            }
+        }
+
+        renderHandle = requestAnimationFrame(renderChunk);
+    }
+
+    // --- Zoom via drag rectangle ---
+    let dragStart = null;
+    let dragRect = null;
+
+    function canvasPos(e) {
+        const rect = wrapper.getBoundingClientRect();
+        const scaleX = W / rect.width;
+        const scaleY = H / rect.height;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+            x: (clientX - rect.left) * scaleX,
+            y: (clientY - rect.top) * scaleY,
+        };
+    }
+
+    function pixelToView(px, py) {
+        const r = view.rMin + (px / W) * (view.rMax - view.rMin);
+        const x = view.xMax - (py / H) * (view.xMax - view.xMin);
+        return { r, x };
+    }
+
+    wrapper.addEventListener('mousedown', e => {
+        if (e.button !== 0) return;
+        dragStart = canvasPos(e);
+        dragRect = null;
+        e.preventDefault();
+    });
+
+    wrapper.addEventListener('mousemove', e => {
+        const pos = canvasPos(e);
+        const { r, x } = pixelToView(pos.x, pos.y);
+        coordsDisplay.textContent = `r = ${fmt(r)}  x = ${fmt(x)}`;
+
+        if (dragStart) {
+            dragRect = {
+                x: Math.min(dragStart.x, pos.x),
+                y: Math.min(dragStart.y, pos.y),
+                w: Math.abs(pos.x - dragStart.x),
+                h: Math.abs(pos.y - dragStart.y),
+            };
+            drawOverlay();
+        }
+    });
+
+    wrapper.addEventListener('mouseleave', () => {
+        coordsDisplay.textContent = '';
+        if (dragStart) {
+            dragStart = null;
+            dragRect = null;
+            clearOverlay();
+        }
+    });
+
+    wrapper.addEventListener('mouseup', e => {
+        if (!dragStart) return;
+        const pos = canvasPos(e);
+        const MIN_DRAG = 5;
+        if (Math.abs(pos.x - dragStart.x) > MIN_DRAG && Math.abs(pos.y - dragStart.y) > MIN_DRAG) {
+            const a = pixelToView(Math.min(dragStart.x, pos.x), Math.max(dragStart.y, pos.y));
+            const b = pixelToView(Math.max(dragStart.x, pos.x), Math.min(dragStart.y, pos.y));
+            view = { rMin: a.r, rMax: b.r, xMin: a.x, xMax: b.x };
+            updateParamDisplay();
+            render();
+        }
+        dragStart = null;
+        dragRect = null;
+        clearOverlay();
+    });
+
+    // Double-click to reset
+    wrapper.addEventListener('dblclick', () => {
+        view = { rMin: 2.5, rMax: 4.0, xMin: 0.0, xMax: 1.0 };
+        updateParamDisplay();
+        render();
+    });
+
+    resetBtn.addEventListener('click', () => {
+        view = { rMin: 2.5, rMax: 4.0, xMin: 0.0, xMax: 1.0 };
+        updateParamDisplay();
+        render();
+    });
+
+    function drawOverlay() {
+        clearOverlay();
+        if (!dragRect) return;
+        octx.strokeStyle = 'rgba(255, 255, 100, 0.9)';
+        octx.lineWidth = 1.5;
+        octx.setLineDash([6, 3]);
+        octx.strokeRect(dragRect.x, dragRect.y, dragRect.w, dragRect.h);
+        octx.fillStyle = 'rgba(255, 255, 100, 0.08)';
+        octx.fillRect(dragRect.x, dragRect.y, dragRect.w, dragRect.h);
+    }
+
+    function clearOverlay() {
+        octx.clearRect(0, 0, W, H);
+    }
+
+    // Initial render
+    updateParamDisplay();
+    render();
+})();
+</script>
+{% endblock %}
