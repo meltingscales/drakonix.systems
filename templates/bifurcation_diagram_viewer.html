@@ -17,6 +17,7 @@
 
     <div class="controls">
         <button id="reset-btn" class="btn btn-secondary">Reset View</button>
+        <button id="fix-ar-btn" class="btn btn-secondary">Fix Aspect Ratio</button>
         <button id="fullscreen-btn" class="btn btn-secondary">Fullscreen</button>
         <button id="render-btn" class="btn btn-primary" disabled>Rendering...</button>
         <span id="coords-display" class="coords"></span>
@@ -322,6 +323,7 @@
 
     // UI
     const resetBtn      = document.getElementById('reset-btn');
+    const fixArBtn      = document.getElementById('fix-ar-btn');
     const fullscreenBtn = document.getElementById('fullscreen-btn');
     const renderBtn     = document.getElementById('render-btn');
     const coordsDisplay = document.getElementById('coords-display');
@@ -610,10 +612,30 @@
         mDragStart = null; mDragRect = null; clearMOverlay();
     });
 
+    function fixAspectRatio() {
+        const rRange = view.rMax - view.rMin;
+
+        // Bifurcation: match x range to canvas pixel ratio (H/W)
+        const newXRange = rRange * (H / W);
+        const xCenter = (view.xMin + view.xMax) / 2;
+        view.xMin = Math.max(0, xCenter - newXRange / 2);
+        view.xMax = Math.min(1, xCenter + newXRange / 2);
+
+        // Mandelbrot: match Im range to canvas pixel ratio (H_M/W_M)
+        const newImRange = rRange * (H_M / W_M);
+        const imCenter = (mImMin + mImMax) / 2;
+        mImMin = imCenter - newImRange / 2;
+        mImMax = imCenter + newImRange / 2;
+
+        updateParamDisplay();
+        renderAll();
+    }
+
     // Double-click resets both
     wrapper.addEventListener('dblclick', resetView);
     mWrapper.addEventListener('dblclick', resetView);
     resetBtn.addEventListener('click', resetView);
+    fixArBtn.addEventListener('click', fixAspectRatio);
 
     // --- Overlay drawing ---
     function drawOverlay() {
