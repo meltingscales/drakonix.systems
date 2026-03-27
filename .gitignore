@@ -23,3 +23,6 @@ Thumbs.db
 temp_conversions/
 *.db
 *.log
+
+# Honeypot json
+honeypot-hits.json
