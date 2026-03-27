@@ -1,0 +1,34 @@
+set shell := ["powershell", "-NoProfile", "-Command"]
+
+input  := "../../honeypot-hits.json"
+output := "reports"
+top    := "20"
+
+# List available recipes
+default:
+    @just --list
+
+# Run all reports and save PNGs to ./reports
+run:
+    uv run analysis.py --input {{input}} --output {{output}} --top {{top}}
+
+# Run a specific report (e.g. just report geo)
+report name:
+    uv run analysis.py --input {{input}} --output {{output}} --top {{top}} --report {{name}}
+
+# Run all reports and open figures interactively
+show:
+    uv run analysis.py --input {{input}} --output {{output}} --top {{top}} --show
+
+# Print terminal summary only, no PNGs saved
+summary:
+    uv run analysis.py --input {{input}} --no-save
+
+# Open the reports folder in Explorer
+open:
+    explorer {{output}}
+
+# Delete generated PNGs
+clean:
+    Remove-Item -Path {{output}}\*.png -ErrorAction SilentlyContinue
+    Write-Host "reports cleaned"

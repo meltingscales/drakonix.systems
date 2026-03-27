@@ -1,0 +1,15 @@
+[project]
+name = "honeypot-analysis"
+version = "0.1.0"
+description = "Dashboard-style analysis of honeypot hit logs"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas>=2.2",
+    "matplotlib>=3.8",
+    "numpy>=1.26",
+    "seaborn>=0.13",
+    "rich>=13.7",
+]
+
+[dependency-groups]
+dev = []
