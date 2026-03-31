@@ -8,6 +8,7 @@ date: 2025-01-01
 - site: drakonix.systems
 - email: see resume (anti bot measure)
 - alt email: `umbralstack@proton.me`
+- matrix/element x: `@meltingscales:matrix.org`
 - meatspace: I love IRL meetups. Just email me!
 - github: https://github.com/meltingscales
 
