@@ -353,33 +353,8 @@ monitor-honeypot:
 
 # Create a new blog post
 new-post title:
-    #!/usr/bin/env bash
-    slug=$(echo "{{title}}" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
-    date=$(date +%Y-%m-%d)
-    filename="content/posts/${date}-${slug}.md"
-    cat > "$filename" << EOF
-    ---
-    title: "{{title}}"
-    date: $(date -u +%Y-%m-%dT%H:%M:%SZ)
-    draft: false
-    tags: []
-    ---
-
-    Your content here...
-    EOF
-    echo "Created: $filename"
+    python scripts/new_post.py "{{title}}"
 
 # Create a new page
 new-page title:
-    #!/usr/bin/env bash
-    slug=$(echo "{{title}}" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
-    filename="content/pages/${slug}.md"
-    cat > "$filename" << EOF
-    ---
-    title: "{{title}}"
-    date: $(date -u +%Y-%m-%dT%H:%M:%SZ)
-    ---
-
-    Your content here...
-    EOF
-    echo "Created: $filename"
+    python scripts/new_page.py "{{title}}"
