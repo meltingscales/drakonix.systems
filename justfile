@@ -1,3 +1,6 @@
+set shell := ["bash", "-c"]
+set windows-shell := ["cmd.exe", "/c"]
+
 # List available recipes
 help:
     @just --list
