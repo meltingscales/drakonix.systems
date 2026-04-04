@@ -17,6 +17,7 @@ I am aggressively de-googling my life in 2025/2026.
 - navidrome: youtube music clone, self-hosted
 - more to come? :)
 - [vesktop](https://vesktop.dev/) - lightweight Discord client fork
+- [ps3xploit.me](https://ps3xploit.me/) - PS3 jailbreak/homebrew exploits and tools
 - [switch.hacks.guide](https://switch.hacks.guide/) - comprehensive Nintendo Switch homebrew/CFW guide
   - [nh-server/switch-guide](https://github.com/nh-server/switch-guide) - GitHub source for the above guide
   - [mGBA](https://mgba.io/downloads.html) - GBA emulator for Switch homebrew
