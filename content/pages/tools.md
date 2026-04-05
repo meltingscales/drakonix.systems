@@ -62,6 +62,7 @@ I am aggressively de-googling my life in 2025/2026.
   - (literally just docker containers w/ some yaml command runner. its all the same pattern.)
   - can also do self hosted
 - [openstatus](https://www.openstatus.dev/) - uptime/health monitoring, can self host
+- [forgejo](https://forgejo.org/) - self-hosted Git forge (Gitea fork), lightweight GitHub alternative
 
 ## OS
 
