@@ -1,7 +1,6 @@
 // Linked List Learning — REPL + SVG diagram
-// The `list` variable is injected into user code at execution time.
 
-// ─── Data structure ──────────────────────────────────────────────────────────
+// ─── Singly linked list ───────────────────────────────────────────────────────
 
 class Node {
     constructor(value) {
@@ -18,13 +17,8 @@ class LinkedList {
 
     append(value) {
         const node = new Node(value);
-        if (!this.head) {
-            this.head = node;
-        } else {
-            let curr = this.head;
-            while (curr.next) curr = curr.next;
-            curr.next = node;
-        }
+        if (!this.head) { this.head = node; }
+        else { let c = this.head; while (c.next) c = c.next; c.next = node; }
         this._size++;
     }
 
@@ -40,28 +34,19 @@ class LinkedList {
             throw new RangeError(`Index ${index} out of bounds (size: ${this._size})`);
         if (index === 0) { this.prepend(value); return; }
         const node = new Node(value);
-        let curr = this.head;
-        for (let i = 0; i < index - 1; i++) curr = curr.next;
-        node.next  = curr.next;
-        curr.next  = node;
+        let c = this.head;
+        for (let i = 0; i < index - 1; i++) c = c.next;
+        node.next = c.next; c.next = node;
         this._size++;
     }
 
     delete(value) {
         if (!this.head) return false;
-        if (this.head.value === value) {
-            this.head = this.head.next;
-            this._size--;
-            return true;
-        }
-        let curr = this.head;
-        while (curr.next) {
-            if (curr.next.value === value) {
-                curr.next = curr.next.next;
-                this._size--;
-                return true;
-            }
-            curr = curr.next;
+        if (this.head.value === value) { this.head = this.head.next; this._size--; return true; }
+        let c = this.head;
+        while (c.next) {
+            if (c.next.value === value) { c.next = c.next.next; this._size--; return true; }
+            c = c.next;
         }
         return false;
     }
@@ -70,80 +55,201 @@ class LinkedList {
         if (index < 0 || index >= this._size)
             throw new RangeError(`Index ${index} out of bounds (size: ${this._size})`);
         if (index === 0) { this.head = this.head.next; this._size--; return; }
-        let curr = this.head;
-        for (let i = 0; i < index - 1; i++) curr = curr.next;
-        curr.next = curr.next.next;
+        let c = this.head;
+        for (let i = 0; i < index - 1; i++) c = c.next;
+        c.next = c.next.next;
         this._size--;
     }
 
     find(value) {
-        let curr = this.head, i = 0;
-        while (curr) {
-            if (curr.value === value) return i;
-            curr = curr.next; i++;
-        }
+        let c = this.head, i = 0;
+        while (c) { if (c.value === value) return i; c = c.next; i++; }
         return -1;
     }
 
     get(index) {
         if (index < 0 || index >= this._size)
             throw new RangeError(`Index ${index} out of bounds (size: ${this._size})`);
-        let curr = this.head;
-        for (let i = 0; i < index; i++) curr = curr.next;
-        return curr.value;
+        let c = this.head;
+        for (let i = 0; i < index; i++) c = c.next;
+        return c.value;
     }
 
     set(index, value) {
         if (index < 0 || index >= this._size)
             throw new RangeError(`Index ${index} out of bounds (size: ${this._size})`);
-        let curr = this.head;
-        for (let i = 0; i < index; i++) curr = curr.next;
-        curr.value = value;
+        let c = this.head;
+        for (let i = 0; i < index; i++) c = c.next;
+        c.value = value;
     }
 
     reverse() {
-        let prev = null, curr = this.head;
-        while (curr) {
-            const next = curr.next;
-            curr.next  = prev;
-            prev = curr;
-            curr = next;
-        }
+        let prev = null, c = this.head;
+        while (c) { const nxt = c.next; c.next = prev; prev = c; c = nxt; }
         this.head = prev;
     }
 
     length()  { return this._size; }
 
     toArray() {
-        const arr = [];
-        let curr = this.head;
-        while (curr) { arr.push(curr.value); curr = curr.next; }
+        const arr = []; let c = this.head;
+        while (c) { arr.push(c.value); c = c.next; }
         return arr;
     }
 
     clear()   { this.head = null; this._size = 0; }
 
     toString() {
-        if (!this.head) return 'null';
-        return this.toArray().join(' → ') + ' → null';
+        return this._size === 0 ? 'null' : this.toArray().join(' → ') + ' → null';
     }
 }
 
-// ─── Global list instance ────────────────────────────────────────────────────
-let list = new LinkedList();
+// ─── Doubly linked list ───────────────────────────────────────────────────────
 
-// ─── SVG constants ───────────────────────────────────────────────────────────
+class DoublyNode {
+    constructor(value) {
+        this.value = value;
+        this.prev  = null;
+        this.next  = null;
+    }
+}
+
+class DoublyLinkedList {
+    constructor() {
+        this.head  = null;
+        this.tail  = null;
+        this._size = 0;
+    }
+
+    append(value) {
+        const node = new DoublyNode(value);
+        if (!this.tail) { this.head = this.tail = node; }
+        else { node.prev = this.tail; this.tail.next = node; this.tail = node; }
+        this._size++;
+    }
+
+    prepend(value) {
+        const node = new DoublyNode(value);
+        if (!this.head) { this.head = this.tail = node; }
+        else { node.next = this.head; this.head.prev = node; this.head = node; }
+        this._size++;
+    }
+
+    insertAt(index, value) {
+        if (index < 0 || index > this._size)
+            throw new RangeError(`Index ${index} out of bounds (size: ${this._size})`);
+        if (index === 0)          { this.prepend(value); return; }
+        if (index === this._size) { this.append(value);  return; }
+        const node = new DoublyNode(value);
+        let c = this.head;
+        for (let i = 0; i < index; i++) c = c.next;
+        node.prev = c.prev; node.next = c;
+        c.prev.next = node; c.prev = node;
+        this._size++;
+    }
+
+    _unlink(node) {
+        if (node.prev) node.prev.next = node.next; else this.head = node.next;
+        if (node.next) node.next.prev = node.prev; else this.tail = node.prev;
+        this._size--;
+    }
+
+    delete(value) {
+        let c = this.head;
+        while (c) { if (c.value === value) { this._unlink(c); return true; } c = c.next; }
+        return false;
+    }
+
+    deleteAt(index) {
+        if (index < 0 || index >= this._size)
+            throw new RangeError(`Index ${index} out of bounds (size: ${this._size})`);
+        let c = this.head;
+        for (let i = 0; i < index; i++) c = c.next;
+        this._unlink(c);
+    }
+
+    find(value) {
+        let c = this.head, i = 0;
+        while (c) { if (c.value === value) return i; c = c.next; i++; }
+        return -1;
+    }
+
+    get(index) {
+        if (index < 0 || index >= this._size)
+            throw new RangeError(`Index ${index} out of bounds (size: ${this._size})`);
+        let c = this.head;
+        for (let i = 0; i < index; i++) c = c.next;
+        return c.value;
+    }
+
+    set(index, value) {
+        if (index < 0 || index >= this._size)
+            throw new RangeError(`Index ${index} out of bounds (size: ${this._size})`);
+        let c = this.head;
+        for (let i = 0; i < index; i++) c = c.next;
+        c.value = value;
+    }
+
+    reverse() {
+        let c = this.head;
+        while (c) { [c.prev, c.next] = [c.next, c.prev]; c = c.prev; }
+        [this.head, this.tail] = [this.tail, this.head];
+    }
+
+    length()  { return this._size; }
+
+    toArray() {
+        const arr = []; let c = this.head;
+        while (c) { arr.push(c.value); c = c.next; }
+        return arr;
+    }
+
+    toArrayReverse() {
+        const arr = []; let c = this.tail;
+        while (c) { arr.push(c.value); c = c.prev; }
+        return arr;
+    }
+
+    clear() { this.head = this.tail = null; this._size = 0; }
+
+    toString() {
+        return this._size === 0
+            ? 'null'
+            : 'null ← ' + this.toArray().join(' ⇄ ') + ' → null';
+    }
+}
+
+// ─── State ───────────────────────────────────────────────────────────────────
+let list = new LinkedList();
+let currentMode = 'singly';
+
+// ─── SVG constants — singly ───────────────────────────────────────────────────
 const NODE_W   = 140;
 const NODE_H   = 60;
 const GAP_W    = 50;
 const STEP_W   = NODE_W + GAP_W;
-const HEAD_X   = 80;      // x where the first node left-edge sits
+const HEAD_X   = 80;
 const CENTER_Y = 70;
-const TOP_Y    = CENTER_Y - NODE_H / 2;   // = 40
+const TOP_Y    = CENTER_Y - NODE_H / 2;
 const NULL_W   = 60;
 const SVG_H    = 140;
 
-// ─── SVG rendering ───────────────────────────────────────────────────────────
+// ─── SVG constants — doubly ───────────────────────────────────────────────────
+const DL_NODE_W  = 180;
+const DL_PREV_W  = 50;
+const DL_VAL_W   = 80;
+const DL_NEXT_W  = 50;   // must sum to DL_NODE_W
+const DL_NODE_H  = 60;
+const DL_GAP_W   = 56;
+const DL_STEP_W  = DL_NODE_W + DL_GAP_W;
+const DL_HEAD_X  = 80;
+const DL_CY      = 70;   // centre Y
+const DL_TOP_Y   = DL_CY - DL_NODE_H / 2;
+const DL_NEXT_Y  = DL_CY - 12;   // y for forward (next) arrows
+const DL_PREV_Y  = DL_CY + 12;   // y for backward (prev) arrows
+const DL_SVG_H   = 150;
+
+// ─── XML escaping ─────────────────────────────────────────────────────────────
 function escXml(s) {
     return String(s)
         .replace(/&/g, '&amp;')
@@ -152,14 +258,13 @@ function escXml(s) {
         .replace(/"/g, '&quot;');
 }
 
-function renderDiagram() {
+// ─── Singly diagram ───────────────────────────────────────────────────────────
+function renderSinglyDiagram() {
     const svg    = document.getElementById('ll-diagram');
     const values = list.toArray();
     const n      = values.length;
 
-    const svgW = n === 0
-        ? 320
-        : HEAD_X + n * STEP_W + NULL_W + 20;
+    const svgW = n === 0 ? 320 : HEAD_X + n * STEP_W + NULL_W + 20;
 
     svg.setAttribute('viewBox', `0 0 ${svgW} ${SVG_H}`);
     svg.setAttribute('width',   svgW);
@@ -167,7 +272,6 @@ function renderDiagram() {
 
     const parts = [];
 
-    // Arrowhead marker — fill is controlled by CSS class .ll-arrowhead
     parts.push(`
       <defs>
         <marker id="arr" markerWidth="8" markerHeight="6"
@@ -184,7 +288,6 @@ function renderDiagram() {
         return;
     }
 
-    // "head" label + arrow into first node
     parts.push(`
       <text x="5" y="${CENTER_Y - 5}" class="ll-head-label">head</text>
       <line x1="44" y1="${CENTER_Y}" x2="${HEAD_X - 6}" y2="${CENTER_Y}"
@@ -196,43 +299,31 @@ function renderDiagram() {
         const raw    = String(values[i]);
         const disp   = raw.length > 9 ? raw.slice(0, 8) + '…' : raw;
 
-        // Node rectangle
         parts.push(`
           <rect x="${nx}" y="${TOP_Y}" width="${NODE_W}" height="${NODE_H}"
                 rx="6" class="ll-node-rect"/>`);
-
-        // Vertical divider between value | next compartments
         parts.push(`
           <line x1="${nx + NODE_W / 2}" y1="${TOP_Y}"
                 x2="${nx + NODE_W / 2}" y2="${TOP_Y + NODE_H}"
                 class="ll-divider"/>`);
-
-        // Value text (left compartment, centered)
         parts.push(`
           <text x="${nx + NODE_W / 4}" y="${CENTER_Y}"
                 text-anchor="middle" dominant-baseline="middle"
                 class="ll-val-text">${escXml(disp)}</text>`);
-
-        // "next" micro-label (top of right compartment)
         parts.push(`
           <text x="${nx + NODE_W * 3 / 4}" y="${TOP_Y + 13}"
                 text-anchor="middle" class="ll-next-label">next</text>`);
 
         if (isLast) {
-            // ∅ symbol = null pointer
             parts.push(`
               <text x="${nx + NODE_W * 3 / 4}" y="${CENTER_Y + 8}"
                     text-anchor="middle" dominant-baseline="middle"
                     class="ll-null-ptr">∅</text>`);
-
-            // Arrow from right edge → null box
             const nullX = nx + NODE_W + GAP_W;
             parts.push(`
               <line x1="${nx + NODE_W}" y1="${CENTER_Y}"
                     x2="${nullX - 6}"  y2="${CENTER_Y}"
                     class="ll-arrow" marker-end="url(#arr)"/>`);
-
-            // Null box (dashed)
             parts.push(`
               <rect x="${nullX}" y="${TOP_Y + 10}"
                     width="${NULL_W}" height="${NODE_H - 20}"
@@ -242,25 +333,310 @@ function renderDiagram() {
                     text-anchor="middle" dominant-baseline="middle"
                     class="ll-null-text">null</text>`);
         } else {
-            // Filled dot = live pointer
             parts.push(`
               <circle cx="${nx + NODE_W * 3 / 4}" cy="${CENTER_Y + 8}" r="5"
                       class="ll-ptr-dot"/>`);
-
-            // Arrow → next node
             parts.push(`
               <line x1="${nx + NODE_W}" y1="${CENTER_Y}"
                     x2="${nx + NODE_W + GAP_W - 6}" y2="${CENTER_Y}"
                     class="ll-arrow" marker-end="url(#arr)"/>`);
         }
 
-        // Index label below the value compartment
         parts.push(`
           <text x="${nx + NODE_W / 4}" y="${TOP_Y + NODE_H + 17}"
                 text-anchor="middle" class="ll-index-label">[${i}]</text>`);
     }
 
     svg.innerHTML = parts.join('');
+}
+
+// ─── Doubly diagram ───────────────────────────────────────────────────────────
+function renderDoublyDiagram() {
+    const svg    = document.getElementById('ll-diagram');
+    const values = list.toArray();
+    const n      = values.length;
+
+    const svgW = n === 0 ? 320 : DL_HEAD_X + n * DL_STEP_W + NULL_W + 20;
+
+    svg.setAttribute('viewBox', `0 0 ${svgW} ${DL_SVG_H}`);
+    svg.setAttribute('width',   svgW);
+    svg.setAttribute('height',  DL_SVG_H);
+
+    const parts = [];
+
+    parts.push(`
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="6"
+                refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+          <polygon class="ll-arrowhead" points="0 0, 8 3, 0 6"/>
+        </marker>
+        <marker id="arr-back" markerWidth="8" markerHeight="6"
+                refX="1" refY="3" orient="auto" markerUnits="strokeWidth">
+          <polygon class="ll-arrowhead" points="8 0, 0 3, 8 6"/>
+        </marker>
+      </defs>`);
+
+    if (n === 0) {
+        parts.push(`
+          <text x="10" y="${DL_CY - 6}"  class="ll-head-label">head / tail</text>
+          <text x="10" y="${DL_CY + 14}" class="ll-null-label">→ null</text>`);
+        svg.innerHTML = parts.join('');
+        return;
+    }
+
+    // head label + arrow
+    parts.push(`
+      <text x="5" y="${DL_CY - 5}" class="ll-head-label">head</text>
+      <line x1="44" y1="${DL_CY}" x2="${DL_HEAD_X - 6}" y2="${DL_CY}"
+            class="ll-arrow" marker-end="url(#arr)"/>`);
+
+    for (let i = 0; i < n; i++) {
+        const nx      = DL_HEAD_X + i * DL_STEP_W;
+        const isFirst = i === 0;
+        const isLast  = i === n - 1;
+        const raw     = String(values[i]);
+        const disp    = raw.length > 7 ? raw.slice(0, 6) + '…' : raw;
+
+        // Node rect
+        parts.push(`
+          <rect x="${nx}" y="${DL_TOP_Y}" width="${DL_NODE_W}" height="${DL_NODE_H}"
+                rx="6" class="ll-node-rect"/>`);
+
+        // Dividers: after prev compartment and after val compartment
+        parts.push(`
+          <line x1="${nx + DL_PREV_W}" y1="${DL_TOP_Y}"
+                x2="${nx + DL_PREV_W}" y2="${DL_TOP_Y + DL_NODE_H}"
+                class="ll-divider"/>`);
+        parts.push(`
+          <line x1="${nx + DL_PREV_W + DL_VAL_W}" y1="${DL_TOP_Y}"
+                x2="${nx + DL_PREV_W + DL_VAL_W}" y2="${DL_TOP_Y + DL_NODE_H}"
+                class="ll-divider"/>`);
+
+        // Compartment micro-labels
+        parts.push(`
+          <text x="${nx + DL_PREV_W / 2}" y="${DL_TOP_Y + 12}"
+                text-anchor="middle" class="ll-next-label">prev</text>`);
+        parts.push(`
+          <text x="${nx + DL_PREV_W + DL_VAL_W + DL_NEXT_W / 2}" y="${DL_TOP_Y + 12}"
+                text-anchor="middle" class="ll-next-label">next</text>`);
+
+        // Value text (centre of val compartment)
+        parts.push(`
+          <text x="${nx + DL_PREV_W + DL_VAL_W / 2}" y="${DL_CY}"
+                text-anchor="middle" dominant-baseline="middle"
+                class="ll-val-text">${escXml(disp)}</text>`);
+
+        // prev compartment: ∅ if head, else filled dot at PREV_Y
+        if (isFirst) {
+            parts.push(`
+              <text x="${nx + DL_PREV_W / 2}" y="${DL_CY + 7}"
+                    text-anchor="middle" dominant-baseline="middle"
+                    class="ll-null-ptr">∅</text>`);
+        } else {
+            parts.push(`
+              <circle cx="${nx + DL_PREV_W / 2}" cy="${DL_PREV_Y}" r="5"
+                      class="ll-ptr-dot"/>`);
+        }
+
+        // next compartment: ∅ if tail, else filled dot at NEXT_Y
+        if (isLast) {
+            parts.push(`
+              <text x="${nx + DL_PREV_W + DL_VAL_W + DL_NEXT_W / 2}" y="${DL_CY + 7}"
+                    text-anchor="middle" dominant-baseline="middle"
+                    class="ll-null-ptr">∅</text>`);
+        } else {
+            parts.push(`
+              <circle cx="${nx + DL_PREV_W + DL_VAL_W + DL_NEXT_W / 2}" cy="${DL_NEXT_Y}" r="5"
+                      class="ll-ptr-dot"/>`);
+        }
+
+        // Arrows in the gap to the right
+        if (!isLast) {
+            const x0 = nx + DL_NODE_W;
+            const x1 = nx + DL_STEP_W;
+            // forward (next) arrow →
+            parts.push(`
+              <line x1="${x0}" y1="${DL_NEXT_Y}" x2="${x1 - 6}" y2="${DL_NEXT_Y}"
+                    class="ll-arrow" marker-end="url(#arr)"/>`);
+            // backward (prev) arrow ←
+            parts.push(`
+              <line x1="${x1}" y1="${DL_PREV_Y}" x2="${x0 + 6}" y2="${DL_PREV_Y}"
+                    class="ll-arrow" marker-end="url(#arr-back)"/>`);
+        } else {
+            // null box on the right for tail's next
+            const nullX = nx + DL_NODE_W + DL_GAP_W;
+            parts.push(`
+              <line x1="${nx + DL_NODE_W}" y1="${DL_NEXT_Y}"
+                    x2="${nullX - 6}" y2="${DL_NEXT_Y}"
+                    class="ll-arrow" marker-end="url(#arr)"/>`);
+            parts.push(`
+              <rect x="${nullX}" y="${DL_TOP_Y + 10}"
+                    width="${NULL_W}" height="${DL_NODE_H - 20}"
+                    rx="4" class="ll-null-rect"/>`);
+            parts.push(`
+              <text x="${nullX + NULL_W / 2}" y="${DL_CY}"
+                    text-anchor="middle" dominant-baseline="middle"
+                    class="ll-null-text">null</text>`);
+        }
+
+        // Index label below val compartment
+        parts.push(`
+          <text x="${nx + DL_PREV_W + DL_VAL_W / 2}" y="${DL_TOP_Y + DL_NODE_H + 17}"
+                text-anchor="middle" class="ll-index-label">[${i}]</text>`);
+    }
+
+    svg.innerHTML = parts.join('');
+}
+
+// ─── Diagram dispatcher ───────────────────────────────────────────────────────
+function renderDiagram() {
+    if (currentMode === 'singly') renderSinglyDiagram();
+    else                          renderDoublyDiagram();
+}
+
+// ─── Templates / snippets ─────────────────────────────────────────────────────
+const SNIPPETS = {
+    singly: [
+        {
+            label: 'Build 1–5',
+            code: `[1, 2, 3, 4, 5].forEach(v => list.append(v));`,
+        },
+        {
+            label: 'Inspect',
+            code: `console.log(list.toString());\nconsole.log('length:', list.length());`,
+        },
+        {
+            label: 'Find middle',
+            code: `// Slow/fast pointer technique
+let slow = list.head, fast = list.head;
+while (fast && fast.next) {
+  slow = slow.next;
+  fast = fast.next.next;
+}
+console.log('middle:', slow ? slow.value : null);`,
+        },
+        {
+            label: 'Remove duplicates',
+            code: `// O(n) with a Set
+const seen = new Set();
+let curr = list.head, prev = null;
+while (curr) {
+  if (seen.has(curr.value)) {
+    prev.next = curr.next;
+    list._size--;
+  } else {
+    seen.add(curr.value);
+    prev = curr;
+  }
+  curr = curr.next;
+}`,
+        },
+        {
+            label: 'Fibonacci',
+            code: `let a = 0, b = 1;
+for (let i = 0; i < 8; i++) {
+  list.append(a);
+  [a, b] = [b, a + b];
+}`,
+        },
+        {
+            label: 'Reverse & verify',
+            code: `const before = list.toArray().join(', ');
+list.reverse();
+const after = list.toArray().join(', ');
+console.log('before:', before);
+console.log('after: ', after);`,
+        },
+        {
+            label: 'Sum all values',
+            code: `const sum = list.toArray().reduce((acc, v) => acc + v, 0);
+console.log('sum:', sum);`,
+        },
+        {
+            label: 'Detect cycle',
+            code: `// Floyd's cycle detection (inject cycle manually to test)
+let slow = list.head, fast = list.head;
+while (fast && fast.next) {
+  slow = slow.next;
+  fast = fast.next.next;
+  if (slow === fast) { console.log('cycle detected!'); slow; }
+}
+console.log('no cycle');`,
+        },
+    ],
+    doubly: [
+        {
+            label: 'Build 1–5',
+            code: `[1, 2, 3, 4, 5].forEach(v => list.append(v));`,
+        },
+        {
+            label: 'Inspect',
+            code: `console.log(list.toString());
+console.log('head:', list.head?.value, '  tail:', list.tail?.value);`,
+        },
+        {
+            label: 'Traverse forward',
+            code: `let curr = list.head;
+while (curr) {
+  console.log(curr.value);
+  curr = curr.next;
+}`,
+        },
+        {
+            label: 'Traverse backward',
+            code: `// Use .prev pointers from tail
+let curr = list.tail;
+while (curr) {
+  console.log(curr.value);
+  curr = curr.prev;
+}`,
+        },
+        {
+            label: 'Remove duplicates',
+            code: `// O(n) — _unlink handles prev/next rewiring
+const seen = new Set();
+let curr = list.head;
+while (curr) {
+  const next = curr.next;
+  if (seen.has(curr.value)) list._unlink(curr);
+  else seen.add(curr.value);
+  curr = next;
+}`,
+        },
+        {
+            label: 'Reverse & verify',
+            code: `const before = list.toArray().join(', ');
+list.reverse();
+console.log('forward: ', list.toArray().join(', '));
+console.log('backward:', list.toArrayReverse().join(', '));`,
+        },
+        {
+            label: 'Palindrome check',
+            code: `// Compare forward and backward traversal
+const fwd = list.toArray();
+const bwd = list.toArrayReverse();
+const ok  = fwd.every((v, i) => v === bwd[i]);
+console.log(ok ? 'palindrome ✓' : 'not a palindrome');`,
+        },
+        {
+            label: 'Sum all values',
+            code: `const sum = list.toArray().reduce((acc, v) => acc + v, 0);
+console.log('sum:', sum);`,
+        },
+    ],
+};
+
+// ─── Populate template buttons ────────────────────────────────────────────────
+function updateTemplateButtons() {
+    const grid = document.getElementById('ll-template-grid');
+    grid.innerHTML = '';
+    for (const s of SNIPPETS[currentMode]) {
+        const btn = document.createElement('button');
+        btn.className   = 'll-template-btn';
+        btn.textContent = s.label;
+        btn.dataset.code = s.code;
+        grid.appendChild(btn);
+    }
 }
 
 // ─── Code execution ──────────────────────────────────────────────────────────
@@ -277,17 +653,13 @@ function runCode(code) {
     };
 
     let result, error;
-
-    // Try to auto-return the value of the last expression so the user
-    // can write `list.length()` and see the result without `return`.
     const lines    = code.trim().split('\n');
     const lastLine = lines[lines.length - 1].trim();
     const wrapped  = [...lines.slice(0, -1), 'return ' + lastLine].join('\n');
 
     try {
         result = new Function('list', 'console', wrapped)(list, fakeConsole);
-    } catch (_syntaxError) {
-        // Last line was a statement (e.g. if/for/let) — run without return
+    } catch (_) {
         try {
             result = new Function('list', 'console', code)(list, fakeConsole);
         } catch (e) {
@@ -333,6 +705,25 @@ function updateStats() {
     document.getElementById('ll-length').textContent = list.length();
 }
 
+// ─── Mode switching ───────────────────────────────────────────────────────────
+function switchMode(mode) {
+    currentMode = mode;
+    list = mode === 'singly' ? new LinkedList() : new DoublyLinkedList();
+
+    document.getElementById('ll-workspace').dataset.mode = mode;
+
+    document.querySelectorAll('.ll-tab').forEach(t =>
+        t.classList.toggle('ll-tab-active', t.dataset.mode === mode)
+    );
+
+    updateTemplateButtons();
+    renderDiagram();
+    updateStats();
+
+    document.getElementById('ll-history').innerHTML =
+        `<div class="ll-entry ll-log-line">Switched to ${mode === 'singly' ? 'singly' : 'doubly'} linked list. List reset.</div>`;
+}
+
 // ─── Button handlers ─────────────────────────────────────────────────────────
 function handleRun() {
     const code = document.getElementById('ll-input').value.trim();
@@ -344,7 +735,7 @@ function handleRun() {
 }
 
 function handleReset() {
-    list.clear();
+    list = currentMode === 'singly' ? new LinkedList() : new DoublyLinkedList();
     renderDiagram();
     updateStats();
     document.getElementById('ll-history').innerHTML =
@@ -370,9 +761,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    document.querySelectorAll('.ll-tab').forEach(tab => {
+        tab.addEventListener('click', () => switchMode(tab.dataset.mode));
+    });
+
+    document.getElementById('ll-template-grid').addEventListener('click', e => {
+        const btn = e.target.closest('.ll-template-btn');
+        if (!btn) return;
+        document.getElementById('ll-input').value = btn.dataset.code;
+        document.getElementById('ll-input').focus();
+    });
+
+    updateTemplateButtons();
     renderDiagram();
     updateStats();
 
     document.getElementById('ll-history').innerHTML =
-        '<div class="ll-entry ll-log-line">Ready. Type a command and press Run (or Ctrl+Enter).</div>';
+        '<div class="ll-entry ll-log-line">Ready. Pick a template or type a command and press Run (or Ctrl+Enter).</div>';
 });

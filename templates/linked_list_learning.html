@@ -4,13 +4,20 @@
 <div class="ll-container">
     <h1>Linked List Learning</h1>
     <p class="ll-desc">
-        An interactive playground for singly linked lists.
+        An interactive playground for linked lists.
         Write JavaScript to manipulate the <code>list</code> object — the diagram updates live after each run.
+        Pick a template to get started, or write your own code.
     </p>
 
-    <div class="ll-workspace">
+    <!-- ── Mode tabs ──────────────────────────────────────────────────────── -->
+    <div class="ll-tabs" role="tablist">
+        <button class="ll-tab ll-tab-active" data-mode="singly" role="tab">Singly Linked</button>
+        <button class="ll-tab" data-mode="doubly" role="tab">Doubly Linked</button>
+    </div>
 
-        <!-- ── REPL panel ──────────────────────────────────────────────── -->
+    <div class="ll-workspace" id="ll-workspace" data-mode="singly">
+
+        <!-- ── REPL panel ─────────────────────────────────────────────────── -->
         <div class="ll-panel">
             <h2>REPL</h2>
             <textarea id="ll-input" rows="8" spellcheck="false"
@@ -21,7 +28,14 @@
                 <button id="ll-reset-btn" class="ll-btn ll-btn-danger">Reset List</button>
             </div>
 
-            <details class="ll-ref">
+            <!-- ── Templates ────────────────────────────────────────────────── -->
+            <details class="ll-ref ll-templates-section">
+                <summary>Templates</summary>
+                <div class="ll-template-grid" id="ll-template-grid"></div>
+            </details>
+
+            <!-- ── Quick reference — singly ─────────────────────────────────── -->
+            <details class="ll-ref ll-ref-singly">
                 <summary>Quick Reference</summary>
                 <table>
                     <tr><td><code>list.append(v)</code></td><td>Add v to tail</td></tr>
@@ -36,12 +50,37 @@
                     <tr><td><code>list.length()</code></td><td>Number of nodes</td></tr>
                     <tr><td><code>list.toArray()</code></td><td>Returns JS array of values</td></tr>
                     <tr><td><code>list.clear()</code></td><td>Empty the list</td></tr>
-                    <tr><td><code>console.log(&#8230;)</code></td><td>Print to output panel</td></tr>
+                    <tr><td><code>list.head</code></td><td>First Node (has .value, .next)</td></tr>
+                    <tr><td><code>console.log(…)</code></td><td>Print to output panel</td></tr>
+                </table>
+            </details>
+
+            <!-- ── Quick reference — doubly ─────────────────────────────────── -->
+            <details class="ll-ref ll-ref-doubly">
+                <summary>Quick Reference</summary>
+                <table>
+                    <tr><td><code>list.append(v)</code></td><td>Add v to tail</td></tr>
+                    <tr><td><code>list.prepend(v)</code></td><td>Add v to head</td></tr>
+                    <tr><td><code>list.insertAt(i, v)</code></td><td>Insert at index i</td></tr>
+                    <tr><td><code>list.delete(v)</code></td><td>Remove first node with value v</td></tr>
+                    <tr><td><code>list.deleteAt(i)</code></td><td>Remove node at index i</td></tr>
+                    <tr><td><code>list._unlink(node)</code></td><td>Unlink a node object directly</td></tr>
+                    <tr><td><code>list.find(v)</code></td><td>Returns index of v, or -1</td></tr>
+                    <tr><td><code>list.get(i)</code></td><td>Value at index i</td></tr>
+                    <tr><td><code>list.set(i, v)</code></td><td>Set value at index i</td></tr>
+                    <tr><td><code>list.reverse()</code></td><td>Reverse in place (rewires prev/next)</td></tr>
+                    <tr><td><code>list.length()</code></td><td>Number of nodes</td></tr>
+                    <tr><td><code>list.toArray()</code></td><td>Forward traversal as array</td></tr>
+                    <tr><td><code>list.toArrayReverse()</code></td><td>Backward traversal via .prev</td></tr>
+                    <tr><td><code>list.clear()</code></td><td>Empty the list</td></tr>
+                    <tr><td><code>list.head</code></td><td>First node (has .value, .prev, .next)</td></tr>
+                    <tr><td><code>list.tail</code></td><td>Last node (has .value, .prev, .next)</td></tr>
+                    <tr><td><code>console.log(…)</code></td><td>Print to output panel</td></tr>
                 </table>
             </details>
         </div>
 
-        <!-- ── Diagram panel ───────────────────────────────────────────── -->
+        <!-- ── Diagram panel ──────────────────────────────────────────────── -->
         <div class="ll-panel">
             <h2>Diagram</h2>
             <div class="ll-diagram-scroll">
@@ -52,7 +91,7 @@
 
     </div>
 
-    <!-- ── Output console ──────────────────────────────────────────────── -->
+    <!-- ── Output console ────────────────────────────────────────────────── -->
     <div class="ll-console-wrap">
         <div class="ll-console-header">Output</div>
         <div id="ll-history" class="ll-history"></div>
@@ -69,17 +108,49 @@
 .ll-container h1 { margin-bottom: .5rem; }
 .ll-desc {
     color: var(--text-secondary);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
+
+/* ── Tabs ────────────────────────────────────────────────────────────── */
+.ll-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--border-primary);
+}
+.ll-tab {
+    padding: .45rem 1.2rem;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    background: none;
+    font-size: .9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 4px 4px 0 0;
+    transition: color .15s, border-color .15s;
+}
+.ll-tab:hover { color: var(--text-primary); }
+.ll-tab-active {
+    color: var(--text-primary);
+    border-bottom-color: #2980b9;
+}
+
+/* ── Workspace ───────────────────────────────────────────────────────── */
 .ll-workspace {
     display: grid;
-    grid-template-columns: 380px 1fr;
+    grid-template-columns: 400px 1fr;
     gap: 1.5rem;
     align-items: start;
 }
 @media (max-width: 800px) {
     .ll-workspace { grid-template-columns: 1fr; }
 }
+
+/* Mode-based quick ref visibility */
+#ll-workspace[data-mode="singly"] .ll-ref-doubly { display: none; }
+#ll-workspace[data-mode="doubly"] .ll-ref-singly { display: none; }
 
 /* ── Panels ──────────────────────────────────────────────────────────── */
 .ll-panel {
@@ -132,16 +203,43 @@
     opacity: .7;
     font-weight: normal;
 }
-.ll-btn-primary  { background: #2980b9; color: #fff; }
-.ll-btn-primary:hover  { background: #1a6a9a; }
+.ll-btn-primary   { background: #2980b9; color: #fff; }
+.ll-btn-primary:hover   { background: #1a6a9a; }
 .ll-btn-secondary {
     background: var(--bg-tertiary);
     color: var(--text-primary);
     border: 1px solid var(--border-primary);
 }
 .ll-btn-secondary:hover { background: var(--border-primary); }
-.ll-btn-danger   { background: #c0392b; color: #fff; }
-.ll-btn-danger:hover   { background: #a93226; }
+.ll-btn-danger    { background: #c0392b; color: #fff; }
+.ll-btn-danger:hover    { background: #a93226; }
+
+/* ── Templates ───────────────────────────────────────────────────────── */
+.ll-templates-section {
+    margin-top: 1rem;
+}
+.ll-template-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+    margin-top: .5rem;
+}
+.ll-template-btn {
+    padding: .3rem .75rem;
+    border: 1px solid var(--border-primary);
+    border-radius: 4px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: .82rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .12s, border-color .12s;
+}
+.ll-template-btn:hover {
+    background: #2980b9;
+    border-color: #2980b9;
+    color: #fff;
+}
 
 /* ── Quick Reference ─────────────────────────────────────────────────── */
 .ll-ref {
