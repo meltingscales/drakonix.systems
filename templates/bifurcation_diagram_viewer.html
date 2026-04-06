@@ -660,7 +660,7 @@
 
     // --- Bifurcation: left-click zoom, right-click pan ---
     let dragStart = null, dragRect = null;
-    let panStart = null, panClientStart = null, panViewSnap = null;
+    let panClientStart = null, panCanvasRect = null, panViewSnap = null;
 
     wrapper.addEventListener('contextmenu', e => e.preventDefault());
 
@@ -668,8 +668,8 @@
         if (e.button === 0) {
             dragStart = canvasPos(e, diagramCanvas); dragRect = null; e.preventDefault();
         } else if (e.button === 2) {
-            panStart = canvasPos(e, diagramCanvas);
             panClientStart = { x: e.clientX, y: e.clientY };
+            panCanvasRect  = diagramCanvas.getBoundingClientRect();
             panViewSnap = { ...view };
             wrapper.style.cursor = 'grabbing';
             e.preventDefault();
@@ -685,7 +685,7 @@
                          w: Math.abs(pos.x - dragStart.x), h: Math.abs(pos.y - dragStart.y) };
             drawOverlay();
         }
-        if (panStart) {
+        if (panClientStart) {
             const cssX = e.clientX - panClientStart.x;
             const cssY = e.clientY - panClientStart.y;
             diagramCanvas.style.transform = `translate(${cssX}px,${cssY}px)`;
@@ -696,7 +696,7 @@
     wrapper.addEventListener('mouseleave', () => {
         coordsDisplay.textContent = '';
         if (dragStart) { dragStart = null; dragRect = null; clearOverlay(); }
-        if (panStart) { panStart = null; panClientStart = null; panViewSnap = null;
+        if (panClientStart) { panClientStart = null; panCanvasRect = null; panViewSnap = null;
                         diagramCanvas.style.transform = ''; overlayCanvas.style.transform = '';
                         wrapper.style.cursor = ''; }
     });
@@ -711,10 +711,11 @@
                 updateParamDisplay(); renderAll();
             }
             dragStart = null; dragRect = null; clearOverlay();
-        } else if (e.button === 2 && panStart) {
-            const pos = canvasPos(e, diagramCanvas);
-            const dx = pos.x - panStart.x;
-            const dy = pos.y - panStart.y;
+        } else if (e.button === 2 && panClientStart) {
+            const dxCss = e.clientX - panClientStart.x;
+            const dyCss = e.clientY - panClientStart.y;
+            const dx = dxCss * (diagramCanvas.width  / panCanvasRect.width);
+            const dy = dyCss * (diagramCanvas.height / panCanvasRect.height);
             if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
                 const rRange = panViewSnap.rMax - panViewSnap.rMin;
                 const xRange = panViewSnap.xMax - panViewSnap.xMin;
@@ -726,7 +727,7 @@
                 view.xMax = panViewSnap.xMax + deltaX;
                 updateParamDisplay(); renderAll();
             }
-            panStart = null; panClientStart = null; panViewSnap = null;
+            panClientStart = null; panCanvasRect = null; panViewSnap = null;
             diagramCanvas.style.transform = ''; overlayCanvas.style.transform = '';
             wrapper.style.cursor = '';
         }
@@ -734,7 +735,7 @@
 
     // --- Mandelbrot: left-click zoom, right-click pan ---
     let mDragStart = null, mDragRect = null;
-    let mPanStart = null, mPanClientStart = null, mPanViewSnap = null;
+    let mPanClientStart = null, mPanCanvasRect = null, mPanViewSnap = null;
 
     mWrapper.addEventListener('contextmenu', e => e.preventDefault());
 
@@ -742,8 +743,8 @@
         if (e.button === 0) {
             mDragStart = canvasPos(e, mandelbrotCanvas); mDragRect = null; e.preventDefault();
         } else if (e.button === 2) {
-            mPanStart = canvasPos(e, mandelbrotCanvas);
             mPanClientStart = { x: e.clientX, y: e.clientY };
+            mPanCanvasRect  = mandelbrotCanvas.getBoundingClientRect();
             mPanViewSnap = { rMin: view.rMin, rMax: view.rMax, imMin: mImMin, imMax: mImMax };
             mWrapper.style.cursor = 'grabbing';
             e.preventDefault();
@@ -759,7 +760,7 @@
                           w: Math.abs(pos.x - mDragStart.x), h: Math.abs(pos.y - mDragStart.y) };
             drawMOverlay();
         }
-        if (mPanStart) {
+        if (mPanClientStart) {
             const cssX = e.clientX - mPanClientStart.x;
             const cssY = e.clientY - mPanClientStart.y;
             mandelbrotCanvas.style.transform = `translate(${cssX}px,${cssY}px)`;
@@ -770,7 +771,7 @@
     mWrapper.addEventListener('mouseleave', () => {
         coordsDisplay.textContent = '';
         if (mDragStart) { mDragStart = null; mDragRect = null; clearMOverlay(); }
-        if (mPanStart) { mPanStart = null; mPanClientStart = null; mPanViewSnap = null;
+        if (mPanClientStart) { mPanClientStart = null; mPanCanvasRect = null; mPanViewSnap = null;
                          mandelbrotCanvas.style.transform = ''; mandelbrotOverlay.style.transform = '';
                          mWrapper.style.cursor = ''; }
     });
@@ -786,10 +787,11 @@
                 updateParamDisplay(); renderAll();
             }
             mDragStart = null; mDragRect = null; clearMOverlay();
-        } else if (e.button === 2 && mPanStart) {
-            const pos = canvasPos(e, mandelbrotCanvas);
-            const dx = pos.x - mPanStart.x;
-            const dy = pos.y - mPanStart.y;
+        } else if (e.button === 2 && mPanClientStart) {
+            const dxCss = e.clientX - mPanClientStart.x;
+            const dyCss = e.clientY - mPanClientStart.y;
+            const dx = dxCss * (mandelbrotCanvas.width  / mPanCanvasRect.width);
+            const dy = dyCss * (mandelbrotCanvas.height / mPanCanvasRect.height);
             if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
                 const rRange = mPanViewSnap.rMax - mPanViewSnap.rMin;
                 const imRange = mPanViewSnap.imMax - mPanViewSnap.imMin;
@@ -801,7 +803,7 @@
                 mImMax = mPanViewSnap.imMax + deltaIm;
                 updateParamDisplay(); renderAll();
             }
-            mPanStart = null; mPanClientStart = null; mPanViewSnap = null;
+            mPanClientStart = null; mPanCanvasRect = null; mPanViewSnap = null;
             mandelbrotCanvas.style.transform = ''; mandelbrotOverlay.style.transform = '';
             mWrapper.style.cursor = '';
         }
