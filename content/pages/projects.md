@@ -348,3 +348,11 @@ I helped provide 2026 Cat/Dog rabies vaccination stats to CACC, Chicago Animal C
 I used Rust alongside z.ai/Claude to gather API data and generate a data sheet for CACC. Sent to Cook County's Automatic Certificate Entry (ACE) program.
 
 Closed source for security reasons.
+
+### BAM Email Phishing Report Automation
+
+MS Entra App that analyzes phishing reports and summarizes. Uses a service account to automatically send a summary report to SOC team.
+
+### BAM Data Analysis
+
+Custom Python code that analyzes spreadsheets to ensure we have full Git repo code scan coverage. Correlates data with a vendor's GraphQL API.
