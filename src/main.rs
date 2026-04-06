@@ -169,6 +169,8 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/timer/:timer_id/status", get(handlers::timer_status))
         // Death timer service
         .route("/services/death-timer", get(handlers::death_timer_page))
+        // Linked list learning REPL
+        .route("/services/linked-list-learning", get(handlers::linked_list_learning_page))
         // Bifurcation diagram viewer
         .route("/services/bifurcation-diagram-viewer", get(handlers::bifurcation_diagram_viewer_page))
         // FFmpeg converter service

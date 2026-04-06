@@ -328,6 +328,20 @@ pub async fn death_timer_page(State(state): State<Arc<AppState>>) -> Result<Html
     Ok(Html(html))
 }
 
+/// Linked list learning REPL page handler
+pub async fn linked_list_learning_page(State(state): State<Arc<AppState>>) -> Result<Html<String>, AppError> {
+    let mut context = Context::new();
+    context.insert("title", "Linked List Learning - drakonix.systems");
+    add_honeypot_urls(&mut context);
+
+    let html = state
+        .tera
+        .render("linked_list_learning.html", &context)
+        .map_err(|e| AppError::TemplateError(e.to_string()))?;
+
+    Ok(Html(html))
+}
+
 /// Bifurcation diagram viewer page handler
 pub async fn bifurcation_diagram_viewer_page(State(state): State<Arc<AppState>>) -> Result<Html<String>, AppError> {
     let mut context = Context::new();
