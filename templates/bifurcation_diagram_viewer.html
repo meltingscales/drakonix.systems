@@ -99,7 +99,7 @@
         <div class="bif-modal-body">
             <table class="bif-controls-table">
                 <tbody>
-                    <tr><th>Left-drag</th><td>Draw a zoom selection rectangle</td></tr>
+                    <tr><th>Left-drag</th><td>Draw an aspect-ratio-locked zoom selection</td></tr>
                     <tr><th>Right-drag</th><td>Pan the view</td></tr>
                     <tr><th>Double-click</th><td>Reset to default view</td></tr>
                     <tr><th>Zoom Out</th><td>Expand view by 2&times; around centre</td></tr>
@@ -681,8 +681,11 @@
         const { r, x } = pixelToView(pos.x, pos.y);
         coordsDisplay.textContent = `r = ${fmt6(r)}  x = ${fmt6(x)}  c = ${fmt6(rToC(r))}`;
         if (dragStart) {
-            dragRect = { x: Math.min(dragStart.x, pos.x), y: Math.min(dragStart.y, pos.y),
-                         w: Math.abs(pos.x - dragStart.x), h: Math.abs(pos.y - dragStart.y) };
+            const w = Math.abs(pos.x - dragStart.x);
+            const h = w * (H / W);
+            dragRect = { x: Math.min(dragStart.x, pos.x),
+                         y: pos.y >= dragStart.y ? dragStart.y : dragStart.y - h,
+                         w, h };
             drawOverlay();
         }
         if (panClientStart) {
@@ -703,12 +706,11 @@
 
     wrapper.addEventListener('mouseup', e => {
         if (e.button === 0 && dragStart) {
-            const pos = canvasPos(e, diagramCanvas);
-            if (Math.abs(pos.x - dragStart.x) > 5 && Math.abs(pos.y - dragStart.y) > 5) {
-                const a = pixelToView(Math.min(dragStart.x, pos.x), Math.max(dragStart.y, pos.y));
-                const b = pixelToView(Math.max(dragStart.x, pos.x), Math.min(dragStart.y, pos.y));
+            if (dragRect && dragRect.w > 5) {
+                const a = pixelToView(dragRect.x, dragRect.y + dragRect.h);
+                const b = pixelToView(dragRect.x + dragRect.w, dragRect.y);
                 view = { rMin: a.r, rMax: b.r, xMin: a.x, xMax: b.x };
-                updateParamDisplay(); renderAll();
+                fixAspectRatio();
             }
             dragStart = null; dragRect = null; clearOverlay();
         } else if (e.button === 2 && panClientStart) {
@@ -725,7 +727,7 @@
                 view.rMax = panViewSnap.rMax + deltaR;
                 view.xMin = panViewSnap.xMin + deltaX;
                 view.xMax = panViewSnap.xMax + deltaX;
-                updateParamDisplay(); renderAll();
+                fixAspectRatio();
             }
             panClientStart = null; panCanvasRect = null; panViewSnap = null;
             diagramCanvas.style.transform = ''; overlayCanvas.style.transform = '';
@@ -756,8 +758,11 @@
         const { r, im } = mPixelToView(pos.x, pos.y);
         coordsDisplay.textContent = `r = ${fmt6(r)}  c = ${fmt6(rToC(r))} + ${fmt6(im)}i`;
         if (mDragStart) {
-            mDragRect = { x: Math.min(mDragStart.x, pos.x), y: Math.min(mDragStart.y, pos.y),
-                          w: Math.abs(pos.x - mDragStart.x), h: Math.abs(pos.y - mDragStart.y) };
+            const w = Math.abs(pos.x - mDragStart.x);
+            const h = w * (H_M / W_M);
+            mDragRect = { x: Math.min(mDragStart.x, pos.x),
+                          y: pos.y >= mDragStart.y ? mDragStart.y : mDragStart.y - h,
+                          w, h };
             drawMOverlay();
         }
         if (mPanClientStart) {
@@ -778,13 +783,12 @@
 
     mWrapper.addEventListener('mouseup', e => {
         if (e.button === 0 && mDragStart) {
-            const pos = canvasPos(e, mandelbrotCanvas);
-            if (Math.abs(pos.x - mDragStart.x) > 5 && Math.abs(pos.y - mDragStart.y) > 5) {
-                const a = mPixelToView(Math.min(mDragStart.x, pos.x), Math.max(mDragStart.y, pos.y));
-                const b = mPixelToView(Math.max(mDragStart.x, pos.x), Math.min(mDragStart.y, pos.y));
+            if (mDragRect && mDragRect.w > 5) {
+                const a = mPixelToView(mDragRect.x, mDragRect.y + mDragRect.h);
+                const b = mPixelToView(mDragRect.x + mDragRect.w, mDragRect.y);
                 view.rMin = a.r; view.rMax = b.r;
                 mImMin = a.im;   mImMax = b.im;
-                updateParamDisplay(); renderAll();
+                fixAspectRatio();
             }
             mDragStart = null; mDragRect = null; clearMOverlay();
         } else if (e.button === 2 && mPanClientStart) {
@@ -801,7 +805,7 @@
                 view.rMax = mPanViewSnap.rMax + deltaR;
                 mImMin = mPanViewSnap.imMin + deltaIm;
                 mImMax = mPanViewSnap.imMax + deltaIm;
-                updateParamDisplay(); renderAll();
+                fixAspectRatio();
             }
             mPanClientStart = null; mPanCanvasRect = null; mPanViewSnap = null;
             mandelbrotCanvas.style.transform = ''; mandelbrotOverlay.style.transform = '';
