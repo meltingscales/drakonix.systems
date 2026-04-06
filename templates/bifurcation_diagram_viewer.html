@@ -11,7 +11,7 @@
             models population dynamics. As <em>r</em> increases, the long-term population
             transitions from a stable fixed point into period-doubling cascades and chaos.
             The Mandelbrot set shares the same parameter axis via <code>c = r/2 &minus; r²/4</code>.
-            Drag to zoom. Double-click to reset.
+            Left-drag to zoom, right-drag to pan. Double-click to reset.
         </p>
     </div>
 
@@ -21,6 +21,7 @@
         <button id="fix-ar-btn" class="btn btn-secondary">Fix Aspect Ratio</button>
         <button id="fullscreen-btn" class="btn btn-secondary">Fullscreen</button>
         <button id="render-btn" class="btn btn-primary" disabled>Rendering...</button>
+        <button id="controls-btn" class="btn btn-secondary">Controls?</button>
         <span id="coords-display" class="coords"></span>
     </div>
 
@@ -85,6 +86,34 @@
         <span>Re(c): [<span id="c-real-left-display">−2.000000</span>, <span id="c-real-right-display">−0.312500</span>]</span>
         &nbsp;&nbsp;
         <span>Im(c): [<span id="c-imag-min-display">−1.5</span>, <span id="c-imag-max-display">1.5</span>]</span>
+    </div>
+</div>
+
+<!-- Controls modal -->
+<div id="controls-modal" class="bif-modal-backdrop" hidden>
+    <div class="bif-modal" role="dialog" aria-modal="true" aria-labelledby="controls-modal-title">
+        <div class="bif-modal-header">
+            <h2 id="controls-modal-title">Controls</h2>
+            <button id="controls-modal-close" class="bif-modal-close" aria-label="Close">&times;</button>
+        </div>
+        <div class="bif-modal-body">
+            <table class="bif-controls-table">
+                <tbody>
+                    <tr><th>Left-drag</th><td>Draw a zoom selection rectangle</td></tr>
+                    <tr><th>Right-drag</th><td>Pan the view</td></tr>
+                    <tr><th>Double-click</th><td>Reset to default view</td></tr>
+                    <tr><th>Zoom Out</th><td>Expand view by 2&times; around centre</td></tr>
+                    <tr><th>Fix Aspect Ratio</th><td>Match x / Im axis range to canvas proportions</td></tr>
+                    <tr><th>Fullscreen</th><td>Toggle fullscreen layout</td></tr>
+                    <tr><th>Sliders</th><td>Manually set r, x, and Im axis bounds</td></tr>
+                </tbody>
+            </table>
+            <p class="bif-modal-note">
+                Both diagrams share the <em>r</em> axis, linked via
+                <code>c&nbsp;=&nbsp;r/2&nbsp;&minus;&nbsp;r²/4</code>.
+                Panning or zooming either canvas updates both.
+            </p>
+        </div>
     </div>
 </div>
 
@@ -297,6 +326,85 @@
     max-width: 100%;
     left: 50%;
     transform: translateX(-50%);
+}
+
+/* ── Modal ── */
+.bif-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(0,0,0,0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bif-modal-backdrop[hidden] { display: none; }
+
+.bif-modal {
+    background: var(--bg-primary, #fff);
+    border: 1px solid var(--border-color, #ccc);
+    border-radius: 8px;
+    padding: 1.5rem;
+    min-width: 340px;
+    max-width: 520px;
+    width: 90vw;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+}
+
+.bif-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.bif-modal-header h2 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.bif-modal-close {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--text-muted, #666);
+    padding: 0 0.25rem;
+}
+
+.bif-modal-close:hover { color: var(--text-primary, #000); }
+
+.bif-controls-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.bif-controls-table th,
+.bif-controls-table td {
+    padding: 0.45rem 0.6rem;
+    border-bottom: 1px solid var(--border-color, #eee);
+    text-align: left;
+}
+
+.bif-controls-table th {
+    font-family: 'Courier New', monospace;
+    white-space: nowrap;
+    width: 35%;
+    color: var(--text-primary, #222);
+}
+
+.bif-controls-table td {
+    color: var(--text-muted, #555);
+}
+
+.bif-modal-note {
+    font-size: 0.82rem;
+    color: var(--text-muted, #666);
+    margin: 0;
 }
 </style>
 
@@ -550,12 +658,22 @@
         };
     }
 
-    // --- Bifurcation drag ---
+    // --- Bifurcation: left-click zoom, right-click pan ---
     let dragStart = null, dragRect = null;
+    let panStart = null, panClientStart = null, panViewSnap = null;
+
+    wrapper.addEventListener('contextmenu', e => e.preventDefault());
 
     wrapper.addEventListener('mousedown', e => {
-        if (e.button !== 0) return;
-        dragStart = canvasPos(e, diagramCanvas); dragRect = null; e.preventDefault();
+        if (e.button === 0) {
+            dragStart = canvasPos(e, diagramCanvas); dragRect = null; e.preventDefault();
+        } else if (e.button === 2) {
+            panStart = canvasPos(e, diagramCanvas);
+            panClientStart = { x: e.clientX, y: e.clientY };
+            panViewSnap = { ...view };
+            wrapper.style.cursor = 'grabbing';
+            e.preventDefault();
+        }
     });
 
     wrapper.addEventListener('mousemove', e => {
@@ -567,31 +685,69 @@
                          w: Math.abs(pos.x - dragStart.x), h: Math.abs(pos.y - dragStart.y) };
             drawOverlay();
         }
+        if (panStart) {
+            const cssX = e.clientX - panClientStart.x;
+            const cssY = e.clientY - panClientStart.y;
+            diagramCanvas.style.transform = `translate(${cssX}px,${cssY}px)`;
+            overlayCanvas.style.transform = `translate(${cssX}px,${cssY}px)`;
+        }
     });
 
     wrapper.addEventListener('mouseleave', () => {
         coordsDisplay.textContent = '';
         if (dragStart) { dragStart = null; dragRect = null; clearOverlay(); }
+        if (panStart) { panStart = null; panClientStart = null; panViewSnap = null;
+                        diagramCanvas.style.transform = ''; overlayCanvas.style.transform = '';
+                        wrapper.style.cursor = ''; }
     });
 
     wrapper.addEventListener('mouseup', e => {
-        if (!dragStart) return;
-        const pos = canvasPos(e, diagramCanvas);
-        if (Math.abs(pos.x - dragStart.x) > 5 && Math.abs(pos.y - dragStart.y) > 5) {
-            const a = pixelToView(Math.min(dragStart.x, pos.x), Math.max(dragStart.y, pos.y));
-            const b = pixelToView(Math.max(dragStart.x, pos.x), Math.min(dragStart.y, pos.y));
-            view = { rMin: a.r, rMax: b.r, xMin: a.x, xMax: b.x };
-            updateParamDisplay(); renderAll();
+        if (e.button === 0 && dragStart) {
+            const pos = canvasPos(e, diagramCanvas);
+            if (Math.abs(pos.x - dragStart.x) > 5 && Math.abs(pos.y - dragStart.y) > 5) {
+                const a = pixelToView(Math.min(dragStart.x, pos.x), Math.max(dragStart.y, pos.y));
+                const b = pixelToView(Math.max(dragStart.x, pos.x), Math.min(dragStart.y, pos.y));
+                view = { rMin: a.r, rMax: b.r, xMin: a.x, xMax: b.x };
+                updateParamDisplay(); renderAll();
+            }
+            dragStart = null; dragRect = null; clearOverlay();
+        } else if (e.button === 2 && panStart) {
+            const pos = canvasPos(e, diagramCanvas);
+            const dx = pos.x - panStart.x;
+            const dy = pos.y - panStart.y;
+            if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
+                const rRange = panViewSnap.rMax - panViewSnap.rMin;
+                const xRange = panViewSnap.xMax - panViewSnap.xMin;
+                const deltaR = -dx / W * rRange;
+                const deltaX = dy / H * xRange;
+                view.rMin = panViewSnap.rMin + deltaR;
+                view.rMax = panViewSnap.rMax + deltaR;
+                view.xMin = panViewSnap.xMin + deltaX;
+                view.xMax = panViewSnap.xMax + deltaX;
+                updateParamDisplay(); renderAll();
+            }
+            panStart = null; panClientStart = null; panViewSnap = null;
+            diagramCanvas.style.transform = ''; overlayCanvas.style.transform = '';
+            wrapper.style.cursor = '';
         }
-        dragStart = null; dragRect = null; clearOverlay();
     });
 
-    // --- Mandelbrot drag ---
+    // --- Mandelbrot: left-click zoom, right-click pan ---
     let mDragStart = null, mDragRect = null;
+    let mPanStart = null, mPanClientStart = null, mPanViewSnap = null;
+
+    mWrapper.addEventListener('contextmenu', e => e.preventDefault());
 
     mWrapper.addEventListener('mousedown', e => {
-        if (e.button !== 0) return;
-        mDragStart = canvasPos(e, mandelbrotCanvas); mDragRect = null; e.preventDefault();
+        if (e.button === 0) {
+            mDragStart = canvasPos(e, mandelbrotCanvas); mDragRect = null; e.preventDefault();
+        } else if (e.button === 2) {
+            mPanStart = canvasPos(e, mandelbrotCanvas);
+            mPanClientStart = { x: e.clientX, y: e.clientY };
+            mPanViewSnap = { rMin: view.rMin, rMax: view.rMax, imMin: mImMin, imMax: mImMax };
+            mWrapper.style.cursor = 'grabbing';
+            e.preventDefault();
+        }
     });
 
     mWrapper.addEventListener('mousemove', e => {
@@ -603,24 +759,52 @@
                           w: Math.abs(pos.x - mDragStart.x), h: Math.abs(pos.y - mDragStart.y) };
             drawMOverlay();
         }
+        if (mPanStart) {
+            const cssX = e.clientX - mPanClientStart.x;
+            const cssY = e.clientY - mPanClientStart.y;
+            mandelbrotCanvas.style.transform = `translate(${cssX}px,${cssY}px)`;
+            mandelbrotOverlay.style.transform = `translate(${cssX}px,${cssY}px)`;
+        }
     });
 
     mWrapper.addEventListener('mouseleave', () => {
         coordsDisplay.textContent = '';
         if (mDragStart) { mDragStart = null; mDragRect = null; clearMOverlay(); }
+        if (mPanStart) { mPanStart = null; mPanClientStart = null; mPanViewSnap = null;
+                         mandelbrotCanvas.style.transform = ''; mandelbrotOverlay.style.transform = '';
+                         mWrapper.style.cursor = ''; }
     });
 
     mWrapper.addEventListener('mouseup', e => {
-        if (!mDragStart) return;
-        const pos = canvasPos(e, mandelbrotCanvas);
-        if (Math.abs(pos.x - mDragStart.x) > 5 && Math.abs(pos.y - mDragStart.y) > 5) {
-            const a = mPixelToView(Math.min(mDragStart.x, pos.x), Math.max(mDragStart.y, pos.y));
-            const b = mPixelToView(Math.max(mDragStart.x, pos.x), Math.min(mDragStart.y, pos.y));
-            view.rMin = a.r; view.rMax = b.r;
-            mImMin = a.im;   mImMax = b.im;
-            updateParamDisplay(); renderAll();
+        if (e.button === 0 && mDragStart) {
+            const pos = canvasPos(e, mandelbrotCanvas);
+            if (Math.abs(pos.x - mDragStart.x) > 5 && Math.abs(pos.y - mDragStart.y) > 5) {
+                const a = mPixelToView(Math.min(mDragStart.x, pos.x), Math.max(mDragStart.y, pos.y));
+                const b = mPixelToView(Math.max(mDragStart.x, pos.x), Math.min(mDragStart.y, pos.y));
+                view.rMin = a.r; view.rMax = b.r;
+                mImMin = a.im;   mImMax = b.im;
+                updateParamDisplay(); renderAll();
+            }
+            mDragStart = null; mDragRect = null; clearMOverlay();
+        } else if (e.button === 2 && mPanStart) {
+            const pos = canvasPos(e, mandelbrotCanvas);
+            const dx = pos.x - mPanStart.x;
+            const dy = pos.y - mPanStart.y;
+            if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
+                const rRange = mPanViewSnap.rMax - mPanViewSnap.rMin;
+                const imRange = mPanViewSnap.imMax - mPanViewSnap.imMin;
+                const deltaR = -dx / W_M * rRange;
+                const deltaIm = dy / H_M * imRange;
+                view.rMin = mPanViewSnap.rMin + deltaR;
+                view.rMax = mPanViewSnap.rMax + deltaR;
+                mImMin = mPanViewSnap.imMin + deltaIm;
+                mImMax = mPanViewSnap.imMax + deltaIm;
+                updateParamDisplay(); renderAll();
+            }
+            mPanStart = null; mPanClientStart = null; mPanViewSnap = null;
+            mandelbrotCanvas.style.transform = ''; mandelbrotOverlay.style.transform = '';
+            mWrapper.style.cursor = '';
         }
-        mDragStart = null; mDragRect = null; clearMOverlay();
     });
 
     function fixAspectRatio() {
@@ -689,6 +873,16 @@
         moctx.fillRect(mDragRect.x, mDragRect.y, mDragRect.w, mDragRect.h);
     }
     function clearMOverlay() { moctx.clearRect(0, 0, W_M, H_M); }
+
+    // --- Controls modal ---
+    const controlsModal = document.getElementById('controls-modal');
+    const controlsBtn   = document.getElementById('controls-btn');
+    const controlsClose = document.getElementById('controls-modal-close');
+
+    controlsBtn.addEventListener('click', () => { controlsModal.hidden = false; });
+    controlsClose.addEventListener('click', () => { controlsModal.hidden = true; });
+    controlsModal.addEventListener('click', e => { if (e.target === controlsModal) controlsModal.hidden = true; });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !controlsModal.hidden) controlsModal.hidden = true; });
 
     // Initial render
     updateParamDisplay();
