@@ -349,6 +349,10 @@ I used Rust alongside z.ai/Claude to gather API data and generate a data sheet f
 
 Closed source for security reasons.
 
+### BAM AzureHound and BloodHound
+
+Set up AzureHound and BloodHound myself, on-prem. First set up CE on my own hardware.
+
 ### BAM Email Phishing Report Automation
 
 MS Entra App that analyzes phishing reports and summarizes. Uses a service account to automatically send a summary report to SOC team.
