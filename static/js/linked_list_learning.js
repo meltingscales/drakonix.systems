@@ -224,31 +224,36 @@ let list = new LinkedList();
 let currentMode = 'singly';
 let _opLog = [];
 
-// ─── SVG constants — singly ───────────────────────────────────────────────────
-const NODE_W   = 140;
-const NODE_H   = 60;
-const GAP_W    = 50;
-const STEP_W   = NODE_W + GAP_W;
-const HEAD_X   = 80;
-const CENTER_Y = 70;
-const TOP_Y    = CENTER_Y - NODE_H / 2;
-const NULL_W   = 60;
-const SVG_H    = 140;
+// ─── SVG constants — singly (vertical) ───────────────────────────────────────
+const SV_NODE_W  = 160;
+const SV_NODE_H  = 60;
+const SV_VAL_H   = 40;   // height of value compartment
+const SV_NEXT_H  = 20;   // height of next pointer compartment
+const SV_GAP_H   = 44;
+const SV_STEP_H  = SV_NODE_H + SV_GAP_H;
+const SV_CX      = 100;  // horizontal centre of nodes
+const SV_NX      = SV_CX - SV_NODE_W / 2;
+const SV_HEAD_Y  = 50;
+const SV_NULL_H  = 34;
+const SV_NULL_W  = 60;
+const SV_SVG_W   = 220;
 
-// ─── SVG constants — doubly ───────────────────────────────────────────────────
-const DL_NODE_W  = 180;
-const DL_PREV_W  = 50;
-const DL_VAL_W   = 80;
-const DL_NEXT_W  = 50;
-const DL_NODE_H  = 60;
-const DL_GAP_W   = 56;
-const DL_STEP_W  = DL_NODE_W + DL_GAP_W;
-const DL_HEAD_X  = 80;
-const DL_CY      = 70;
-const DL_TOP_Y   = DL_CY - DL_NODE_H / 2;
-const DL_NEXT_Y  = DL_CY - 12;
-const DL_PREV_Y  = DL_CY + 12;
-const DL_SVG_H   = 150;
+// ─── SVG constants — doubly (vertical) ───────────────────────────────────────
+const DV_NODE_W  = 160;
+const DV_PREV_H  = 18;
+const DV_VAL_H   = 30;
+const DV_NEXT_H  = 18;
+const DV_NODE_H  = DV_PREV_H + DV_VAL_H + DV_NEXT_H;  // 66
+const DV_GAP_H   = 50;
+const DV_STEP_H  = DV_NODE_H + DV_GAP_H;
+const DV_CX      = 100;
+const DV_NX      = DV_CX - DV_NODE_W / 2;
+const DV_HEAD_Y  = 50;
+const DV_FWD_X   = DV_CX + 20;  // x for forward (↓ next) arrows
+const DV_BCK_X   = DV_CX - 20;  // x for backward (↑ prev) arrows
+const DV_NULL_H  = 34;
+const DV_NULL_W  = 60;
+const DV_SVG_W   = 220;
 
 // ─── XML escaping ─────────────────────────────────────────────────────────────
 function escXml(s) {
@@ -282,17 +287,17 @@ function makeTrackedList(baseList) {
     });
 }
 
-// ─── Singly diagram ───────────────────────────────────────────────────────────
+// ─── Singly diagram (vertical) ───────────────────────────────────────────────
 function renderSinglyDiagram(newIndices = new Set()) {
     const svg    = document.getElementById('ll-diagram');
     const values = list.toArray();
     const n      = values.length;
 
-    const svgW = n === 0 ? 320 : HEAD_X + n * STEP_W + NULL_W + 20;
+    const svgH = n === 0 ? 100 : SV_HEAD_Y + n * SV_STEP_H + SV_GAP_H + SV_NULL_H + 10;
 
-    svg.setAttribute('viewBox', `0 0 ${svgW} ${SVG_H}`);
-    svg.setAttribute('width',   svgW);
-    svg.setAttribute('height',  SVG_H);
+    svg.setAttribute('viewBox', `0 0 ${SV_SVG_W} ${svgH}`);
+    svg.setAttribute('width',   SV_SVG_W);
+    svg.setAttribute('height',  svgH);
 
     const parts = [];
 
@@ -306,19 +311,20 @@ function renderSinglyDiagram(newIndices = new Set()) {
 
     if (n === 0) {
         parts.push(`
-          <text x="10" y="${CENTER_Y - 6}"  class="ll-head-label">head</text>
-          <text x="10" y="${CENTER_Y + 14}" class="ll-null-label">→ null</text>`);
+          <text x="${SV_CX}" y="22" text-anchor="middle" class="ll-head-label">head</text>
+          <text x="${SV_CX}" y="42" text-anchor="middle" class="ll-null-label">↓ null</text>`);
         svg.innerHTML = parts.join('');
         return;
     }
 
+    // head label + arrow pointing down
     parts.push(`
-      <text x="5" y="${CENTER_Y - 5}" class="ll-head-label">head</text>
-      <line x1="44" y1="${CENTER_Y}" x2="${HEAD_X - 6}" y2="${CENTER_Y}"
+      <text x="${SV_CX}" y="20" text-anchor="middle" class="ll-head-label">head</text>
+      <line x1="${SV_CX}" y1="26" x2="${SV_CX}" y2="${SV_HEAD_Y - 6}"
             class="ll-arrow" marker-end="url(#arr)"/>`);
 
     for (let i = 0; i < n; i++) {
-        const nx     = HEAD_X + i * STEP_W;
+        const ny     = SV_HEAD_Y + i * SV_STEP_H;
         const isLast = i === n - 1;
         const raw    = String(values[i]);
         const disp   = raw.length > 9 ? raw.slice(0, 8) + '…' : raw;
@@ -326,52 +332,64 @@ function renderSinglyDiagram(newIndices = new Set()) {
 
         parts.push(`<g class="ll-node-group${isNew ? ' ll-node-new' : ''}" data-index="${i}" data-value="${escXml(raw)}">`);
 
+        // Node rect
         parts.push(`
-          <rect x="${nx}" y="${TOP_Y}" width="${NODE_W}" height="${NODE_H}"
+          <rect x="${SV_NX}" y="${ny}" width="${SV_NODE_W}" height="${SV_NODE_H}"
                 rx="6" class="ll-node-rect"/>`);
+
+        // Horizontal divider: value (top) / next (bottom)
         parts.push(`
-          <line x1="${nx + NODE_W / 2}" y1="${TOP_Y}"
-                x2="${nx + NODE_W / 2}" y2="${TOP_Y + NODE_H}"
+          <line x1="${SV_NX}" y1="${ny + SV_VAL_H}"
+                x2="${SV_NX + SV_NODE_W}" y2="${ny + SV_VAL_H}"
                 class="ll-divider"/>`);
+
+        // Value text (centred in top compartment)
         parts.push(`
-          <text x="${nx + NODE_W / 4}" y="${CENTER_Y}"
+          <text x="${SV_CX}" y="${ny + SV_VAL_H / 2}"
                 text-anchor="middle" dominant-baseline="middle"
                 class="ll-val-text">${escXml(disp)}</text>`);
+
+        // "next" label in bottom compartment
         parts.push(`
-          <text x="${nx + NODE_W * 3 / 4}" y="${TOP_Y + 13}"
-                text-anchor="middle" class="ll-next-label">next</text>`);
+          <text x="${SV_NX + 8}" y="${ny + SV_VAL_H + SV_NEXT_H / 2}"
+                dominant-baseline="middle" class="ll-next-label">next</text>`);
 
         if (isLast) {
+            // ∅ in next compartment
             parts.push(`
-              <text x="${nx + NODE_W * 3 / 4}" y="${CENTER_Y + 8}"
+              <text x="${SV_NX + SV_NODE_W - 16}" y="${ny + SV_VAL_H + SV_NEXT_H / 2 + 1}"
                     text-anchor="middle" dominant-baseline="middle"
                     class="ll-null-ptr">∅</text>`);
-            const nullX = nx + NODE_W + GAP_W;
+            // Arrow + null box below
+            const nullY = ny + SV_NODE_H + SV_GAP_H;
             parts.push(`
-              <line x1="${nx + NODE_W}" y1="${CENTER_Y}"
-                    x2="${nullX - 6}"  y2="${CENTER_Y}"
+              <line x1="${SV_CX}" y1="${ny + SV_NODE_H}"
+                    x2="${SV_CX}" y2="${nullY - 6}"
                     class="ll-arrow" marker-end="url(#arr)"/>`);
             parts.push(`
-              <rect x="${nullX}" y="${TOP_Y + 10}"
-                    width="${NULL_W}" height="${NODE_H - 20}"
+              <rect x="${SV_CX - SV_NULL_W / 2}" y="${nullY}"
+                    width="${SV_NULL_W}" height="${SV_NULL_H}"
                     rx="4" class="ll-null-rect"/>`);
             parts.push(`
-              <text x="${nullX + NULL_W / 2}" y="${CENTER_Y}"
+              <text x="${SV_CX}" y="${nullY + SV_NULL_H / 2}"
                     text-anchor="middle" dominant-baseline="middle"
                     class="ll-null-text">null</text>`);
         } else {
+            // Dot in next compartment
             parts.push(`
-              <circle cx="${nx + NODE_W * 3 / 4}" cy="${CENTER_Y + 8}" r="5"
-                      class="ll-ptr-dot"/>`);
+              <circle cx="${SV_NX + SV_NODE_W - 16}" cy="${ny + SV_VAL_H + SV_NEXT_H / 2}"
+                      r="5" class="ll-ptr-dot"/>`);
+            // Arrow to next node
             parts.push(`
-              <line x1="${nx + NODE_W}" y1="${CENTER_Y}"
-                    x2="${nx + NODE_W + GAP_W - 6}" y2="${CENTER_Y}"
+              <line x1="${SV_CX}" y1="${ny + SV_NODE_H}"
+                    x2="${SV_CX}" y2="${ny + SV_STEP_H - 6}"
                     class="ll-arrow" marker-end="url(#arr)"/>`);
         }
 
+        // Index label to the right
         parts.push(`
-          <text x="${nx + NODE_W / 4}" y="${TOP_Y + NODE_H + 17}"
-                text-anchor="middle" class="ll-index-label">[${i}]</text>`);
+          <text x="${SV_NX + SV_NODE_W + 8}" y="${ny + SV_VAL_H / 2}"
+                dominant-baseline="middle" class="ll-index-label">[${i}]</text>`);
 
         parts.push(`</g>`);
     }
@@ -379,17 +397,17 @@ function renderSinglyDiagram(newIndices = new Set()) {
     svg.innerHTML = parts.join('');
 }
 
-// ─── Doubly diagram ───────────────────────────────────────────────────────────
+// ─── Doubly diagram (vertical) ───────────────────────────────────────────────
 function renderDoublyDiagram(newIndices = new Set()) {
     const svg    = document.getElementById('ll-diagram');
     const values = list.toArray();
     const n      = values.length;
 
-    const svgW = n === 0 ? 320 : DL_HEAD_X + n * DL_STEP_W + NULL_W + 20;
+    const svgH = n === 0 ? 100 : DV_HEAD_Y + n * DV_STEP_H + DV_GAP_H + DV_NULL_H + 10;
 
-    svg.setAttribute('viewBox', `0 0 ${svgW} ${DL_SVG_H}`);
-    svg.setAttribute('width',   svgW);
-    svg.setAttribute('height',  DL_SVG_H);
+    svg.setAttribute('viewBox', `0 0 ${DV_SVG_W} ${svgH}`);
+    svg.setAttribute('width',   DV_SVG_W);
+    svg.setAttribute('height',  svgH);
 
     const parts = [];
 
@@ -407,99 +425,114 @@ function renderDoublyDiagram(newIndices = new Set()) {
 
     if (n === 0) {
         parts.push(`
-          <text x="10" y="${DL_CY - 6}"  class="ll-head-label">head / tail</text>
-          <text x="10" y="${DL_CY + 14}" class="ll-null-label">→ null</text>`);
+          <text x="${DV_CX}" y="22" text-anchor="middle" class="ll-head-label">head / tail</text>
+          <text x="${DV_CX}" y="42" text-anchor="middle" class="ll-null-label">↓ null</text>`);
         svg.innerHTML = parts.join('');
         return;
     }
 
+    // head label + arrow pointing down
     parts.push(`
-      <text x="5" y="${DL_CY - 5}" class="ll-head-label">head</text>
-      <line x1="44" y1="${DL_CY}" x2="${DL_HEAD_X - 6}" y2="${DL_CY}"
+      <text x="${DV_CX}" y="20" text-anchor="middle" class="ll-head-label">head</text>
+      <line x1="${DV_CX}" y1="26" x2="${DV_CX}" y2="${DV_HEAD_Y - 6}"
             class="ll-arrow" marker-end="url(#arr)"/>`);
 
     for (let i = 0; i < n; i++) {
-        const nx      = DL_HEAD_X + i * DL_STEP_W;
+        const ny      = DV_HEAD_Y + i * DV_STEP_H;
         const isFirst = i === 0;
         const isLast  = i === n - 1;
         const raw     = String(values[i]);
-        const disp    = raw.length > 7 ? raw.slice(0, 6) + '…' : raw;
+        const disp    = raw.length > 9 ? raw.slice(0, 8) + '…' : raw;
         const isNew   = newIndices.has(i);
 
         parts.push(`<g class="ll-node-group${isNew ? ' ll-node-new' : ''}" data-index="${i}" data-value="${escXml(raw)}">`);
 
+        // Node rect
         parts.push(`
-          <rect x="${nx}" y="${DL_TOP_Y}" width="${DL_NODE_W}" height="${DL_NODE_H}"
+          <rect x="${DV_NX}" y="${ny}" width="${DV_NODE_W}" height="${DV_NODE_H}"
                 rx="6" class="ll-node-rect"/>`);
+
+        // Horizontal dividers: prev | value | next
         parts.push(`
-          <line x1="${nx + DL_PREV_W}" y1="${DL_TOP_Y}"
-                x2="${nx + DL_PREV_W}" y2="${DL_TOP_Y + DL_NODE_H}"
+          <line x1="${DV_NX}" y1="${ny + DV_PREV_H}"
+                x2="${DV_NX + DV_NODE_W}" y2="${ny + DV_PREV_H}"
                 class="ll-divider"/>`);
         parts.push(`
-          <line x1="${nx + DL_PREV_W + DL_VAL_W}" y1="${DL_TOP_Y}"
-                x2="${nx + DL_PREV_W + DL_VAL_W}" y2="${DL_TOP_Y + DL_NODE_H}"
+          <line x1="${DV_NX}" y1="${ny + DV_PREV_H + DV_VAL_H}"
+                x2="${DV_NX + DV_NODE_W}" y2="${ny + DV_PREV_H + DV_VAL_H}"
                 class="ll-divider"/>`);
+
+        // Compartment labels
         parts.push(`
-          <text x="${nx + DL_PREV_W / 2}" y="${DL_TOP_Y + 12}"
-                text-anchor="middle" class="ll-next-label">prev</text>`);
+          <text x="${DV_NX + 8}" y="${ny + DV_PREV_H / 2}"
+                dominant-baseline="middle" class="ll-next-label">prev</text>`);
         parts.push(`
-          <text x="${nx + DL_PREV_W + DL_VAL_W + DL_NEXT_W / 2}" y="${DL_TOP_Y + 12}"
-                text-anchor="middle" class="ll-next-label">next</text>`);
+          <text x="${DV_NX + 8}" y="${ny + DV_PREV_H + DV_VAL_H + DV_NEXT_H / 2}"
+                dominant-baseline="middle" class="ll-next-label">next</text>`);
+
+        // Value text (centred in middle compartment)
         parts.push(`
-          <text x="${nx + DL_PREV_W + DL_VAL_W / 2}" y="${DL_CY}"
+          <text x="${DV_CX}" y="${ny + DV_PREV_H + DV_VAL_H / 2}"
                 text-anchor="middle" dominant-baseline="middle"
                 class="ll-val-text">${escXml(disp)}</text>`);
 
+        // Prev compartment pointer: ∅ for head, dot otherwise
         if (isFirst) {
             parts.push(`
-              <text x="${nx + DL_PREV_W / 2}" y="${DL_CY + 7}"
+              <text x="${DV_NX + DV_NODE_W - 16}" y="${ny + DV_PREV_H / 2}"
                     text-anchor="middle" dominant-baseline="middle"
                     class="ll-null-ptr">∅</text>`);
         } else {
             parts.push(`
-              <circle cx="${nx + DL_PREV_W / 2}" cy="${DL_PREV_Y}" r="5"
-                      class="ll-ptr-dot"/>`);
+              <circle cx="${DV_NX + DV_NODE_W - 16}" cy="${ny + DV_PREV_H / 2}"
+                      r="5" class="ll-ptr-dot"/>`);
         }
 
+        // Next compartment pointer: ∅ for tail, dot otherwise
         if (isLast) {
             parts.push(`
-              <text x="${nx + DL_PREV_W + DL_VAL_W + DL_NEXT_W / 2}" y="${DL_CY + 7}"
+              <text x="${DV_NX + DV_NODE_W - 16}" y="${ny + DV_PREV_H + DV_VAL_H + DV_NEXT_H / 2}"
                     text-anchor="middle" dominant-baseline="middle"
                     class="ll-null-ptr">∅</text>`);
         } else {
             parts.push(`
-              <circle cx="${nx + DL_PREV_W + DL_VAL_W + DL_NEXT_W / 2}" cy="${DL_NEXT_Y}" r="5"
-                      class="ll-ptr-dot"/>`);
+              <circle cx="${DV_NX + DV_NODE_W - 16}" cy="${ny + DV_PREV_H + DV_VAL_H + DV_NEXT_H / 2}"
+                      r="5" class="ll-ptr-dot"/>`);
         }
 
+        // Arrows in the gap below (between this node and the next)
         if (!isLast) {
-            const x0 = nx + DL_NODE_W;
-            const x1 = nx + DL_STEP_W;
+            const y0 = ny + DV_NODE_H;
+            const y1 = ny + DV_STEP_H;
+            // Forward (next ↓) arrow on right side
             parts.push(`
-              <line x1="${x0}" y1="${DL_NEXT_Y}" x2="${x1 - 6}" y2="${DL_NEXT_Y}"
+              <line x1="${DV_FWD_X}" y1="${y0}" x2="${DV_FWD_X}" y2="${y1 - 6}"
                     class="ll-arrow" marker-end="url(#arr)"/>`);
+            // Backward (prev ↑) arrow on left side
             parts.push(`
-              <line x1="${x1}" y1="${DL_PREV_Y}" x2="${x0 + 6}" y2="${DL_PREV_Y}"
+              <line x1="${DV_BCK_X}" y1="${y1}" x2="${DV_BCK_X}" y2="${y0 + 6}"
                     class="ll-arrow" marker-end="url(#arr-back)"/>`);
         } else {
-            const nullX = nx + DL_NODE_W + DL_GAP_W;
+            // Null box below last node
+            const nullY = ny + DV_NODE_H + DV_GAP_H;
             parts.push(`
-              <line x1="${nx + DL_NODE_W}" y1="${DL_NEXT_Y}"
-                    x2="${nullX - 6}" y2="${DL_NEXT_Y}"
+              <line x1="${DV_CX}" y1="${ny + DV_NODE_H}"
+                    x2="${DV_CX}" y2="${nullY - 6}"
                     class="ll-arrow" marker-end="url(#arr)"/>`);
             parts.push(`
-              <rect x="${nullX}" y="${DL_TOP_Y + 10}"
-                    width="${NULL_W}" height="${DL_NODE_H - 20}"
+              <rect x="${DV_CX - DV_NULL_W / 2}" y="${nullY}"
+                    width="${DV_NULL_W}" height="${DV_NULL_H}"
                     rx="4" class="ll-null-rect"/>`);
             parts.push(`
-              <text x="${nullX + NULL_W / 2}" y="${DL_CY}"
+              <text x="${DV_CX}" y="${nullY + DV_NULL_H / 2}"
                     text-anchor="middle" dominant-baseline="middle"
                     class="ll-null-text">null</text>`);
         }
 
+        // Index label to the right
         parts.push(`
-          <text x="${nx + DL_PREV_W + DL_VAL_W / 2}" y="${DL_TOP_Y + DL_NODE_H + 17}"
-                text-anchor="middle" class="ll-index-label">[${i}]</text>`);
+          <text x="${DV_NX + DV_NODE_W + 8}" y="${ny + DV_PREV_H + DV_VAL_H / 2}"
+                dominant-baseline="middle" class="ll-index-label">[${i}]</text>`);
 
         parts.push(`</g>`);
     }
