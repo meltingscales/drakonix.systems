@@ -1,0 +1,377 @@
+/* ── Layout ──────────────────────────────────────────────────────────── */
+.ll-container {
+    margin: 0 auto;
+    padding: 1rem 0 3rem;
+}
+.ll-container h1 {
+    margin-bottom: 0.5rem;
+}
+.ll-desc {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+/* ── Tabs ────────────────────────────────────────────────────────────── */
+.ll-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--border-primary);
+}
+.ll-tab {
+    padding: 0.45rem 1.2rem;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    background: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 4px 4px 0 0;
+    transition:
+        color 0.15s,
+        border-color 0.15s;
+}
+.ll-tab:hover {
+    color: var(--text-primary);
+}
+.ll-tab-active {
+    color: var(--text-primary);
+    border-bottom-color: #2980b9;
+}
+
+/* ── Workspace ───────────────────────────────────────────────────────── */
+.ll-workspace {
+    display: grid;
+    grid-template-columns: 360px 1fr 300px;
+    gap: 1.25rem;
+    align-items: start;
+}
+@media (max-width: 1100px) {
+    .ll-workspace {
+        grid-template-columns: 360px 1fr;
+    }
+    .ll-output-panel {
+        grid-column: 1 / -1;
+    }
+}
+@media (max-width: 700px) {
+    .ll-workspace {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Mode-based quick ref visibility */
+#ll-workspace[data-mode="singly"] .ll-ref-doubly {
+    display: none;
+}
+#ll-workspace[data-mode="doubly"] .ll-ref-singly {
+    display: none;
+}
+
+/* ── Panels ──────────────────────────────────────────────────────────── */
+.ll-panel {
+    border: 1px solid var(--border-primary);
+    border-radius: 6px;
+    padding: 1rem;
+    background: var(--bg-secondary);
+}
+.ll-panel h2 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/* ── Textarea ────────────────────────────────────────────────────────── */
+#ll-input {
+    width: 100%;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 0.9rem;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--border-primary);
+    border-radius: 4px;
+    resize: vertical;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+#ll-input:focus {
+    outline: 2px solid var(--text-link);
+    outline-offset: 1px;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────── */
+.ll-btn-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.6rem;
+    flex-wrap: wrap;
+}
+.ll-btn {
+    padding: 0.45rem 1rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+.ll-btn kbd {
+    font-size: 0.75em;
+    opacity: 0.7;
+    font-weight: normal;
+}
+.ll-btn-primary {
+    background: #2980b9;
+    color: #fff;
+}
+.ll-btn-primary:hover {
+    background: #1a6a9a;
+}
+.ll-btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-primary);
+}
+.ll-btn-secondary:hover {
+    background: var(--border-primary);
+}
+.ll-btn-danger {
+    background: #c0392b;
+    color: #fff;
+}
+.ll-btn-danger:hover {
+    background: #a93226;
+}
+
+/* ── Templates ───────────────────────────────────────────────────────── */
+.ll-templates-section {
+    margin-top: 1rem;
+}
+.ll-template-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+}
+.ll-template-btn {
+    padding: 0.3rem 0.75rem;
+    border: 1px solid var(--border-primary);
+    border-radius: 4px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 0.82rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+        background 0.12s,
+        border-color 0.12s;
+}
+.ll-template-btn:hover {
+    background: #2980b9;
+    border-color: #2980b9;
+    color: #fff;
+}
+
+/* ── Quick Reference ─────────────────────────────────────────────────── */
+.ll-ref {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+}
+.ll-ref summary {
+    cursor: pointer;
+    color: var(--text-secondary);
+    user-select: none;
+    padding: 0.25rem 0;
+}
+.ll-ref table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.5rem;
+}
+.ll-ref td {
+    padding: 0.2rem 0.4rem;
+    vertical-align: top;
+}
+.ll-ref td:first-child {
+    white-space: nowrap;
+}
+.ll-ref td:last-child {
+    color: var(--text-secondary);
+    padding-left: 0.75rem;
+}
+.ll-ref code {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: 3px;
+    padding: 0.1rem 0.3rem;
+    font-size: 0.82rem;
+}
+
+/* ── Diagram ─────────────────────────────────────────────────────────── */
+.ll-diagram-scroll {
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    min-height: 140px;
+}
+#ll-diagram {
+    display: block;
+}
+.ll-stats {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* ── SVG element classes ─────────────────────────────────────────────── */
+:root {
+    --ll-node-fill: #dbeeff;
+    --ll-node-stroke: #2980b9;
+    --ll-arrow: #555;
+    --ll-flash-color: #f5c518;
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --ll-node-fill: #1a3a5c;
+        --ll-node-stroke: #5dade2;
+        --ll-arrow: #aaa;
+        --ll-flash-color: #d4a017;
+    }
+}
+
+.ll-node-rect {
+    fill: var(--ll-node-fill);
+    stroke: var(--ll-node-stroke);
+    stroke-width: 2;
+}
+.ll-divider {
+    stroke: var(--ll-node-stroke);
+    stroke-width: 1;
+    opacity: 0.4;
+}
+.ll-val-text {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 16px;
+    font-weight: bold;
+    fill: var(--text-primary);
+}
+.ll-next-label {
+    font-size: 9px;
+    fill: var(--text-secondary);
+    font-family: system-ui, sans-serif;
+}
+.ll-ptr-dot {
+    fill: var(--ll-node-stroke);
+}
+.ll-null-ptr {
+    fill: var(--text-secondary);
+    font-size: 15px;
+    font-family: system-ui, sans-serif;
+}
+.ll-arrow {
+    stroke: var(--ll-arrow);
+    stroke-width: 2;
+    fill: none;
+}
+.ll-arrowhead {
+    fill: var(--ll-arrow);
+}
+.ll-null-rect {
+    fill: var(--bg-primary);
+    stroke: var(--text-secondary);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 3;
+}
+.ll-null-text {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 12px;
+    font-style: italic;
+    fill: var(--text-secondary);
+}
+.ll-head-label {
+    font-family: system-ui, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    fill: var(--text-primary);
+}
+.ll-null-label {
+    font-family: system-ui, sans-serif;
+    font-size: 12px;
+    font-style: italic;
+    fill: var(--text-secondary);
+}
+.ll-index-label {
+    font-family: system-ui, sans-serif;
+    font-size: 10px;
+    fill: var(--text-secondary);
+}
+
+/* ── Node group interactivity ────────────────────────────────────────── */
+.ll-node-group {
+    cursor: grab;
+}
+.ll-node-group:hover .ll-node-rect {
+    stroke-width: 3;
+    filter: brightness(1.08);
+}
+
+/* ── Node flash animation (new/changed nodes) ────────────────────────── */
+@keyframes ll-flash {
+    0%   { fill: var(--ll-flash-color); }
+    60%  { fill: var(--ll-flash-color); }
+    100% { fill: var(--ll-node-fill); }
+}
+.ll-node-new .ll-node-rect {
+    animation: ll-flash 0.7s ease-out forwards;
+}
+
+/* ── Output panel ────────────────────────────────────────────────────── */
+.ll-output-panel {
+    display: flex;
+    flex-direction: column;
+}
+.ll-history {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 0.82rem;
+    flex: 1;
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 0.5rem 0.75rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: 4px;
+}
+.ll-entry {
+    margin-bottom: 0.5rem;
+}
+.ll-code-line {
+    color: var(--text-primary);
+}
+.ll-log-line {
+    color: var(--text-secondary);
+    padding-left: 1rem;
+}
+.ll-op-line {
+    color: #2980b9;
+    padding-left: 1rem;
+    font-style: italic;
+}
+.ll-ret-line {
+    color: #27ae60;
+    padding-left: 1rem;
+}
+.ll-err-line {
+    color: #e74c3c;
+    padding-left: 1rem;
+}
+@media (prefers-color-scheme: dark) {
+    .ll-ret-line {
+        color: #2ecc71;
+    }
+    .ll-op-line {
+        color: #5dade2;
+    }
+}

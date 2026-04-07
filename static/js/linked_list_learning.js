@@ -222,6 +222,7 @@ class DoublyLinkedList {
 // ─── State ───────────────────────────────────────────────────────────────────
 let list = new LinkedList();
 let currentMode = 'singly';
+let _opLog = [];
 
 // ─── SVG constants — singly ───────────────────────────────────────────────────
 const NODE_W   = 140;
@@ -238,15 +239,15 @@ const SVG_H    = 140;
 const DL_NODE_W  = 180;
 const DL_PREV_W  = 50;
 const DL_VAL_W   = 80;
-const DL_NEXT_W  = 50;   // must sum to DL_NODE_W
+const DL_NEXT_W  = 50;
 const DL_NODE_H  = 60;
 const DL_GAP_W   = 56;
 const DL_STEP_W  = DL_NODE_W + DL_GAP_W;
 const DL_HEAD_X  = 80;
-const DL_CY      = 70;   // centre Y
+const DL_CY      = 70;
 const DL_TOP_Y   = DL_CY - DL_NODE_H / 2;
-const DL_NEXT_Y  = DL_CY - 12;   // y for forward (next) arrows
-const DL_PREV_Y  = DL_CY + 12;   // y for backward (prev) arrows
+const DL_NEXT_Y  = DL_CY - 12;
+const DL_PREV_Y  = DL_CY + 12;
 const DL_SVG_H   = 150;
 
 // ─── XML escaping ─────────────────────────────────────────────────────────────
@@ -258,8 +259,31 @@ function escXml(s) {
         .replace(/"/g, '&quot;');
 }
 
+// ─── Operation tracking ───────────────────────────────────────────────────────
+const TRACKED_OPS = new Set(['append','prepend','insertAt','delete','deleteAt','set','reverse','clear']);
+
+function makeTrackedList(baseList) {
+    return new Proxy(baseList, {
+        get(target, prop) {
+            const val = target[prop];
+            if (typeof val !== 'function') return val;
+            return function(...args) {
+                const result = val.apply(target, args);
+                if (TRACKED_OPS.has(String(prop))) {
+                    _opLog.push({ op: String(prop), args: [...args] });
+                }
+                return result;
+            };
+        },
+        set(target, prop, value) {
+            target[prop] = value;
+            return true;
+        }
+    });
+}
+
 // ─── Singly diagram ───────────────────────────────────────────────────────────
-function renderSinglyDiagram() {
+function renderSinglyDiagram(newIndices = new Set()) {
     const svg    = document.getElementById('ll-diagram');
     const values = list.toArray();
     const n      = values.length;
@@ -298,6 +322,9 @@ function renderSinglyDiagram() {
         const isLast = i === n - 1;
         const raw    = String(values[i]);
         const disp   = raw.length > 9 ? raw.slice(0, 8) + '…' : raw;
+        const isNew  = newIndices.has(i);
+
+        parts.push(`<g class="ll-node-group${isNew ? ' ll-node-new' : ''}" data-index="${i}" data-value="${escXml(raw)}">`);
 
         parts.push(`
           <rect x="${nx}" y="${TOP_Y}" width="${NODE_W}" height="${NODE_H}"
@@ -345,13 +372,15 @@ function renderSinglyDiagram() {
         parts.push(`
           <text x="${nx + NODE_W / 4}" y="${TOP_Y + NODE_H + 17}"
                 text-anchor="middle" class="ll-index-label">[${i}]</text>`);
+
+        parts.push(`</g>`);
     }
 
     svg.innerHTML = parts.join('');
 }
 
 // ─── Doubly diagram ───────────────────────────────────────────────────────────
-function renderDoublyDiagram() {
+function renderDoublyDiagram(newIndices = new Set()) {
     const svg    = document.getElementById('ll-diagram');
     const values = list.toArray();
     const n      = values.length;
@@ -384,7 +413,6 @@ function renderDoublyDiagram() {
         return;
     }
 
-    // head label + arrow
     parts.push(`
       <text x="5" y="${DL_CY - 5}" class="ll-head-label">head</text>
       <line x1="44" y1="${DL_CY}" x2="${DL_HEAD_X - 6}" y2="${DL_CY}"
@@ -396,13 +424,13 @@ function renderDoublyDiagram() {
         const isLast  = i === n - 1;
         const raw     = String(values[i]);
         const disp    = raw.length > 7 ? raw.slice(0, 6) + '…' : raw;
+        const isNew   = newIndices.has(i);
 
-        // Node rect
+        parts.push(`<g class="ll-node-group${isNew ? ' ll-node-new' : ''}" data-index="${i}" data-value="${escXml(raw)}">`);
+
         parts.push(`
           <rect x="${nx}" y="${DL_TOP_Y}" width="${DL_NODE_W}" height="${DL_NODE_H}"
                 rx="6" class="ll-node-rect"/>`);
-
-        // Dividers: after prev compartment and after val compartment
         parts.push(`
           <line x1="${nx + DL_PREV_W}" y1="${DL_TOP_Y}"
                 x2="${nx + DL_PREV_W}" y2="${DL_TOP_Y + DL_NODE_H}"
@@ -411,22 +439,17 @@ function renderDoublyDiagram() {
           <line x1="${nx + DL_PREV_W + DL_VAL_W}" y1="${DL_TOP_Y}"
                 x2="${nx + DL_PREV_W + DL_VAL_W}" y2="${DL_TOP_Y + DL_NODE_H}"
                 class="ll-divider"/>`);
-
-        // Compartment micro-labels
         parts.push(`
           <text x="${nx + DL_PREV_W / 2}" y="${DL_TOP_Y + 12}"
                 text-anchor="middle" class="ll-next-label">prev</text>`);
         parts.push(`
           <text x="${nx + DL_PREV_W + DL_VAL_W + DL_NEXT_W / 2}" y="${DL_TOP_Y + 12}"
                 text-anchor="middle" class="ll-next-label">next</text>`);
-
-        // Value text (centre of val compartment)
         parts.push(`
           <text x="${nx + DL_PREV_W + DL_VAL_W / 2}" y="${DL_CY}"
                 text-anchor="middle" dominant-baseline="middle"
                 class="ll-val-text">${escXml(disp)}</text>`);
 
-        // prev compartment: ∅ if head, else filled dot at PREV_Y
         if (isFirst) {
             parts.push(`
               <text x="${nx + DL_PREV_W / 2}" y="${DL_CY + 7}"
@@ -438,7 +461,6 @@ function renderDoublyDiagram() {
                       class="ll-ptr-dot"/>`);
         }
 
-        // next compartment: ∅ if tail, else filled dot at NEXT_Y
         if (isLast) {
             parts.push(`
               <text x="${nx + DL_PREV_W + DL_VAL_W + DL_NEXT_W / 2}" y="${DL_CY + 7}"
@@ -450,20 +472,16 @@ function renderDoublyDiagram() {
                       class="ll-ptr-dot"/>`);
         }
 
-        // Arrows in the gap to the right
         if (!isLast) {
             const x0 = nx + DL_NODE_W;
             const x1 = nx + DL_STEP_W;
-            // forward (next) arrow →
             parts.push(`
               <line x1="${x0}" y1="${DL_NEXT_Y}" x2="${x1 - 6}" y2="${DL_NEXT_Y}"
                     class="ll-arrow" marker-end="url(#arr)"/>`);
-            // backward (prev) arrow ←
             parts.push(`
               <line x1="${x1}" y1="${DL_PREV_Y}" x2="${x0 + 6}" y2="${DL_PREV_Y}"
                     class="ll-arrow" marker-end="url(#arr-back)"/>`);
         } else {
-            // null box on the right for tail's next
             const nullX = nx + DL_NODE_W + DL_GAP_W;
             parts.push(`
               <line x1="${nx + DL_NODE_W}" y1="${DL_NEXT_Y}"
@@ -479,19 +497,20 @@ function renderDoublyDiagram() {
                     class="ll-null-text">null</text>`);
         }
 
-        // Index label below val compartment
         parts.push(`
           <text x="${nx + DL_PREV_W + DL_VAL_W / 2}" y="${DL_TOP_Y + DL_NODE_H + 17}"
                 text-anchor="middle" class="ll-index-label">[${i}]</text>`);
+
+        parts.push(`</g>`);
     }
 
     svg.innerHTML = parts.join('');
 }
 
 // ─── Diagram dispatcher ───────────────────────────────────────────────────────
-function renderDiagram() {
-    if (currentMode === 'singly') renderSinglyDiagram();
-    else                          renderDoublyDiagram();
+function renderDiagram(newIndices = new Set()) {
+    if (currentMode === 'singly') renderSinglyDiagram(newIndices);
+    else                          renderDoublyDiagram(newIndices);
 }
 
 // ─── Templates / snippets ─────────────────────────────────────────────────────
@@ -641,6 +660,7 @@ function updateTemplateButtons() {
 
 // ─── Code execution ──────────────────────────────────────────────────────────
 function runCode(code) {
+    _opLog = [];
     const logs = [];
     const fakeConsole = {
         log: (...args) => logs.push(
@@ -652,22 +672,24 @@ function runCode(code) {
         )
     };
 
+    const trackedList = makeTrackedList(list);
+
     let result, error;
     const lines    = code.trim().split('\n');
     const lastLine = lines[lines.length - 1].trim();
     const wrapped  = [...lines.slice(0, -1), 'return ' + lastLine].join('\n');
 
     try {
-        result = new Function('list', 'console', wrapped)(list, fakeConsole);
+        result = new Function('list', 'console', wrapped)(trackedList, fakeConsole);
     } catch (_) {
         try {
-            result = new Function('list', 'console', code)(list, fakeConsole);
+            result = new Function('list', 'console', code)(trackedList, fakeConsole);
         } catch (e) {
             error = e.message;
         }
     }
 
-    return { logs, result, error };
+    return { logs, result, error, ops: [..._opLog] };
 }
 
 // ─── History / output panel ──────────────────────────────────────────────────
@@ -676,6 +698,15 @@ function escHtml(s) {
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
+}
+
+function fmtOpArgs(args) {
+    return args.map(a =>
+        a === null ? 'null' :
+        a === undefined ? 'undefined' :
+        typeof a === 'string' ? `"${a}"` :
+        String(a)
+    ).join(', ');
 }
 
 function addToHistory(code, result) {
@@ -688,6 +719,14 @@ function addToHistory(code, result) {
         .join('');
 
     let outHtml = '';
+
+    // Operation log entries
+    if (result.ops && result.ops.length > 0) {
+        for (const { op, args } of result.ops) {
+            outHtml += `<div class="ll-op-line">&#x2713; list.${escHtml(op)}(${escHtml(fmtOpArgs(args))})</div>`;
+        }
+    }
+
     for (const line of result.logs)
         outHtml += `<div class="ll-log-line">${escHtml(line)}</div>`;
     if (result.error)
@@ -728,9 +767,22 @@ function switchMode(mode) {
 function handleRun() {
     const code = document.getElementById('ll-input').value.trim();
     if (!code) return;
+    const before = list.toArray();
     const result = runCode(code);
+    const after  = list.toArray();
+
+    // Determine which indices are new or changed (for animation)
+    const newIndices = new Set();
+    if (!result.error) {
+        after.forEach((v, i) => {
+            if (i >= before.length || String(before[i]) !== String(v)) {
+                newIndices.add(i);
+            }
+        });
+    }
+
     addToHistory(code, result);
-    renderDiagram();
+    renderDiagram(newIndices);
     updateStats();
 }
 
@@ -746,6 +798,88 @@ function handleClearInput() {
     const ta = document.getElementById('ll-input');
     ta.value = '';
     ta.focus();
+}
+
+// ─── Diagram interaction (click + drag) ──────────────────────────────────────
+function computeDropGap(svgX, n) {
+    // Returns gap index: 0 = before node[0], n = after node[n-1]
+    if (currentMode === 'singly') {
+        const raw = Math.round((svgX - HEAD_X + STEP_W / 2) / STEP_W);
+        return Math.max(0, Math.min(n, raw));
+    } else {
+        const raw = Math.round((svgX - DL_HEAD_X + DL_STEP_W / 2) / DL_STEP_W);
+        return Math.max(0, Math.min(n, raw));
+    }
+}
+
+function svgXFromClient(svg, clientX) {
+    const rect = svg.getBoundingClientRect();
+    const viewBox = svg.viewBox.baseVal;
+    return (clientX - rect.left) * (viewBox.width / rect.width);
+}
+
+function initDiagramInteraction() {
+    const svg = document.getElementById('ll-diagram');
+    let drag = null;
+
+    svg.addEventListener('mousedown', (e) => {
+        const g = e.target.closest('.ll-node-group');
+        if (!g) return;
+        e.preventDefault();
+        drag = {
+            fromIdx: parseInt(g.dataset.index),
+            fromVal: g.dataset.value,
+            startClientX: e.clientX,
+            moved: false,
+        };
+        g.style.opacity = '0.6';
+        g.style.cursor  = 'grabbing';
+    });
+
+    svg.addEventListener('mousemove', (e) => {
+        if (!drag) return;
+        if (Math.abs(e.clientX - drag.startClientX) > 8) drag.moved = true;
+    });
+
+    window.addEventListener('mouseup', (e) => {
+        if (!drag) return;
+        const state = drag;
+        drag = null;
+
+        // Restore opacity
+        const g = svg.querySelector(`[data-index="${state.fromIdx}"]`);
+        if (g) { g.style.opacity = ''; g.style.cursor = ''; }
+
+        const n = list.length();
+
+        if (state.moved && n > 1) {
+            // Drag-to-reorder: compute target gap
+            const svgX  = svgXFromClient(svg, e.clientX);
+            const gap   = computeDropGap(svgX, n);
+            const from  = state.fromIdx;
+            // Effective insertAt index after deleteAt(from)
+            const insertIdx = gap > from ? gap - 1 : gap;
+
+            if (insertIdx !== from) {
+                const ta = document.getElementById('ll-input');
+                ta.value =
+                    `// Move node from [${from}] to [${insertIdx}]\n` +
+                    `const _v = list.get(${from});\n` +
+                    `list.deleteAt(${from});\n` +
+                    `list.insertAt(${insertIdx}, _v);`;
+                ta.focus();
+            }
+        } else {
+            // Click: fill textarea with get, delete, or set options as a comment menu
+            const idx = state.fromIdx;
+            const val = state.fromVal;
+            const ta  = document.getElementById('ll-input');
+            ta.value  = `list.get(${idx})`;
+            ta.focus();
+            // Select all so user can easily replace
+            ta.select();
+        }
+    });
 }
 
 // ─── Init ────────────────────────────────────────────────────────────────────
@@ -772,10 +906,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('ll-input').focus();
     });
 
+    initDiagramInteraction();
     updateTemplateButtons();
     renderDiagram();
     updateStats();
 
     document.getElementById('ll-history').innerHTML =
-        '<div class="ll-entry ll-log-line">Ready. Pick a template or type a command and press Run (or Ctrl+Enter).</div>';
+        '<div class="ll-entry ll-log-line">Ready. Pick a template or type a command and press Run (or Ctrl+Enter). Click a node to inspect it, drag to reorder.</div>';
 });
