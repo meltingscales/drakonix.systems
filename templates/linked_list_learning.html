@@ -1,31 +1,42 @@
-{% extends "base.html" %}
-
-{% block content %}
+{% extends "base.html" %} {% block content %}
 <div class="ll-container">
     <h1>Linked List Learning</h1>
     <p class="ll-desc">
-        An interactive playground for linked lists.
-        Write JavaScript to manipulate the <code>list</code> object — the diagram updates live after each run.
-        Pick a template to get started, or write your own code.
+        An interactive playground for linked lists. Write JavaScript to
+        manipulate the <code>list</code> object — the diagram updates live after
+        each run. Pick a template to get started, or write your own code.
     </p>
 
     <!-- ── Mode tabs ──────────────────────────────────────────────────────── -->
     <div class="ll-tabs" role="tablist">
-        <button class="ll-tab ll-tab-active" data-mode="singly" role="tab">Singly Linked</button>
-        <button class="ll-tab" data-mode="doubly" role="tab">Doubly Linked</button>
+        <button class="ll-tab ll-tab-active" data-mode="singly" role="tab">
+            Singly Linked
+        </button>
+        <button class="ll-tab" data-mode="doubly" role="tab">
+            Doubly Linked
+        </button>
     </div>
 
     <div class="ll-workspace" id="ll-workspace" data-mode="singly">
-
         <!-- ── REPL panel ─────────────────────────────────────────────────── -->
         <div class="ll-panel">
             <h2>REPL</h2>
-            <textarea id="ll-input" rows="8" spellcheck="false"
-                placeholder="list.append(5)&#10;list.append(10)&#10;list.prepend(1)&#10;list.length()"></textarea>
+            <textarea
+                id="ll-input"
+                rows="8"
+                spellcheck="false"
+                placeholder="list.append(5)&#10;list.append(10)&#10;list.prepend(1)&#10;list.length()"
+            ></textarea>
             <div class="ll-btn-row">
-                <button id="ll-run-btn"   class="ll-btn ll-btn-primary">&#9654; Run <kbd>Ctrl+&#8629;</kbd></button>
-                <button id="ll-clear-btn" class="ll-btn ll-btn-secondary">Clear</button>
-                <button id="ll-reset-btn" class="ll-btn ll-btn-danger">Reset List</button>
+                <button id="ll-run-btn" class="ll-btn ll-btn-primary">
+                    &#9654; Run <kbd>Ctrl+&#8629;</kbd>
+                </button>
+                <button id="ll-clear-btn" class="ll-btn ll-btn-secondary">
+                    Clear
+                </button>
+                <button id="ll-reset-btn" class="ll-btn ll-btn-danger">
+                    Reset List
+                </button>
             </div>
 
             <!-- ── Templates ────────────────────────────────────────────────── -->
@@ -38,20 +49,62 @@
             <details class="ll-ref ll-ref-singly">
                 <summary>Quick Reference</summary>
                 <table>
-                    <tr><td><code>list.append(v)</code></td><td>Add v to tail</td></tr>
-                    <tr><td><code>list.prepend(v)</code></td><td>Add v to head</td></tr>
-                    <tr><td><code>list.insertAt(i, v)</code></td><td>Insert at index i</td></tr>
-                    <tr><td><code>list.delete(v)</code></td><td>Remove first node with value v</td></tr>
-                    <tr><td><code>list.deleteAt(i)</code></td><td>Remove node at index i</td></tr>
-                    <tr><td><code>list.find(v)</code></td><td>Returns index of v, or -1</td></tr>
-                    <tr><td><code>list.get(i)</code></td><td>Value at index i</td></tr>
-                    <tr><td><code>list.set(i, v)</code></td><td>Set value at index i</td></tr>
-                    <tr><td><code>list.reverse()</code></td><td>Reverse in place</td></tr>
-                    <tr><td><code>list.length()</code></td><td>Number of nodes</td></tr>
-                    <tr><td><code>list.toArray()</code></td><td>Returns JS array of values</td></tr>
-                    <tr><td><code>list.clear()</code></td><td>Empty the list</td></tr>
-                    <tr><td><code>list.head</code></td><td>First Node (has .value, .next)</td></tr>
-                    <tr><td><code>console.log(…)</code></td><td>Print to output panel</td></tr>
+                    <tr>
+                        <td><code>list.append(v)</code></td>
+                        <td>Add v to tail</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.prepend(v)</code></td>
+                        <td>Add v to head</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.insertAt(i, v)</code></td>
+                        <td>Insert at index i</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.delete(v)</code></td>
+                        <td>Remove first node with value v</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.deleteAt(i)</code></td>
+                        <td>Remove node at index i</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.find(v)</code></td>
+                        <td>Returns index of v, or -1</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.get(i)</code></td>
+                        <td>Value at index i</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.set(i, v)</code></td>
+                        <td>Set value at index i</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.reverse()</code></td>
+                        <td>Reverse in place</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.length()</code></td>
+                        <td>Number of nodes</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.toArray()</code></td>
+                        <td>Returns JS array of values</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.clear()</code></td>
+                        <td>Empty the list</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.head</code></td>
+                        <td>First Node (has .value, .next)</td>
+                    </tr>
+                    <tr>
+                        <td><code>console.log(…)</code></td>
+                        <td>Print to output panel</td>
+                    </tr>
                 </table>
             </details>
 
@@ -59,23 +112,74 @@
             <details class="ll-ref ll-ref-doubly">
                 <summary>Quick Reference</summary>
                 <table>
-                    <tr><td><code>list.append(v)</code></td><td>Add v to tail</td></tr>
-                    <tr><td><code>list.prepend(v)</code></td><td>Add v to head</td></tr>
-                    <tr><td><code>list.insertAt(i, v)</code></td><td>Insert at index i</td></tr>
-                    <tr><td><code>list.delete(v)</code></td><td>Remove first node with value v</td></tr>
-                    <tr><td><code>list.deleteAt(i)</code></td><td>Remove node at index i</td></tr>
-                    <tr><td><code>list._unlink(node)</code></td><td>Unlink a node object directly</td></tr>
-                    <tr><td><code>list.find(v)</code></td><td>Returns index of v, or -1</td></tr>
-                    <tr><td><code>list.get(i)</code></td><td>Value at index i</td></tr>
-                    <tr><td><code>list.set(i, v)</code></td><td>Set value at index i</td></tr>
-                    <tr><td><code>list.reverse()</code></td><td>Reverse in place (rewires prev/next)</td></tr>
-                    <tr><td><code>list.length()</code></td><td>Number of nodes</td></tr>
-                    <tr><td><code>list.toArray()</code></td><td>Forward traversal as array</td></tr>
-                    <tr><td><code>list.toArrayReverse()</code></td><td>Backward traversal via .prev</td></tr>
-                    <tr><td><code>list.clear()</code></td><td>Empty the list</td></tr>
-                    <tr><td><code>list.head</code></td><td>First node (has .value, .prev, .next)</td></tr>
-                    <tr><td><code>list.tail</code></td><td>Last node (has .value, .prev, .next)</td></tr>
-                    <tr><td><code>console.log(…)</code></td><td>Print to output panel</td></tr>
+                    <tr>
+                        <td><code>list.append(v)</code></td>
+                        <td>Add v to tail</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.prepend(v)</code></td>
+                        <td>Add v to head</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.insertAt(i, v)</code></td>
+                        <td>Insert at index i</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.delete(v)</code></td>
+                        <td>Remove first node with value v</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.deleteAt(i)</code></td>
+                        <td>Remove node at index i</td>
+                    </tr>
+                    <tr>
+                        <td><code>list._unlink(node)</code></td>
+                        <td>Unlink a node object directly</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.find(v)</code></td>
+                        <td>Returns index of v, or -1</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.get(i)</code></td>
+                        <td>Value at index i</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.set(i, v)</code></td>
+                        <td>Set value at index i</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.reverse()</code></td>
+                        <td>Reverse in place (rewires prev/next)</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.length()</code></td>
+                        <td>Number of nodes</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.toArray()</code></td>
+                        <td>Forward traversal as array</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.toArrayReverse()</code></td>
+                        <td>Backward traversal via .prev</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.clear()</code></td>
+                        <td>Empty the list</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.head</code></td>
+                        <td>First node (has .value, .prev, .next)</td>
+                    </tr>
+                    <tr>
+                        <td><code>list.tail</code></td>
+                        <td>Last node (has .value, .prev, .next)</td>
+                    </tr>
+                    <tr>
+                        <td><code>console.log(…)</code></td>
+                        <td>Print to output panel</td>
+                    </tr>
                 </table>
             </details>
         </div>
@@ -88,7 +192,6 @@
             </div>
             <p class="ll-stats">Nodes: <strong id="ll-length">0</strong></p>
         </div>
-
     </div>
 
     <!-- ── Output console ────────────────────────────────────────────────── -->
@@ -99,301 +202,356 @@
 </div>
 
 <style>
-/* ── Layout ──────────────────────────────────────────────────────────── */
-.ll-container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 1rem 0 3rem;
-}
-.ll-container h1 { margin-bottom: .5rem; }
-.ll-desc {
-    color: var(--text-secondary);
-    margin-bottom: 1rem;
-}
-
-/* ── Tabs ────────────────────────────────────────────────────────────── */
-.ll-tabs {
-    display: flex;
-    gap: 0;
-    margin-bottom: 1rem;
-    border-bottom: 2px solid var(--border-primary);
-}
-.ll-tab {
-    padding: .45rem 1.2rem;
-    border: none;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -2px;
-    background: none;
-    font-size: .9rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-    cursor: pointer;
-    border-radius: 4px 4px 0 0;
-    transition: color .15s, border-color .15s;
-}
-.ll-tab:hover { color: var(--text-primary); }
-.ll-tab-active {
-    color: var(--text-primary);
-    border-bottom-color: #2980b9;
-}
-
-/* ── Workspace ───────────────────────────────────────────────────────── */
-.ll-workspace {
-    display: grid;
-    grid-template-columns: 400px 1fr;
-    gap: 1.5rem;
-    align-items: start;
-}
-@media (max-width: 800px) {
-    .ll-workspace { grid-template-columns: 1fr; }
-}
-
-/* Mode-based quick ref visibility */
-#ll-workspace[data-mode="singly"] .ll-ref-doubly { display: none; }
-#ll-workspace[data-mode="doubly"] .ll-ref-singly { display: none; }
-
-/* ── Panels ──────────────────────────────────────────────────────────── */
-.ll-panel {
-    border: 1px solid var(--border-primary);
-    border-radius: 6px;
-    padding: 1rem;
-    background: var(--bg-secondary);
-}
-.ll-panel h2 {
-    font-size: .85rem;
-    font-weight: 700;
-    margin-bottom: .75rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: .06em;
-}
-
-/* ── Textarea ────────────────────────────────────────────────────────── */
-#ll-input {
-    width: 100%;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: .9rem;
-    padding: .6rem .75rem;
-    border: 1px solid var(--border-primary);
-    border-radius: 4px;
-    resize: vertical;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    line-height: 1.5;
-}
-#ll-input:focus { outline: 2px solid var(--text-link); outline-offset: 1px; }
-
-/* ── Buttons ─────────────────────────────────────────────────────────── */
-.ll-btn-row {
-    display: flex;
-    gap: .5rem;
-    margin-top: .6rem;
-    flex-wrap: wrap;
-}
-.ll-btn {
-    padding: .45rem 1rem;
-    border: none;
-    border-radius: 4px;
-    font-size: .9rem;
-    font-weight: 600;
-    cursor: pointer;
-}
-.ll-btn kbd {
-    font-size: .75em;
-    opacity: .7;
-    font-weight: normal;
-}
-.ll-btn-primary   { background: #2980b9; color: #fff; }
-.ll-btn-primary:hover   { background: #1a6a9a; }
-.ll-btn-secondary {
-    background: var(--bg-tertiary);
-    color: var(--text-primary);
-    border: 1px solid var(--border-primary);
-}
-.ll-btn-secondary:hover { background: var(--border-primary); }
-.ll-btn-danger    { background: #c0392b; color: #fff; }
-.ll-btn-danger:hover    { background: #a93226; }
-
-/* ── Templates ───────────────────────────────────────────────────────── */
-.ll-templates-section {
-    margin-top: 1rem;
-}
-.ll-template-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .4rem;
-    margin-top: .5rem;
-}
-.ll-template-btn {
-    padding: .3rem .75rem;
-    border: 1px solid var(--border-primary);
-    border-radius: 4px;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    font-size: .82rem;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background .12s, border-color .12s;
-}
-.ll-template-btn:hover {
-    background: #2980b9;
-    border-color: #2980b9;
-    color: #fff;
-}
-
-/* ── Quick Reference ─────────────────────────────────────────────────── */
-.ll-ref {
-    margin-top: 1rem;
-    font-size: .85rem;
-}
-.ll-ref summary {
-    cursor: pointer;
-    color: var(--text-secondary);
-    user-select: none;
-    padding: .25rem 0;
-}
-.ll-ref table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: .5rem;
-}
-.ll-ref td {
-    padding: .2rem .4rem;
-    vertical-align: top;
-}
-.ll-ref td:first-child { white-space: nowrap; }
-.ll-ref td:last-child  { color: var(--text-secondary); padding-left: .75rem; }
-.ll-ref code {
-    background: var(--bg-primary);
-    border: 1px solid var(--border-primary);
-    border-radius: 3px;
-    padding: .1rem .3rem;
-    font-size: .82rem;
-}
-
-/* ── Diagram ─────────────────────────────────────────────────────────── */
-.ll-diagram-scroll {
-    overflow-x: auto;
-    padding-bottom: .5rem;
-    min-height: 140px;
-}
-#ll-diagram { display: block; }
-.ll-stats {
-    margin-top: .5rem;
-    font-size: .85rem;
-    color: var(--text-secondary);
-}
-
-/* ── SVG element classes ─────────────────────────────────────────────── */
-:root {
-    --ll-node-fill:   #dbeeff;
-    --ll-node-stroke: #2980b9;
-    --ll-arrow:       #555;
-}
-@media (prefers-color-scheme: dark) {
-    :root {
-        --ll-node-fill:   #1a3a5c;
-        --ll-node-stroke: #5dade2;
-        --ll-arrow:       #aaa;
+    /* ── Layout ──────────────────────────────────────────────────────────── */
+    .ll-container {
+        /*max-width: 1100px;*/
+        margin: 0 auto;
+        padding: 1rem 0 3rem;
     }
-}
+    .ll-container h1 {
+        margin-bottom: 0.5rem;
+    }
+    .ll-desc {
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+    }
 
-.ll-node-rect {
-    fill: var(--ll-node-fill);
-    stroke: var(--ll-node-stroke);
-    stroke-width: 2;
-}
-.ll-divider {
-    stroke: var(--ll-node-stroke);
-    stroke-width: 1;
-    opacity: .4;
-}
-.ll-val-text {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 16px;
-    font-weight: bold;
-    fill: var(--text-primary);
-}
-.ll-next-label {
-    font-size: 9px;
-    fill: var(--text-secondary);
-    font-family: system-ui, sans-serif;
-}
-.ll-ptr-dot   { fill: var(--ll-node-stroke); }
-.ll-null-ptr  {
-    fill: var(--text-secondary);
-    font-size: 15px;
-    font-family: system-ui, sans-serif;
-}
-.ll-arrow {
-    stroke: var(--ll-arrow);
-    stroke-width: 2;
-    fill: none;
-}
-.ll-arrowhead { fill: var(--ll-arrow); }
-.ll-null-rect {
-    fill: var(--bg-primary);
-    stroke: var(--text-secondary);
-    stroke-width: 1.5;
-    stroke-dasharray: 4 3;
-}
-.ll-null-text {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 12px;
-    font-style: italic;
-    fill: var(--text-secondary);
-}
-.ll-head-label {
-    font-family: system-ui, sans-serif;
-    font-size: 12px;
-    font-weight: bold;
-    fill: var(--text-primary);
-}
-.ll-null-label {
-    font-family: system-ui, sans-serif;
-    font-size: 12px;
-    font-style: italic;
-    fill: var(--text-secondary);
-}
-.ll-index-label {
-    font-family: system-ui, sans-serif;
-    font-size: 10px;
-    fill: var(--text-secondary);
-}
+    /* ── Tabs ────────────────────────────────────────────────────────────── */
+    .ll-tabs {
+        display: flex;
+        gap: 0;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid var(--border-primary);
+    }
+    .ll-tab {
+        padding: 0.45rem 1.2rem;
+        border: none;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+        background: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        cursor: pointer;
+        border-radius: 4px 4px 0 0;
+        transition:
+            color 0.15s,
+            border-color 0.15s;
+    }
+    .ll-tab:hover {
+        color: var(--text-primary);
+    }
+    .ll-tab-active {
+        color: var(--text-primary);
+        border-bottom-color: #2980b9;
+    }
 
-/* ── Output console ──────────────────────────────────────────────────── */
-.ll-console-wrap {
-    margin-top: 1.5rem;
-    border: 1px solid var(--border-primary);
-    border-radius: 6px;
-    overflow: hidden;
-}
-.ll-console-header {
-    background: var(--bg-tertiary);
-    border-bottom: 1px solid var(--border-primary);
-    padding: .4rem .75rem;
-    font-size: .8rem;
-    font-weight: 700;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: .06em;
-}
-.ll-history {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: .85rem;
-    max-height: 260px;
-    overflow-y: auto;
-    padding: .5rem .75rem;
-    background: var(--bg-primary);
-}
-.ll-entry      { margin-bottom: .5rem; }
-.ll-code-line  { color: var(--text-primary); }
-.ll-log-line   { color: var(--text-secondary); padding-left: 1rem; }
-.ll-ret-line   { color: #27ae60; padding-left: 1rem; }
-.ll-err-line   { color: #e74c3c; padding-left: 1rem; }
-@media (prefers-color-scheme: dark) {
-    .ll-ret-line { color: #2ecc71; }
-}
+    /* ── Workspace ───────────────────────────────────────────────────────── */
+    .ll-workspace {
+        display: grid;
+        grid-template-columns: 400px 1fr;
+        gap: 1.5rem;
+        align-items: start;
+    }
+    @media (max-width: 800px) {
+        .ll-workspace {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Mode-based quick ref visibility */
+    #ll-workspace[data-mode="singly"] .ll-ref-doubly {
+        display: none;
+    }
+    #ll-workspace[data-mode="doubly"] .ll-ref-singly {
+        display: none;
+    }
+
+    /* ── Panels ──────────────────────────────────────────────────────────── */
+    .ll-panel {
+        border: 1px solid var(--border-primary);
+        border-radius: 6px;
+        padding: 1rem;
+        background: var(--bg-secondary);
+    }
+    .ll-panel h2 {
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    /* ── Textarea ────────────────────────────────────────────────────────── */
+    #ll-input {
+        width: 100%;
+        font-family: "Courier New", Courier, monospace;
+        font-size: 0.9rem;
+        padding: 0.6rem 0.75rem;
+        border: 1px solid var(--border-primary);
+        border-radius: 4px;
+        resize: vertical;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.5;
+    }
+    #ll-input:focus {
+        outline: 2px solid var(--text-link);
+        outline-offset: 1px;
+    }
+
+    /* ── Buttons ─────────────────────────────────────────────────────────── */
+    .ll-btn-row {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.6rem;
+        flex-wrap: wrap;
+    }
+    .ll-btn {
+        padding: 0.45rem 1rem;
+        border: none;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .ll-btn kbd {
+        font-size: 0.75em;
+        opacity: 0.7;
+        font-weight: normal;
+    }
+    .ll-btn-primary {
+        background: #2980b9;
+        color: #fff;
+    }
+    .ll-btn-primary:hover {
+        background: #1a6a9a;
+    }
+    .ll-btn-secondary {
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+        border: 1px solid var(--border-primary);
+    }
+    .ll-btn-secondary:hover {
+        background: var(--border-primary);
+    }
+    .ll-btn-danger {
+        background: #c0392b;
+        color: #fff;
+    }
+    .ll-btn-danger:hover {
+        background: #a93226;
+    }
+
+    /* ── Templates ───────────────────────────────────────────────────────── */
+    .ll-templates-section {
+        margin-top: 1rem;
+    }
+    .ll-template-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-top: 0.5rem;
+    }
+    .ll-template-btn {
+        padding: 0.3rem 0.75rem;
+        border: 1px solid var(--border-primary);
+        border-radius: 4px;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        font-size: 0.82rem;
+        cursor: pointer;
+        white-space: nowrap;
+        transition:
+            background 0.12s,
+            border-color 0.12s;
+    }
+    .ll-template-btn:hover {
+        background: #2980b9;
+        border-color: #2980b9;
+        color: #fff;
+    }
+
+    /* ── Quick Reference ─────────────────────────────────────────────────── */
+    .ll-ref {
+        margin-top: 1rem;
+        font-size: 0.85rem;
+    }
+    .ll-ref summary {
+        cursor: pointer;
+        color: var(--text-secondary);
+        user-select: none;
+        padding: 0.25rem 0;
+    }
+    .ll-ref table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0.5rem;
+    }
+    .ll-ref td {
+        padding: 0.2rem 0.4rem;
+        vertical-align: top;
+    }
+    .ll-ref td:first-child {
+        white-space: nowrap;
+    }
+    .ll-ref td:last-child {
+        color: var(--text-secondary);
+        padding-left: 0.75rem;
+    }
+    .ll-ref code {
+        background: var(--bg-primary);
+        border: 1px solid var(--border-primary);
+        border-radius: 3px;
+        padding: 0.1rem 0.3rem;
+        font-size: 0.82rem;
+    }
+
+    /* ── Diagram ─────────────────────────────────────────────────────────── */
+    .ll-diagram-scroll {
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+        min-height: 140px;
+    }
+    #ll-diagram {
+        display: block;
+    }
+    .ll-stats {
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
+    /* ── SVG element classes ─────────────────────────────────────────────── */
+    :root {
+        --ll-node-fill: #dbeeff;
+        --ll-node-stroke: #2980b9;
+        --ll-arrow: #555;
+    }
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --ll-node-fill: #1a3a5c;
+            --ll-node-stroke: #5dade2;
+            --ll-arrow: #aaa;
+        }
+    }
+
+    .ll-node-rect {
+        fill: var(--ll-node-fill);
+        stroke: var(--ll-node-stroke);
+        stroke-width: 2;
+    }
+    .ll-divider {
+        stroke: var(--ll-node-stroke);
+        stroke-width: 1;
+        opacity: 0.4;
+    }
+    .ll-val-text {
+        font-family: "Courier New", Courier, monospace;
+        font-size: 16px;
+        font-weight: bold;
+        fill: var(--text-primary);
+    }
+    .ll-next-label {
+        font-size: 9px;
+        fill: var(--text-secondary);
+        font-family: system-ui, sans-serif;
+    }
+    .ll-ptr-dot {
+        fill: var(--ll-node-stroke);
+    }
+    .ll-null-ptr {
+        fill: var(--text-secondary);
+        font-size: 15px;
+        font-family: system-ui, sans-serif;
+    }
+    .ll-arrow {
+        stroke: var(--ll-arrow);
+        stroke-width: 2;
+        fill: none;
+    }
+    .ll-arrowhead {
+        fill: var(--ll-arrow);
+    }
+    .ll-null-rect {
+        fill: var(--bg-primary);
+        stroke: var(--text-secondary);
+        stroke-width: 1.5;
+        stroke-dasharray: 4 3;
+    }
+    .ll-null-text {
+        font-family: "Courier New", Courier, monospace;
+        font-size: 12px;
+        font-style: italic;
+        fill: var(--text-secondary);
+    }
+    .ll-head-label {
+        font-family: system-ui, sans-serif;
+        font-size: 12px;
+        font-weight: bold;
+        fill: var(--text-primary);
+    }
+    .ll-null-label {
+        font-family: system-ui, sans-serif;
+        font-size: 12px;
+        font-style: italic;
+        fill: var(--text-secondary);
+    }
+    .ll-index-label {
+        font-family: system-ui, sans-serif;
+        font-size: 10px;
+        fill: var(--text-secondary);
+    }
+
+    /* ── Output console ──────────────────────────────────────────────────── */
+    .ll-console-wrap {
+        margin-top: 1.5rem;
+        border: 1px solid var(--border-primary);
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    .ll-console-header {
+        background: var(--bg-tertiary);
+        border-bottom: 1px solid var(--border-primary);
+        padding: 0.4rem 0.75rem;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+    .ll-history {
+        font-family: "Courier New", Courier, monospace;
+        font-size: 0.85rem;
+        max-height: 260px;
+        overflow-y: auto;
+        padding: 0.5rem 0.75rem;
+        background: var(--bg-primary);
+    }
+    .ll-entry {
+        margin-bottom: 0.5rem;
+    }
+    .ll-code-line {
+        color: var(--text-primary);
+    }
+    .ll-log-line {
+        color: var(--text-secondary);
+        padding-left: 1rem;
+    }
+    .ll-ret-line {
+        color: #27ae60;
+        padding-left: 1rem;
+    }
+    .ll-err-line {
+        color: #e74c3c;
+        padding-left: 1rem;
+    }
+    @media (prefers-color-scheme: dark) {
+        .ll-ret-line {
+            color: #2ecc71;
+        }
+    }
 </style>
 
 <script src="/static/js/linked_list_learning.js"></script>
