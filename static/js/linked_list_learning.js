@@ -431,10 +431,6 @@ function renderDoublyDiagram(newIndices = new Set()) {
                 refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
           <polygon class="ll-arrowhead" points="0 0, 8 3, 0 6"/>
         </marker>
-        <marker id="arr-back" markerWidth="8" markerHeight="6"
-                refX="1" refY="3" orient="auto" markerUnits="strokeWidth">
-          <polygon class="ll-arrowhead" points="8 0, 0 3, 8 6"/>
-        </marker>
       </defs>`);
 
     if (n === 0) {
@@ -525,7 +521,7 @@ function renderDoublyDiagram(newIndices = new Set()) {
             // Backward (prev ↑) arrow on left side
             parts.push(`
               <line x1="${DV_BCK_X}" y1="${y1}" x2="${DV_BCK_X}" y2="${y0 + 6}"
-                    class="ll-arrow" marker-end="url(#arr-back)"/>`);
+                    class="ll-arrow" marker-end="url(#arr)"/>`);
         } else {
             // Null box below last node
             const nullY = ny + DV_NODE_H + DV_GAP_H;
