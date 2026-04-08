@@ -391,6 +391,20 @@ function renderSinglyDiagram(newIndices = new Set()) {
           <text x="${SV_NX + SV_NODE_W + 8}" y="${ny + SV_VAL_H / 2}"
                 dominant-baseline="middle" class="ll-index-label">[${i}]</text>`);
 
+        // Edit / delete icons (shown on hover, inside value compartment right edge)
+        const iconY = ny + SV_VAL_H / 2;
+        const editX = SV_NX + SV_NODE_W - 28;
+        const delX  = SV_NX + SV_NODE_W - 10;
+        parts.push(`
+          <g class="ll-node-icon" data-action="edit" data-index="${i}">
+            <circle cx="${editX}" cy="${iconY}" r="9" class="ll-icon-circle"/>
+            <text x="${editX}" y="${iconY}" class="ll-icon-text">✎</text>
+          </g>
+          <g class="ll-node-icon" data-action="delete" data-index="${i}">
+            <circle cx="${delX}" cy="${iconY}" r="9" class="ll-icon-circle"/>
+            <text x="${delX}" y="${iconY}" class="ll-icon-text">✕</text>
+          </g>`);
+
         parts.push(`</g>`);
     }
 
@@ -533,6 +547,20 @@ function renderDoublyDiagram(newIndices = new Set()) {
         parts.push(`
           <text x="${DV_NX + DV_NODE_W + 8}" y="${ny + DV_PREV_H + DV_VAL_H / 2}"
                 dominant-baseline="middle" class="ll-index-label">[${i}]</text>`);
+
+        // Edit / delete icons (shown on hover, inside value compartment right edge)
+        const iconY = ny + DV_PREV_H + DV_VAL_H / 2;
+        const editX = DV_NX + DV_NODE_W - 28;
+        const delX  = DV_NX + DV_NODE_W - 10;
+        parts.push(`
+          <g class="ll-node-icon" data-action="edit" data-index="${i}">
+            <circle cx="${editX}" cy="${iconY}" r="9" class="ll-icon-circle"/>
+            <text x="${editX}" y="${iconY}" class="ll-icon-text">✎</text>
+          </g>
+          <g class="ll-node-icon" data-action="delete" data-index="${i}">
+            <circle cx="${delX}" cy="${iconY}" r="9" class="ll-icon-circle"/>
+            <text x="${delX}" y="${iconY}" class="ll-icon-text">✕</text>
+          </g>`);
 
         parts.push(`</g>`);
     }
@@ -834,13 +862,13 @@ function handleClearInput() {
 }
 
 // ─── Diagram interaction (click + drag) ──────────────────────────────────────
-function computeDropGap(svgX, n) {
+function computeDropGap(svgY, n) {
     // Returns gap index: 0 = before node[0], n = after node[n-1]
     if (currentMode === 'singly') {
-        const raw = Math.round((svgX - HEAD_X + STEP_W / 2) / STEP_W);
+        const raw = Math.round((svgY - SV_HEAD_Y + SV_STEP_H / 2) / SV_STEP_H);
         return Math.max(0, Math.min(n, raw));
     } else {
-        const raw = Math.round((svgX - DL_HEAD_X + DL_STEP_W / 2) / DL_STEP_W);
+        const raw = Math.round((svgY - DV_HEAD_Y + DV_STEP_H / 2) / DV_STEP_H);
         return Math.max(0, Math.min(n, raw));
     }
 }
@@ -851,18 +879,25 @@ function svgXFromClient(svg, clientX) {
     return (clientX - rect.left) * (viewBox.width / rect.width);
 }
 
+function svgYFromClient(svg, clientY) {
+    const rect = svg.getBoundingClientRect();
+    const viewBox = svg.viewBox.baseVal;
+    return (clientY - rect.top) * (viewBox.height / rect.height);
+}
+
 function initDiagramInteraction() {
     const svg = document.getElementById('ll-diagram');
     let drag = null;
 
     svg.addEventListener('mousedown', (e) => {
+        if (e.target.closest('[data-action]')) return;
         const g = e.target.closest('.ll-node-group');
         if (!g) return;
         e.preventDefault();
         drag = {
             fromIdx: parseInt(g.dataset.index),
             fromVal: g.dataset.value,
-            startClientX: e.clientX,
+            startClientY: e.clientY,
             moved: false,
         };
         g.style.opacity = '0.6';
@@ -871,7 +906,7 @@ function initDiagramInteraction() {
 
     svg.addEventListener('mousemove', (e) => {
         if (!drag) return;
-        if (Math.abs(e.clientX - drag.startClientX) > 8) drag.moved = true;
+        if (Math.abs(e.clientY - drag.startClientY) > 8) drag.moved = true;
     });
 
     window.addEventListener('mouseup', (e) => {
@@ -880,15 +915,15 @@ function initDiagramInteraction() {
         drag = null;
 
         // Restore opacity
-        const g = svg.querySelector(`[data-index="${state.fromIdx}"]`);
+        const g = svg.querySelector(`.ll-node-group[data-index="${state.fromIdx}"]`);
         if (g) { g.style.opacity = ''; g.style.cursor = ''; }
 
         const n = list.length();
 
         if (state.moved && n > 1) {
-            // Drag-to-reorder: compute target gap
-            const svgX  = svgXFromClient(svg, e.clientX);
-            const gap   = computeDropGap(svgX, n);
+            // Drag-to-reorder: compute target gap using vertical position
+            const svgY  = svgYFromClient(svg, e.clientY);
+            const gap   = computeDropGap(svgY, n);
             const from  = state.fromIdx;
             // Effective insertAt index after deleteAt(from)
             const insertIdx = gap > from ? gap - 1 : gap;
@@ -903,14 +938,32 @@ function initDiagramInteraction() {
                 ta.focus();
             }
         } else {
-            // Click: fill textarea with get, delete, or set options as a comment menu
+            // Click: fill textarea with get
             const idx = state.fromIdx;
-            const val = state.fromVal;
             const ta  = document.getElementById('ll-input');
             ta.value  = `list.get(${idx})`;
             ta.focus();
-            // Select all so user can easily replace
             ta.select();
+        }
+    });
+
+    svg.addEventListener('click', (e) => {
+        const iconGroup = e.target.closest('[data-action]');
+        if (!iconGroup) return;
+        e.stopPropagation();
+        const action = iconGroup.dataset.action;
+        const idx    = parseInt(iconGroup.dataset.index);
+        const ta     = document.getElementById('ll-input');
+        if (action === 'edit') {
+            const current = list.get(idx);
+            const raw = window.prompt(`Edit node [${idx}] — new value:`, current);
+            if (raw === null) return;
+            const parsed = (raw.trim() !== '' && !isNaN(raw)) ? raw.trim() : JSON.stringify(raw);
+            ta.value = `list.set(${idx}, ${parsed})`;
+            handleRun();
+        } else if (action === 'delete') {
+            ta.value = `list.deleteAt(${idx})`;
+            handleRun();
         }
     });
 }

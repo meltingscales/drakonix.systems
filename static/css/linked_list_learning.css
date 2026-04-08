@@ -318,6 +318,36 @@
     filter: brightness(1.08);
 }
 
+/* ── Node icons (edit / delete) ──────────────────────────────────────── */
+.ll-node-icon {
+    opacity: 0;
+    cursor: pointer;
+    transition: opacity 0.15s;
+}
+.ll-node-group:hover .ll-node-icon {
+    opacity: 1;
+}
+.ll-icon-circle {
+    fill: var(--bg-secondary);
+    stroke: var(--ll-node-stroke);
+    stroke-width: 1.5;
+}
+.ll-node-icon:hover .ll-icon-circle {
+    fill: var(--ll-node-stroke);
+}
+.ll-icon-text {
+    font-size: 10px;
+    font-family: system-ui, sans-serif;
+    fill: var(--text-primary);
+    text-anchor: middle;
+    dominant-baseline: middle;
+    pointer-events: none;
+    user-select: none;
+}
+.ll-node-icon:hover .ll-icon-text {
+    fill: #fff;
+}
+
 /* ── Node flash animation (new/changed nodes) ────────────────────────── */
 @keyframes ll-flash {
     0%   { fill: var(--ll-flash-color); }
