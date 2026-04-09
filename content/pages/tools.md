@@ -197,6 +197,7 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 - raidforums - data leak forum (seized by law enforcement)
 - leaks - data leak aggregator
 
+- [gtfobins](https://gtfobins.org/) - Unix binaries that can be exploited for privilege escalation/bypasses
 - [hacktricks](https://book.hacktricks.xyz/welcome/readme) - pentesting/CTF reference book
 - [revshells](https://www.revshells.com/) - reverse shell generator
 - [eclypsium](https://eclypsium.com/) - firmware/supply chain security research
