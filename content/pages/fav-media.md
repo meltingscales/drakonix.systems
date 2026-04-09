@@ -1,23 +1,13 @@
 ---
 title: "Favorite Media"
-date: "2025-09-25"
-author: ""
-authorTwitter: ""
-cover: ""
-tags:
-  - "fun"
-description: ""
-showFullContent: false
-readingTime: false
-hideComments: false
+date: 2026-04-09
 ---
 
-This is a stub, a TODO item for myself. I want to make a list of my fave games, minecraft modpacks, music, movies, and books.
+# Favorite Media
+
+A list of my fave games, minecraft modpacks, music, movies, and books.
 
 Another TODO would be to pull data from my Bandcamp and just dump it here.
-
-<!-- DONE! Another TODO is to make a webring, since I've entirely ditched social media. It'd be neat to have a real RSS feed that I control
-and avoid getting oneshotted by bots and `recommendation_watchnext.serve()`...-->
 
 ## Games
 
@@ -64,6 +54,7 @@ and avoid getting oneshotted by bots and `recommendation_watchnext.serve()`...--
 - Material Energy Exponential series
   - <https://www.curseforge.com/members/parcel31u/projects>
 - [Biohazard Project Genesis](https://www.curseforge.com/minecraft/modpacks/biohazard-project-genesis)
+- [MC Eternal 2](https://www.curseforge.com/minecraft/modpacks/mc-eternal-2)
 
 ### PC
 
@@ -117,3 +108,8 @@ and avoid getting oneshotted by bots and `recommendation_watchnext.serve()`...--
 
 - Snowden Leaks - Yeah, that's right. I read these as a teenager and was filled with determination, and
   vowed to eventually find my way into Utah Data Processing Center 2 ;)
+
+## Hack
+
+- [ps3xploit.me](https://ps3xploit.me/) - PS3 jailbreak/homebrew exploits and tools
+- [ohmygit](https://ohmygit.org/) - interactive Git learning game

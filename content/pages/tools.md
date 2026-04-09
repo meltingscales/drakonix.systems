@@ -38,6 +38,7 @@ I am aggressively de-googling my life in 2025/2026.
 - rust: faster than python.
 - bash: scripting language
 - just: very good build tool
+- [ohmygit](https://ohmygit.org/) - interactive Git learning game
 - postman: http requests
   - bruno is probably better, TODO use it
   - in general, *ditch postman*. they're starting to put their client behind a paywall/login wall. move to an OSS tool that's free. it's not rocket science to make something that ingests OpenAPI Spec and just runs `curl`...so why force corporations or individuals to pay for the simple feature of saving a Postman collection?
@@ -82,6 +83,7 @@ i highly recommend never using windows, for [many](https://en.wikipedia.org/wiki
 
 ### Windows utilities
 
+- [windhawk](https://windhawk.net/) - Windows app modding/tweaking tool
 - [crystaldiskinfo](https://crystalmark.info/en/software/crystaldiskinfo/) - disk health monitor
 - [windirstat](https://windirstat.net/) - disk usage visualizer
 - [minitool partition wizard](https://www.minitool.com/partition-manager/) - partition manager
