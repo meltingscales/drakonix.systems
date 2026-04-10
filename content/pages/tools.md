@@ -154,6 +154,7 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 - kubernetes: container orchestration
 - grafana: monitoring visualization
 - prometheus: monitoring metrics/backend
+- [copyparty](https://github.com/9001/copyparty) - portable file server with upload, search, media playback, and more
 
 ## Backup
 
