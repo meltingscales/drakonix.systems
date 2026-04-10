@@ -49,7 +49,7 @@ I am aggressively de-googling my life in 2025/2026.
 - cursor: bloated, use zed
 - vscode - bloated, only use if you absolutely need to. It's slow and used to be my favorite, but...
 
-- [zed](https://zed.dev/) - Fast and simple text editor. Rust backend.
+- [zed](https://zed.dev/) - Fast and simple text editor. Rust backend. (`zeditor` is the CLI command)
 - nano - command line editor
 
 ## CICD
@@ -222,16 +222,22 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 - parrotos - security/privacy-focused Linux distro
 
 - dirb - web content scanner / directory brute-forcer
+- ffuf - Fuzz Faster U Fool, fast web fuzzer for directories/params/vhosts
+- gobuster - directory/DNS/vhost brute-forcer
 - nmap - network mapper and port scanner
 - rustscan - fast Rust-based port scanner, feeds into nmap
 - ftp - file transfer protocol CLI client
 - some python idk lol
+- `/etc/hosts` - local DNS override file, useful for redirecting domains or lab environments
 - searchsploit - offline CLI search for exploit-db
 - msfconsole - Metasploit Framework interactive console
+- GodPotato.exe - Windows privilege escalation via impersonation (SeImpersonatePrivilege / Potato family)
 - msfvenom - Metasploit payload and shellcode generator
 - [evilginx2](https://github.com/meltingscales/evilginx2/tree/restored) - adversary-in-the-middle phishing framework, bypasses 2FA by proxying real login pages and capturing session cookies
 
 #### To investigate
+- [BlueHammer](https://github.com/Nightmare-Eclipse/BlueHammer/) - tool to investigate
+  - [meltingscales/BlueHammer](https://github.com/meltingscales/BlueHammer) - my fork
 - [deepnet DN Key Pro](https://deepnet.store/products/dn_key-pro-experimental) - experimental hardware key
 - Proxgrind - NFC/RFID tool
 - [proxmark / icopy-x](https://proxmark.com/) - RFID/NFC research hardware
