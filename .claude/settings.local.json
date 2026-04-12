@@ -20,7 +20,8 @@
       "Bash(just --list)",
       "Bash(wc:*)",
       "Bash(cargo check:*)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Bash(git:*)"
     ]
   }
 }
