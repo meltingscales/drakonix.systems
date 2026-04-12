@@ -6,6 +6,10 @@ toc: false
 
 A collection of write-up reports from boxes I've pwned.
 
+## OSCP
+
+- [meltingscales/oscp](https://github.com/meltingscales/oscp)
+
 ## Offensive Security Proving Grounds
 
 - [Reporting Template](/static/ctfs/REPORT-TEMPLATE.pdf)
