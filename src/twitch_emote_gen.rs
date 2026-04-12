@@ -103,14 +103,16 @@ impl TwitchEmoteGenManager {
                 .to_lowercase();
 
             let is_gif = ext == "gif";
+            let is_apng = !is_gif && ext == "png" && Self::detect_apng(data);
 
             let input_path = job_dir.join(format!("in_{}.{}", stem, ext));
             fs::write(&input_path, data)
                 .await
                 .map_err(|e| format!("Failed to write input file: {}", e))?;
 
-            // Validate GIF frame count before processing
-            if is_gif {
+            // Validate animated frame count before processing
+            if is_gif || is_apng {
+                let label = if is_gif { "GIF" } else { "APNG" };
                 match Self::gif_frame_count(&input_path).await {
                     Ok(frames) if frames > MAX_GIF_FRAMES => {
                         for &size in &sizes {
@@ -119,8 +121,8 @@ impl TwitchEmoteGenManager {
                                 size,
                                 ok: false,
                                 warning: Some(format!(
-                                    "GIF has {} frames; Twitch allows a maximum of {} frames",
-                                    frames, MAX_GIF_FRAMES
+                                    "{} has {} frames; Twitch allows a maximum of {} frames",
+                                    label, frames, MAX_GIF_FRAMES
                                 )),
                             });
                         }
@@ -128,7 +130,7 @@ impl TwitchEmoteGenManager {
                         continue;
                     }
                     Err(e) => {
-                        tracing::warn!("Could not count GIF frames for {}: {}", original_name, e);
+                        tracing::warn!("Could not count {} frames for {}: {}", label, original_name, e);
                     }
                     Ok(_) => {}
                 }
@@ -141,6 +143,8 @@ impl TwitchEmoteGenManager {
 
                 let success = if is_gif {
                     Self::resize_gif(&input_path, &out_path, size).await
+                } else if is_apng {
+                    Self::resize_apng(&input_path, &out_path, size).await
                 } else {
                     Self::resize_png(&input_path, &out_path, size).await
                 };
@@ -173,13 +177,14 @@ impl TwitchEmoteGenManager {
                 let _ = fs::remove_file(&out_path).await;
 
                 let size_bytes = out_data.len() as u64;
-                let limit = if is_gif { MAX_GIF_BYTES } else { MAX_PNG_BYTES };
+                let is_animated = is_gif || is_apng;
+                let limit = if is_animated { MAX_GIF_BYTES } else { MAX_PNG_BYTES };
                 let warning = if size_bytes > limit {
                     Some(format!(
                         "{}KB exceeds Twitch's {}KB {} emote size limit",
                         (size_bytes + 1023) / 1024,
                         limit / 1024,
-                        if is_gif { "animated" } else { "static" }
+                        if is_animated { "animated" } else { "static" }
                     ))
                 } else {
                     None
@@ -270,6 +275,39 @@ impl TwitchEmoteGenManager {
             .arg("-define")
             .arg("png:compression-level=9")
             .arg(output)
+            .output()
+            .await
+            .map_err(|e| format!("Failed to spawn convert: {}", e))?;
+
+        if !out.status.success() {
+            let err = String::from_utf8_lossy(&out.stderr);
+            return Err(format!("ImageMagick error: {}", err.trim()));
+        }
+        Ok(())
+    }
+
+    /// Returns true if the raw bytes contain an APNG `acTL` chunk.
+    fn detect_apng(data: &[u8]) -> bool {
+        data.windows(4).any(|w| w == b"acTL")
+    }
+
+    async fn resize_apng(input: &PathBuf, output: &PathBuf, size: u32) -> Result<(), String> {
+        // Prefix output with "APNG:" so ImageMagick writes animated PNG, not static PNG.
+        let output_arg = format!("APNG:{}", output.display());
+        let out = Command::new("convert")
+            .arg(input)
+            .arg("-coalesce")
+            .arg("-resize")
+            .arg(format!("{}x{}", size, size))
+            .arg("-background")
+            .arg("none")
+            .arg("-gravity")
+            .arg("center")
+            .arg("-extent")
+            .arg(format!("{}x{}", size, size))
+            .arg("-layers")
+            .arg("optimize")
+            .arg(&output_arg)
             .output()
             .await
             .map_err(|e| format!("Failed to spawn convert: {}", e))?;
