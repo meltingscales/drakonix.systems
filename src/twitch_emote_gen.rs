@@ -103,7 +103,9 @@ impl TwitchEmoteGenManager {
                 .to_lowercase();
 
             let is_gif = ext == "gif";
+            let is_webp = ext == "webp";
             let is_apng = !is_gif && ext == "png" && Self::detect_apng(data);
+            let is_animated_webp = is_webp && Self::detect_animated_webp(data);
 
             let input_path = job_dir.join(format!("in_{}.{}", stem, ext));
             fs::write(&input_path, data)
@@ -111,8 +113,8 @@ impl TwitchEmoteGenManager {
                 .map_err(|e| format!("Failed to write input file: {}", e))?;
 
             // Validate animated frame count before processing
-            if is_gif || is_apng {
-                let label = if is_gif { "GIF" } else { "APNG" };
+            if is_gif || is_apng || is_animated_webp {
+                let label = if is_gif { "GIF" } else if is_apng { "APNG" } else { "WebP" };
                 match Self::gif_frame_count(&input_path).await {
                     Ok(frames) if frames > MAX_GIF_FRAMES => {
                         for &size in &sizes {
@@ -137,7 +139,7 @@ impl TwitchEmoteGenManager {
             }
 
             for &size in &sizes {
-                let out_ext = if is_gif { "gif" } else { "png" };
+                let out_ext = if is_gif { "gif" } else if is_webp { "webp" } else { "png" };
                 let out_filename = format!("{}_{}x{}.{}", stem, size, size, out_ext);
                 let out_path = job_dir.join(&out_filename);
 
@@ -145,6 +147,10 @@ impl TwitchEmoteGenManager {
                     Self::resize_gif(&input_path, &out_path, size).await
                 } else if is_apng {
                     Self::resize_apng(&input_path, &out_path, size).await
+                } else if is_animated_webp {
+                    Self::resize_animated_webp(&input_path, &out_path, size).await
+                } else if is_webp {
+                    Self::resize_webp(&input_path, &out_path, size).await
                 } else {
                     Self::resize_png(&input_path, &out_path, size).await
                 };
@@ -177,7 +183,7 @@ impl TwitchEmoteGenManager {
                 let _ = fs::remove_file(&out_path).await;
 
                 let size_bytes = out_data.len() as u64;
-                let is_animated = is_gif || is_apng;
+                let is_animated = is_gif || is_apng || is_animated_webp;
                 let limit = if is_animated { MAX_GIF_BYTES } else { MAX_PNG_BYTES };
                 let warning = if size_bytes > limit {
                     Some(format!(
@@ -289,6 +295,61 @@ impl TwitchEmoteGenManager {
     /// Returns true if the raw bytes contain an APNG `acTL` chunk.
     fn detect_apng(data: &[u8]) -> bool {
         data.windows(4).any(|w| w == b"acTL")
+    }
+
+    /// Returns true if the raw bytes are an animated WebP (contains an `ANIM` chunk).
+    fn detect_animated_webp(data: &[u8]) -> bool {
+        data.windows(4).any(|w| w == b"ANIM")
+    }
+
+    async fn resize_webp(input: &PathBuf, output: &PathBuf, size: u32) -> Result<(), String> {
+        let out = Command::new("convert")
+            .arg(input)
+            .arg("-resize")
+            .arg(format!("{}x{}", size, size))
+            .arg("-background")
+            .arg("none")
+            .arg("-alpha")
+            .arg("set")
+            .arg("-gravity")
+            .arg("center")
+            .arg("-extent")
+            .arg(format!("{}x{}", size, size))
+            .arg(output)
+            .output()
+            .await
+            .map_err(|e| format!("Failed to spawn convert: {}", e))?;
+
+        if !out.status.success() {
+            let err = String::from_utf8_lossy(&out.stderr);
+            return Err(format!("ImageMagick error: {}", err.trim()));
+        }
+        Ok(())
+    }
+
+    async fn resize_animated_webp(input: &PathBuf, output: &PathBuf, size: u32) -> Result<(), String> {
+        let filter = format!(
+            "scale={s}:{s}:force_original_aspect_ratio=decrease,\
+             pad={s}:{s}:(ow-iw)/2:(oh-ih)/2:color=0x00000000",
+            s = size,
+        );
+        let out = Command::new("ffmpeg")
+            .arg("-y")
+            .arg("-i").arg(input)
+            .arg("-vf").arg(&filter)
+            .arg("-pix_fmt").arg("rgba")
+            .arg("-loop").arg("0")
+            .arg("-f").arg("webp")
+            .arg(output)
+            .output()
+            .await
+            .map_err(|e| format!("Failed to spawn ffmpeg: {}", e))?;
+
+        if !out.status.success() {
+            let err = String::from_utf8_lossy(&out.stderr);
+            return Err(format!("ffmpeg error: {}", err.trim()));
+        }
+        Ok(())
     }
 
     async fn resize_apng(input: &PathBuf, output: &PathBuf, size: u32) -> Result<(), String> {

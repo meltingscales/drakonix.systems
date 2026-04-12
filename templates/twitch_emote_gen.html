@@ -1,7 +1,7 @@
 {% extends "base.html" %} {% block content %}
 <div class="emote-gen-container">
     <h1>Twitch Emote Generator</h1>
-    <p>Upload your image and get a ready-to-use emote pack at all three required sizes: <strong>28×28</strong>, <strong>56×56</strong>, and <strong>112×112</strong> px. Supports both static (PNG) and animated (GIF) emotes.</p>
+    <p>Upload your image and get a ready-to-use emote pack at all three required sizes: <strong>28×28</strong>, <strong>56×56</strong>, and <strong>112×112</strong> px. Supports static (PNG, WebP) and animated (GIF, APNG, animated WebP) emotes.</p>
     <p>Images are processed with ImageMagick: resized with transparent background preserved. Output is a <strong>.zip</strong> containing all sized files.</p>
     <p>Looking for emote inspiration? Check out <a href="https://slackmojis.com" target="_blank" rel="noopener">slackmojis.com</a>.</p>
 
@@ -37,11 +37,11 @@
 
     <div class="upload-section">
         <div class="file-input-wrapper" id="drop-zone">
-            <input type="file" id="file-input" accept="image/png,image/gif,.png,.gif" multiple />
+            <input type="file" id="file-input" accept="image/png,image/gif,image/webp,.png,.gif,.webp" multiple />
             <label for="file-input" class="file-label">
                 <div class="drop-icon">🖼️</div>
                 <span id="file-label-text">Choose images or drag &amp; drop here</span>
-                <span class="file-hint">PNG or GIF · multiple files supported · max 50MB total</span>
+                <span class="file-hint">PNG, GIF, or WebP · multiple files supported · max 50MB total</span>
             </label>
         </div>
 
@@ -499,10 +499,10 @@
 
     function handleFiles(files) {
         const allowed = Array.from(files).filter(f =>
-            f.type === "image/png" || f.type === "image/gif"
+            f.type === "image/png" || f.type === "image/gif" || f.type === "image/webp"
         );
         if (allowed.length === 0) {
-            showError("Please select PNG or GIF files.");
+            showError("Please select PNG, GIF, or WebP files.");
             return;
         }
         selectedFileList = allowed;
