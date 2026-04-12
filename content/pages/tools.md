@@ -127,6 +127,7 @@ Current working stack:
 - claude: You can use this, but you can also self-host local AI and use CLI tools like:
   - `aider`: OSS claude cli clone
   - [claude-code-router](https://github.com/musistudio/claude-code-router) - route Claude Code requests to different AI providers/models
+  - [Claude Code Router Tutorial](https://www.youtube.com/watch?v=4qs21EBOkn8)
   - etc...TODO: Add more coding agents here from testing.
 
 The basic pattern to locally host is just to run `llama.cpp` (or `ollama` if you have NVIDIA GPUs) on a powerful PC, set up a VPN with `tailscale`, and then connect to the LLM endpoint with your less powerful computer via a coding agent like `aider` or a frontend like `openwebui`.
