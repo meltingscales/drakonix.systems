@@ -292,29 +292,29 @@ impl TwitchEmoteGenManager {
     }
 
     async fn resize_apng(input: &PathBuf, output: &PathBuf, size: u32) -> Result<(), String> {
-        // Prefix output with "APNG:" so ImageMagick writes animated PNG, not static PNG.
-        let output_arg = format!("APNG:{}", output.display());
-        let out = Command::new("convert")
-            .arg(input)
-            .arg("-coalesce")
-            .arg("-resize")
-            .arg(format!("{}x{}", size, size))
-            .arg("-background")
-            .arg("none")
-            .arg("-gravity")
-            .arg("center")
-            .arg("-extent")
-            .arg(format!("{}x{}", size, size))
-            .arg("-layers")
-            .arg("optimize")
-            .arg(&output_arg)
+        // Use ffmpeg directly — ImageMagick 6's APNG: delegate is unreliable.
+        // scale to fit within the target square while preserving aspect ratio,
+        // then pad to exactly size×size with a transparent background.
+        let filter = format!(
+            "scale={s}:{s}:force_original_aspect_ratio=decrease,\
+             pad={s}:{s}:(ow-iw)/2:(oh-ih)/2:color=0x00000000",
+            s = size,
+        );
+        let out = Command::new("ffmpeg")
+            .arg("-y")
+            .arg("-i").arg(input)
+            .arg("-vf").arg(&filter)
+            .arg("-pix_fmt").arg("rgba")
+            .arg("-plays").arg("0")   // loop forever (standard for emotes)
+            .arg("-f").arg("apng")
+            .arg(output)
             .output()
             .await
-            .map_err(|e| format!("Failed to spawn convert: {}", e))?;
+            .map_err(|e| format!("Failed to spawn ffmpeg: {}", e))?;
 
         if !out.status.success() {
             let err = String::from_utf8_lossy(&out.stderr);
-            return Err(format!("ImageMagick error: {}", err.trim()));
+            return Err(format!("ffmpeg error: {}", err.trim()));
         }
         Ok(())
     }
