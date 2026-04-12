@@ -5,6 +5,7 @@ use crate::models::SearchEntry;
 use crate::schizo_rng;
 use crate::timer::{StartTimerRequest, StartTimerResponse, TimerStatusResponse};
 use crate::twitch_icon_gen::IconGenResponse;
+use crate::twitch_emote_gen::EmoteGenResponse;
 use crate::{constants, honeypot_db, rss, AppState, CountryCache, OrgCache};
 use axum::{
     body::Body,
@@ -610,6 +611,140 @@ pub async fn download_twitch_icon_pack(
     headers.insert(
         axum::http::header::CONTENT_DISPOSITION,
         format!("attachment; filename=\"twitch-badges-{}.zip\"", &job_id[..8])
+            .parse()
+            .unwrap(),
+    );
+
+    Ok((headers, body).into_response())
+}
+
+/// Twitch emote generator page
+pub async fn twitch_emote_gen_page(
+    State(state): State<Arc<AppState>>,
+) -> Result<Html<String>, AppError> {
+    let mut context = Context::new();
+    add_honeypot_urls(&mut context);
+    let html = state
+        .tera
+        .render("twitch_emote_gen.html", &context)
+        .map_err(|e| AppError::TemplateError(e.to_string()))?;
+    Ok(Html(html))
+}
+
+/// API endpoint to generate Twitch emote pack from uploaded images
+#[utoipa::path(
+    post,
+    path = "/api/twitch-emotes/generate",
+    tag = "Twitch",
+    request_body(
+        content = String,
+        description = "Multipart form with one or more 'images[]' fields (PNG/GIF, max 50MB total). Each image is processed at 28×28, 56×56, and 112×112 px.",
+        content_type = "multipart/form-data"
+    ),
+    responses(
+        (status = 200, description = "Emotes generated; download ZIP via job_id", body = EmoteGenResponse),
+        (status = 400, description = "No images provided"),
+        (status = 413, description = "Upload too large (max 50MB)"),
+        (status = 500, description = "Internal server error")
+    )
+)]
+pub async fn generate_twitch_emotes(
+    State(state): State<Arc<AppState>>,
+    mut multipart: Multipart,
+) -> Result<Json<EmoteGenResponse>, AppError> {
+    let mut images: Vec<(String, Vec<u8>)> = Vec::new();
+    let mut sizes: Vec<u32> = Vec::new();
+
+    while let Some(field) = multipart
+        .next_field()
+        .await
+        .map_err(|e| AppError::InternalError(anyhow::anyhow!("Multipart error: {}", e)))?
+    {
+        let name = field.name().unwrap_or("").to_string();
+        match name.as_str() {
+            "images[]" | "images" => {
+                let filename = field.file_name().unwrap_or("emote.png").to_string();
+                let data = field.bytes().await.map_err(|e| {
+                    AppError::InternalError(anyhow::anyhow!("File read error: {}", e))
+                })?;
+                if !data.is_empty() {
+                    images.push((filename, data.to_vec()));
+                }
+            }
+            "sizes[]" | "sizes" => {
+                let val = field.text().await.map_err(|e| {
+                    AppError::InternalError(anyhow::anyhow!("Sizes read error: {}", e))
+                })?;
+                if let Ok(n) = val.trim().parse::<u32>() {
+                    if matches!(n, 28 | 56 | 112) {
+                        sizes.push(n);
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+
+    if images.is_empty() {
+        return Err(AppError::InternalError(anyhow::anyhow!(
+            "No images provided"
+        )));
+    }
+
+    if sizes.is_empty() {
+        sizes = vec![28, 56, 112];
+    }
+    sizes.sort_unstable();
+    sizes.dedup();
+
+    let (job_id, results) = state
+        .twitch_emote_gen_manager
+        .generate_emote_pack(images, sizes)
+        .await
+        .map_err(|e| AppError::InternalError(anyhow::anyhow!("Emote generation error: {}", e)))?;
+
+    Ok(Json(EmoteGenResponse { job_id, results }))
+}
+
+/// API endpoint to download a generated Twitch emote pack ZIP
+#[utoipa::path(
+    get,
+    path = "/api/twitch-emotes/download/{job_id}",
+    tag = "Twitch",
+    params(
+        ("job_id" = String, Path, description = "Job identifier returned from the generate endpoint")
+    ),
+    responses(
+        (status = 200, description = "Returns the emote pack as a ZIP archive", content_type = "application/zip"),
+        (status = 404, description = "Job not found or expired (10-minute TTL)"),
+        (status = 500, description = "Internal server error")
+    )
+)]
+pub async fn download_twitch_emote_pack(
+    State(state): State<Arc<AppState>>,
+    Path(job_id): Path<String>,
+) -> Result<Response, AppError> {
+    let zip_path = state
+        .twitch_emote_gen_manager
+        .get_zip_file(&job_id)
+        .await
+        .ok_or(AppError::NotFound)?;
+
+    let file = File::open(&zip_path)
+        .await
+        .map_err(|e| AppError::InternalError(anyhow::anyhow!("File open error: {}", e)))?;
+
+    let stream = ReaderStream::new(file);
+    let body = Body::from_stream(stream);
+
+    let mut headers = HeaderMap::new();
+    headers.insert(
+        axum::http::header::CONTENT_TYPE,
+        "application/zip".parse().unwrap(),
+    );
+    headers.insert(
+        axum::http::header::CONTENT_DISPOSITION,
+        format!("attachment; filename=\"twitch-emotes-{}.zip\"", &job_id[..8])
             .parse()
             .unwrap(),
     );

@@ -10,6 +10,7 @@ mod rss;
 mod schizo_rng;
 mod timer;
 mod twitch_icon_gen;
+mod twitch_emote_gen;
 
 use axum::{
     extract::DefaultBodyLimit,
@@ -33,6 +34,8 @@ use utoipa_swagger_ui::SwaggerUi;
         handlers::download_converted_file,
         handlers::generate_twitch_icons,
         handlers::download_twitch_icon_pack,
+        handlers::generate_twitch_emotes,
+        handlers::download_twitch_emote_pack,
         handlers::markov_babble_honeypot,
         handlers::honeypot_hits_api,
         handlers::honeypot_config_api,
@@ -45,6 +48,8 @@ use utoipa_swagger_ui::SwaggerUi;
             converter::ConvertResponse,
             twitch_icon_gen::IconGenResponse,
             twitch_icon_gen::IconResult,
+            twitch_emote_gen::EmoteGenResponse,
+            twitch_emote_gen::EmoteResult,
             honeypot_db::HoneypotHit,
         )
     ),
@@ -120,6 +125,8 @@ async fn main() -> anyhow::Result<()> {
         .map_err(|e| anyhow::anyhow!("Failed to initialize converter: {}", e))?;
     let twitch_icon_gen_manager = twitch_icon_gen::TwitchIconGenManager::new()
         .map_err(|e| anyhow::anyhow!("Failed to initialize twitch icon gen: {}", e))?;
+    let twitch_emote_gen_manager = twitch_emote_gen::TwitchEmoteGenManager::new()
+        .map_err(|e| anyhow::anyhow!("Failed to initialize twitch emote gen: {}", e))?;
 
     let markov_generator = markov::MarkovGenerator::new();
 
@@ -144,6 +151,7 @@ async fn main() -> anyhow::Result<()> {
         timer_manager,
         converter_manager,
         twitch_icon_gen_manager,
+        twitch_emote_gen_manager,
         markov_generator,
         honeypot_db,
         http_client,
@@ -204,6 +212,19 @@ async fn main() -> anyhow::Result<()> {
             "/api/twitch-icons/download/:job_id",
             get(handlers::download_twitch_icon_pack),
         )
+        // Twitch emote generator service
+        .route(
+            "/services/twitch-emoji-gen",
+            get(handlers::twitch_emote_gen_page),
+        )
+        .route(
+            "/api/twitch-emotes/generate",
+            post(handlers::generate_twitch_emotes).layer(DefaultBodyLimit::max(50 * 1024 * 1024)), // 50MB limit
+        )
+        .route(
+            "/api/twitch-emotes/download/:job_id",
+            get(handlers::download_twitch_emote_pack),
+        )
         // Honeypot endpoint - slow markov babble to trap scrapers
         .route(
             "/api/markov-babble/:slug/gen",
@@ -254,6 +275,7 @@ pub struct AppState {
     pub timer_manager: timer::TimerManager,
     pub converter_manager: converter::ConverterManager,
     pub twitch_icon_gen_manager: twitch_icon_gen::TwitchIconGenManager,
+    pub twitch_emote_gen_manager: twitch_emote_gen::TwitchEmoteGenManager,
     pub markov_generator: markov::MarkovGenerator,
     pub honeypot_db: honeypot_db::HoneypotDb,
     pub http_client: reqwest::Client,
