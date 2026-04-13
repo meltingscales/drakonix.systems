@@ -24,7 +24,6 @@ I am aggressively de-googling my life in 2025/2026.
   - [pemu](https://github.com/Cpasjuste/pemu/releases) - multi-system emulator frontend (needs a custom XML file, annoying)
   - [retroarch](https://github.com/retroarch/retroarch) - multi-system emulator frontend (needs older firmware, warning)
 - [imgburn, cd burning](https://www.imgburn.com)
-- [canirun.ai](https://www.canirun.ai/) - can I run this game checker
 - [Xbox Emulator Files](https://github.com/K3V1991/Xbox-Emulator-Files) - Xbox emulator files collection
 
 ## Programming
@@ -118,6 +117,7 @@ Current working stack:
   - [ComfyUI-Zluda](https://github.com/patientx/ComfyUI-Zluda) - ComfyUI with ZLUDA for AMD GPUs on Windows
 - stablediffusion: image generation (TBD)
 - [goose: Claude CLI clone, seems very formidable.](//github.com/block/goose)
+- [canirun.ai](https://www.canirun.ai/) - LLM right-sizing tool: check if your hardware can run a given LLM
 - [llmfit: Hardware-aware LLM model finder. Detects your RAM/CPU/GPU and recommends models that will actually run well on your hardware. Supports multi-GPU, MoE architectures, and integrates with Ollama/llama.cpp/MLX.](https://github.com/AlexsJones/llmfit)
   - [stable-diffusion-webui-amdgpu](https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu) - SD WebUI fork with AMD GPU support
     - [setup guide (YouTube)](https://www.youtube.com/watch?v=g3XSZo6ewSQ)
