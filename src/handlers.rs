@@ -25,14 +25,37 @@ fn add_honeypot_urls(context: &mut Context) {
     context.insert("honeypot_urls", &urls);
 }
 
-/// Home page handler - shows recent posts
+/// Home page handler - shows about-me page
 pub async fn index(State(state): State<Arc<AppState>>) -> Result<Html<String>, AppError> {
+    let processor = MarkdownProcessor::new();
+    let pages = processor.load_all_pages()?;
+
+    let page = pages
+        .into_iter()
+        .find(|p| p.slug == "about-me")
+        .ok_or_else(|| AppError::NotFound)?;
+
+    let mut context = Context::new();
+    context.insert("page", &page);
+    context.insert("title", &page.title);
+    add_honeypot_urls(&mut context);
+
+    let html = state.tera.render("page_detail.html", &context).map_err(|e| {
+        tracing::error!("Tera render error: {:?}", e);
+        AppError::TemplateError(format!("{:#?}", e))
+    })?;
+
+    Ok(Html(html))
+}
+
+/// Blog page handler - shows recent posts
+pub async fn blog(State(state): State<Arc<AppState>>) -> Result<Html<String>, AppError> {
     let processor = MarkdownProcessor::new();
     let posts = processor.load_all_posts()?;
 
     let mut context = Context::new();
     context.insert("posts", &posts);
-    context.insert("title", "Home - drakonix.systems");
+    context.insert("title", "Blog - drakonix.systems");
     add_honeypot_urls(&mut context);
 
     let html = state.tera.render("index.html", &context).map_err(|e| {

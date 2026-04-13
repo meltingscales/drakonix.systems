@@ -163,6 +163,7 @@ async fn main() -> anyhow::Result<()> {
     let app = Router::new()
         .route("/favicon.ico", get(favicon::favicon_ico))
         .route("/", get(handlers::index))
+        .route("/blog", get(handlers::blog))
         .route("/posts", get(handlers::posts_list))
         .route("/posts/:slug", get(handlers::post_detail))
         .route("/pages/:slug", get(handlers::page_detail))
