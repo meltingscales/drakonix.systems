@@ -13,8 +13,8 @@ I am aggressively de-googling my life in 2025/2026.
 
 - [protonmail](https://protonmail.com) - encrypted email, Swiss privacy laws
 - [duckduckgo](https://duckduckgo.com) - privacy-respecting search engine
-- immich: google photos clone, self-hosted
-- navidrome: youtube music clone, self-hosted
+- [immich](https://immich.app/): google photos clone, self-hosted
+- [navidrome](https://www.navidrome.org/): youtube music clone, self-hosted
 - more to come? :)
 - [vesktop](https://vesktop.dev/) - lightweight Discord client fork
 - [ps3xploit.me](https://ps3xploit.me/) - PS3 jailbreak/homebrew exploits and tools
@@ -28,32 +28,32 @@ I am aggressively de-googling my life in 2025/2026.
 
 ## Programming
 
-- python: general purpose language
-  - conda/poetry/uv/pipenv/pip - package managers. prefer uv for speed/simplicity.
-  - pil/pillow: image processing library
-  - numpy: numerical computing library
-  - pandas: xlsx/csv manipulation library
-  - matplotlib: data visualization library
-- rust: faster than python.
-- bash: scripting language
-- just: very good build tool
+- [python](https://www.python.org/): general purpose language
+  - [conda](https://docs.conda.io/)/[poetry](https://python-poetry.org/)/[uv](https://github.com/astral-sh/uv)/[pipenv](https://pipenv.pypa.io/)/[pip](https://pip.pypa.io/) - package managers. prefer uv for speed/simplicity.
+  - [pil/pillow](https://pillow.readthedocs.io/): image processing library
+  - [numpy](https://numpy.org/): numerical computing library
+  - [pandas](https://pandas.pydata.org/): xlsx/csv manipulation library
+  - [matplotlib](https://matplotlib.org/): data visualization library
+- [rust](https://www.rust-lang.org/): faster than python.
+- [bash](https://www.gnu.org/software/bash/): scripting language
+- [just](https://github.com/casey/just): very good build tool
 - [ohmygit](https://ohmygit.org/) - interactive Git learning game
-- postman: http requests
-  - bruno is probably better, TODO use it
+- [postman](https://www.postman.com/): http requests
+  - [bruno](https://www.usebruno.com/) is probably better, TODO use it
   - in general, *ditch postman*. they're starting to put their client behind a paywall/login wall. move to an OSS tool that's free. it's not rocket science to make something that ingests OpenAPI Spec and just runs `curl`...so why force corporations or individuals to pay for the simple feature of saving a Postman collection?
 
 ### Text Editing
 
-- windsurf: bloated, use zed
-- cursor: bloated, use zed
-- vscode - bloated, only use if you absolutely need to. It's slow and used to be my favorite, but...
+- [windsurf](https://windsurf.com/): bloated, use zed
+- [cursor](https://www.cursor.com/): bloated, use zed
+- [vscode](https://code.visualstudio.com/) - bloated, only use if you absolutely need to. It's slow and used to be my favorite, but...
 
 - [zed](https://zed.dev/) - Fast and simple text editor. Rust backend. (`zeditor` is the CLI command)
-- nano - command line editor
+- [nano](https://www.nano-editor.org/) - command line editor
 
 ## CICD
 
-- jenkins
+- [jenkins](https://www.jenkins.io/)
   - AVOID. legacy and lots of design bugs
   - pipeline is useful but...its 2025. try to use github cicd or similar. AVOID jenkins.
 - get good at bash
@@ -109,14 +109,14 @@ My current AI stack is here. I used to use ollama but it has issues with ROCm dr
 
 Current working stack:
 - [lm studio](https://lmstudio.ai/): easy GUI for running local LLMs
-- llama.cpp: text generation backend (works with ROCm)
-- koboldcpp: easier to setup than llama.cpp.
+- [llama.cpp](https://github.com/ggerganov/llama.cpp): text generation backend (works with ROCm)
+- [koboldcpp](https://github.com/LostRuins/koboldcpp): easier to setup than llama.cpp.
 - [exo](https://github.com/exo-explore/exo) - run your own AI cluster across multiple devices (phones, laptops, etc.), no specialized hardware needed
-- openwebui: frontend for LLM interaction (TBD)
-- comfyui: image/video/audio generation (TBD)
+- [openwebui](https://openwebui.com/): frontend for LLM interaction (TBD)
+- [comfyui](https://github.com/comfyanonymous/ComfyUI): image/video/audio generation (TBD)
   - [ComfyUI-Zluda](https://github.com/patientx/ComfyUI-Zluda) - ComfyUI with ZLUDA for AMD GPUs on Windows
-- stablediffusion: image generation (TBD)
-- [goose: Claude CLI clone, seems very formidable.](//github.com/block/goose)
+- [stablediffusion](https://github.com/AUTOMATIC1111/stable-diffusion-webui): image generation (TBD)
+- [goose](https://github.com/block/goose): Claude CLI clone, seems very formidable.
 - [canirun.ai](https://www.canirun.ai/) - LLM right-sizing tool: check if your hardware can run a given LLM
 - [llmfit: Hardware-aware LLM model finder. Detects your RAM/CPU/GPU and recommends models that will actually run well on your hardware. Supports multi-GPU, MoE architectures, and integrates with Ollama/llama.cpp/MLX.](https://github.com/AlexsJones/llmfit)
   - [stable-diffusion-webui-amdgpu](https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu) - SD WebUI fork with AMD GPU support
@@ -152,10 +152,10 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 
 ## Infra
 
-- docker: containerization platform
-- kubernetes: container orchestration
-- grafana: monitoring visualization
-- prometheus: monitoring metrics/backend
+- [docker](https://www.docker.com/): containerization platform
+- [kubernetes](https://kubernetes.io/): container orchestration
+- [grafana](https://grafana.com/): monitoring visualization
+- [prometheus](https://prometheus.io/): monitoring metrics/backend
 - [copyparty](https://github.com/9001/copyparty) - portable file server with upload, search, media playback, and more
 
 ## Backup
@@ -166,10 +166,10 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 
 ## Media
 
-- yt-dlp: youtube downloader, before youtube killed it with session cookie enforcement.
-- transmission: torrent client
-- jellyfin: media server
-- romm: emulation ROM/retro game database
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp): youtube downloader, before youtube killed it with session cookie enforcement.
+- [transmission](https://transmissionbt.com/): torrent client
+- [jellyfin](https://jellyfin.org/): media server
+- [romm](https://github.com/rommapp/romm): emulation ROM/retro game database
 - [seanime: anime media server](https://seanime.rahim.app/)
   - extensions: TODO
 - [gallery-dl: image downloader](https://github.com/mikf/gallery-dl)
@@ -182,10 +182,12 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 
 ## Other
 
-- handy.computer - offline text transcription
-- sshx.io - share terminal (dangerous)
-- <https://pomofocus.io/> - pomodoro timer
+- [opengridworks power plants](https://opengridworks.com/power-plants) - power plant data
+- [handy.computer](https://handy.computer) - offline text transcription
+- [sshx.io](https://sshx.io) - share terminal (dangerous)
+- [pomofocus](https://pomofocus.io/) - pomodoro timer
 - [obsidian](https://obsidian.md/) - markdown note-taking / personal knowledge base
+- [laboriacuboniks](https://laboriacuboniks.net/) - xenofeminist collective
 
 ## Hacking links
 
@@ -199,6 +201,8 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 - exploit.in - Russian-language cybercrime/exploit forum
 - raidforums - data leak forum (seized by law enforcement)
 - leaks - data leak aggregator
+
+### References & resources
 
 - [gandalf](https://gandalf.lakera.ai/baseline) - AI prompt injection challenge/game
 - [gtfobins](https://gtfobins.org/) - Unix binaries that can be exploited for privilege escalation/bypasses
@@ -221,21 +225,21 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 
 #### Used
 
-- kali linux - penetration testing distro by Offensive Security
-- parrotos - security/privacy-focused Linux distro
+- [kali linux](https://www.kali.org/) - penetration testing distro by Offensive Security
+- [parrotos](https://www.parrotsec.org/) - security/privacy-focused Linux distro
 
-- dirb - web content scanner / directory brute-forcer
-- ffuf - Fuzz Faster U Fool, fast web fuzzer for directories/params/vhosts
-- gobuster - directory/DNS/vhost brute-forcer
-- nmap - network mapper and port scanner
-- rustscan - fast Rust-based port scanner, feeds into nmap
+- [dirb](https://github.com/v0re/dirb) - web content scanner / directory brute-forcer
+- [ffuf](https://github.com/ffuf/ffuf) - Fuzz Faster U Fool, fast web fuzzer for directories/params/vhosts
+- [gobuster](https://github.com/OJ/gobuster) - directory/DNS/vhost brute-forcer
+- [nmap](https://nmap.org/) - network mapper and port scanner
+- [rustscan](https://github.com/RustScan/RustScan) - fast Rust-based port scanner, feeds into nmap
 - ftp - file transfer protocol CLI client
 - some python idk lol
 - `/etc/hosts` - local DNS override file, useful for redirecting domains or lab environments
-- searchsploit - offline CLI search for exploit-db
-- msfconsole - Metasploit Framework interactive console
-- GodPotato.exe - Windows privilege escalation via impersonation (SeImpersonatePrivilege / Potato family)
-- msfvenom - Metasploit payload and shellcode generator
+- [searchsploit](https://www.exploit-db.com/searchsploit) - offline CLI search for exploit-db
+- [msfconsole](https://www.metasploit.com/) - Metasploit Framework interactive console
+- [GodPotato](https://github.com/BeichenDream/GodPotato) - Windows privilege escalation via impersonation (SeImpersonatePrivilege / Potato family)
+- [msfvenom](https://docs.metasploit.com/docs/using-metasploit/basics/how-to-use-msfvenom.html) - Metasploit payload and shellcode generator
 - [evilginx2](https://github.com/meltingscales/evilginx2/tree/restored) - adversary-in-the-middle phishing framework, bypasses 2FA by proxying real login pages and capturing session cookies
 
 #### To investigate
