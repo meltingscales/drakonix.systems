@@ -245,6 +245,7 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 #### To investigate
 - [BlueHammer](https://github.com/Nightmare-Eclipse/BlueHammer/) - tool to investigate
   - [meltingscales/BlueHammer](https://github.com/meltingscales/BlueHammer) - my fork
+- [RedSun](https://github.com/Nightmare-Eclipse/RedSun) - windows LPE
 - [deepnet DN Key Pro](https://deepnet.store/products/dn_key-pro-experimental) - experimental hardware key
 - Proxgrind - NFC/RFID tool
 - [proxmark / icopy-x](https://proxmark.com/) - RFID/NFC research hardware
