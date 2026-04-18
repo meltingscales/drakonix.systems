@@ -7,6 +7,10 @@ date: 2025-01-01
 
 A list of tools I use.
 
+## Unformatted
+
+- <https://github.com/affaan-m/everything-claude-code>
+
 ## Fun/media
 
 I am aggressively de-googling my life in 2025/2026.
