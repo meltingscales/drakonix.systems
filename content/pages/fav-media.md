@@ -55,6 +55,8 @@ Another TODO would be to pull data from my Bandcamp and just dump it here.
   - <https://www.curseforge.com/members/parcel31u/projects>
 - [Biohazard Project Genesis](https://www.curseforge.com/minecraft/modpacks/biohazard-project-genesis)
 - [MC Eternal 2](https://www.curseforge.com/minecraft/modpacks/mc-eternal-2)
+- [FTB StoneBlock 4](https://www.feed-the-beast.com/modpacks/130-ftb-stoneblock-4)
+  - [Resource Automation in Stoneblock 4 is UNIQUE!](https://www.youtube.com/watch?v=mnpHhIp7hd4)
 
 ### PC
 
