@@ -10,6 +10,7 @@ A list of tools I use.
 ## Unformatted
 
 - <https://github.com/affaan-m/everything-claude-code>
+- <https://github.com/peass-ng/PEASS-ng/tree/master>
 
 ## Fun/media
 
