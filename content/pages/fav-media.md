@@ -55,11 +55,15 @@ Another TODO would be to pull data from my Bandcamp and just dump it here.
 - Riviera: The Promised Land
 - Final Fantasy VI Advance
 - Megaman Zero series
+- Kingdom Hearts: Chain of Memories
 
 ### NDS
 
 - Wario: Master of Disguise
 - WarioWare - Touched!
+- Kirby: Squeak Squad
+- Kirby: Canvas Curse
+- Solatorobo: Red the Hunter
 - Rune Factory series
 - Dragon Quest Heroes: Rocket Slime
 - Cooking Mama
