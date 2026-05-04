@@ -83,6 +83,10 @@ Another TODO would be to pull data from my Bandcamp and just dump it here.
 
 - Rune Factory series
 
+### PS2
+
+- .hack//INFECTION
+
 ### PSP
 
 - Ratchet and Clank
