@@ -11,6 +11,7 @@ A list of tools I use.
 
 - <https://github.com/affaan-m/everything-claude-code>
 - <https://github.com/peass-ng/PEASS-ng/tree/master>
+- <https://github.com/0bfxgh0st/MMG-LO/>
 
 ## Fun/media
 
