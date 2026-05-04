@@ -38,6 +38,7 @@ Another TODO would be to pull data from my Bandcamp and just dump it here.
 
 ### GBA
 
+- Sword of Mana
 - Wario Ware Inc.
 - Wario Land 4
 - Wario Ware Twisted
@@ -59,6 +60,8 @@ Another TODO would be to pull data from my Bandcamp and just dump it here.
 
 ### NDS
 
+- Magical Starsign
+- Children of Mana
 - Wario: Master of Disguise
 - WarioWare - Touched!
 - Kirby: Squeak Squad
