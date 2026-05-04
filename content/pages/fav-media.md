@@ -11,6 +11,14 @@ Another TODO would be to pull data from my Bandcamp and just dump it here.
 
 ## Games
 
+## Hardware/Software stack
+
+- `romm`: [Retro game library software running on docker-compose on some linux box.](https://romm.app/)
+
+- [Ayn Thor](https://www.ayntec.com/products/ayn-thor)
+  - DS clone running Android.
+  - tbd: What software?
+
 ### SNES
 
 - Super Metroid
@@ -30,6 +38,9 @@ Another TODO would be to pull data from my Bandcamp and just dump it here.
 
 ### GBA
 
+- Wario Ware Inc.
+- Wario Land 4
+- Wario Ware Twisted
 - Metroid Fusion
 - Metroid Zero Mission
 - Summon Night Swordcraft Story
@@ -47,6 +58,8 @@ Another TODO would be to pull data from my Bandcamp and just dump it here.
 
 ### NDS
 
+- Wario: Master of Disguise
+- WarioWare - Touched!
 - Rune Factory series
 - Dragon Quest Heroes: Rocket Slime
 - Cooking Mama
