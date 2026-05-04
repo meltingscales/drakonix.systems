@@ -14,6 +14,19 @@ Another TODO would be to pull data from my Bandcamp and just dump it here.
 ### SNES
 
 - Super Metroid
+  - ROMHACK: Super Metroid Ascent
+- Castlevania IV
+- Contra III: The Alien Wars
+- Chrono Trigger
+- Final Fantasy VI
+- Tactics Ogre: Let Us Cling Together
+- Ogre Battle: March of the Black Queen
+- Earthbound
+- Terranigma
+  - <https://fantasyanime.com/legacy/terran_downloads.htm>
+  - Soul Blazer
+  - Illusion of Gaia
+- Demon's Crest
 
 ### GBA
 
@@ -23,19 +36,32 @@ Another TODO would be to pull data from my Bandcamp and just dump it here.
 - Summon Night Swordcraft Story 2
 - Summon Night Swordcraft Story 3 (English Translation Romhack)
 - Castlevania Aria of Sorrow
+  - ROMHACK: Aria of Sorrow Alter
 - Castlevania Syphony of the Night
 - Super Mario RPG
+- Golden Sun
+- Tactics Ogre: The Knight of Lodis
+- Riviera: The Promised Land
+- Final Fantasy VI Advance
+- Megaman Zero series
 
 ### NDS
 
+- Rune Factory series
+- Dragon Quest Heroes: Rocket Slime
 - Cooking Mama
-- Castlevania Portrait of Ruin
-- Castlevania Dawn of Sorrow
-- Castlevania Order of Ecclesia
+- Castlevania: Portrait of Ruin
+- Castlevania: Dawn of Sorrow
+- Castlevania: Order of Ecclesia
+- Shin Megami Tensei: Strange Journey
+- Radiant Historia
+- The World Ends With You
+- Etrian Odyssey series
+- 9 Hours 9 Persons 9 Doors
 
 ### 3DS
 
-...
+- Rune Factory series
 
 ### PSP
 
