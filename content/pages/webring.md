@@ -31,38 +31,38 @@ Some are personal sites, some are just content aggregators/social media, all are
 Here's a list without 88x31 buttons:
 
 <ul>
-https://dnsense.pub/
-meshtastic
-https://forge.hackers.town/hackers.town
-https://www.ud2.rip/
-https://lina.sh/
-<li><a href="//rose.systems">rose.systems</a></li>
-<li><a href="//tinytoolk.it">tinytoolk.it</a></li>
-<li><a href="//justine.lol">justine.lol</a></li>
-<li><a href="//nullpt.rs">nullpt.rs</a></li>
-<li><a href="//mechanize.work">mechanize.work</a></li>
-<li><a href="//herman.bearblog.dev">herman.bearblog.dev</a></li>
-<li><a href="//ptrpa.ws">ptrpa.ws</a></li>
-<li><a href="//kognise.dev">kognise.dev</a></li>
-<li><a href="//pthorpe92.dev/intro/my-story/">A recent biography from an incarcerated programmer</a></li>
-<li><a href="//crimethinc.com/2004/01/01/despair">(CONTENT WARNING) a 2004 essay on suicide.</a></li>
-<li><a href="//cryptcoffee.github.io/research/luks.html">what is LUKS?</a></li>
-<li><a href="//how-did-i-get-here.net/">how-did-i-get-here.net</a></li>
-<li><a href="//ratatui.rs/showcase/apps/">ratatui TUI showcase</a></li>
-<li><a href="//deepfates.com">deepfates.com</a></li>
-<li><a href="//upward.earth">upward.earth</a></li>
-<li><a href="//cpu.land">cpu.land</a></li>
-<li><a href="//yeen.town">yeen.town</a></li>
-<li><a href="//lunarpunk.town">lunarpunk.town</a></li>
-<li><a href="//queer.party">queer.party</a></li>
-<li><a href="https://math.ucr.edu/home/baez/roots/">fractal roots</a></li>
-<li><a href="https://math.ucr.edu/home/baez/">baez - cool math and chaos</a></li>
-<li><a href="https://fmhy.net/">free media heck yeah</a></li>
-<li><a href="https://dontasktoask.com/">don't ask to ask - how to actually ask tech questions effectively</a></li>
-<li><a href="https://jyn.dev/i-m-just-having-fun/">fun :)</a></li>
-<li><a href="https://neilthanedar.com/youre-not-burnt-out-youre-existentially-starving/">burnout or nihilism?</a></li>
-<li><a href="//vmfunc.re/blog/persona">vmfunc.re</a></li>
-<li><a href="https://lynndotpy.dev/posts/stoat-chat/">https://lynndotpy.dev/posts/stoat-chat/</a></li>
+    <li><a href="//dnsense.pub/">dnsense.pub</a></li>
+    <li><a href="">meshtastic</a></li>
+    <li><a href="https://forge.hackers.town/hackers.town">forge.hackers.town/hackers.town</a></li>
+    <li><a href="https://www.ud2.rip/">www.ud2.rip</a></li>
+    <li><a href="https://lina.sh/">lina.sh</a></li>
+    <li><a href="//rose.systems">rose.systems</a></li>
+    <li><a href="//tinytoolk.it">tinytoolk.it</a></li>
+    <li><a href="//justine.lol">justine.lol</a></li>
+    <li><a href="//nullpt.rs">nullpt.rs</a></li>
+    <li><a href="//mechanize.work">mechanize.work</a></li>
+    <li><a href="//herman.bearblog.dev">herman.bearblog.dev</a></li>
+    <li><a href="//ptrpa.ws">ptrpa.ws</a></li>
+    <li><a href="//kognise.dev">kognise.dev</a></li>
+    <li><a href="//pthorpe92.dev/intro/my-story/">A recent biography from an incarcerated programmer</a></li>
+    <li><a href="//crimethinc.com/2004/01/01/despair">(CONTENT WARNING) a 2004 essay on suicide.</a></li>
+    <li><a href="//cryptcoffee.github.io/research/luks.html">what is LUKS?</a></li>
+    <li><a href="//how-did-i-get-here.net/">how-did-i-get-here.net</a></li>
+    <li><a href="//ratatui.rs/showcase/apps/">ratatui TUI showcase</a></li>
+    <li><a href="//deepfates.com">deepfates.com</a></li>
+    <li><a href="//upward.earth">upward.earth</a></li>
+    <li><a href="//cpu.land">cpu.land</a></li>
+    <li><a href="//yeen.town">yeen.town</a></li>
+    <li><a href="//lunarpunk.town">lunarpunk.town</a></li>
+    <li><a href="//queer.party">queer.party</a></li>
+    <li><a href="https://math.ucr.edu/home/baez/roots/">fractal roots</a></li>
+    <li><a href="https://math.ucr.edu/home/baez/">baez - cool math and chaos</a></li>
+    <li><a href="https://fmhy.net/">free media heck yeah</a></li>
+    <li><a href="https://dontasktoask.com/">don't ask to ask - how to actually ask tech questions effectively</a></li>
+    <li><a href="https://jyn.dev/i-m-just-having-fun/">fun :)</a></li>
+    <li><a href="https://neilthanedar.com/youre-not-burnt-out-youre-existentially-starving/">burnout or nihilism?</a></li>
+    <li><a href="//vmfunc.re/blog/persona">vmfunc.re</a></li>
+    <li><a href="https://lynndotpy.dev/posts/stoat-chat/">https://lynndotpy.dev/posts/stoat-chat/</a></li>
 </ul>
 
 Here's a list of non-personal websites that are just good alternatives to
