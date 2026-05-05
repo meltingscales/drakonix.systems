@@ -74,6 +74,7 @@ Use at your own legal risk.
 - Children of Mana
 - Wario: Master of Disguise
 - WarioWare - Touched!
+- Mario & Luigi: Bowser's Inside Story
 - Kirby: Squeak Squad
 - Kirby: Canvas Curse
 - Solatorobo: Red the Hunter
