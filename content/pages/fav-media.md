@@ -7,18 +7,27 @@ date: 2026-04-09
 
 A list of my fave games, minecraft modpacks, music, movies, and books.
 
-Another TODO would be to pull data from my Bandcamp and just dump it here.
-
 ## Games
+
+## ROM sites
+
+Use at your own legal risk.
+
+- <https://romsfun.com>
+- <https://vimm.net/vault>
 
 ## Hardware/Software stack
 
 - `romm`: [Retro game library software running on docker-compose on some linux box.](https://romm.app/)
 
-- [Ayn Thor](https://www.ayntec.com/products/ayn-thor)
-  - DS clone running Android.
+- [AYN Thor](https://www.ayntec.com/products/ayn-thor)
+  - AYN Thor is a DS clone running Android.
   - [DS: MelonDS (use nightly)](https://www.youtube.com/watch?v=zQUr89ccVEI)
-  - GBA/SNES/etc: [RetroArch](https://www.adinwalls.com/2025/10/29/ayn-thor-simple-setup-guide/).
+  - [3DS: Citra](https://github.com/weihuoya/citra/releases)
+    - [Associated guide](https://retrogamecorps.com/2025/10/27/dual-screen-android-handheld-guide/)
+    - Citra can run `.3ds` and `.cia` files.
+    - [You can use this tool to decrypt 3DS rom files.](https://gbatemp.net/threads/batch-cia-3ds-decryptor-a-simple-batch-file-to-decrypt-cia-3ds.512385/)
+  - GBA/SNES/etc: [use RetroArch.](https://www.adinwalls.com/2025/10/29/ayn-thor-simple-setup-guide/).
 
 ### SNES
 
@@ -82,7 +91,13 @@ Another TODO would be to pull data from my Bandcamp and just dump it here.
 
 ### 3DS
 
-- Rune Factory series
+- Rune Factory 4
+- Bravely Default
+- Etrian Odyssey IV - Legends of the Titan
+- Metroid: Samus Returns
+- Castlevania: Mirror of Fate
+- Shantae and the Pirate's Curse
+- Azure Striker Gunvolt
 
 ### PS2
 
