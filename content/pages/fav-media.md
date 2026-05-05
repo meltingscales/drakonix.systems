@@ -18,6 +18,7 @@ Another TODO would be to pull data from my Bandcamp and just dump it here.
 - [Ayn Thor](https://www.ayntec.com/products/ayn-thor)
   - DS clone running Android.
   - [DS: MelonDS (use nightly)](https://www.youtube.com/watch?v=zQUr89ccVEI)
+  - GBA/SNES/etc: [RetroArch](https://www.adinwalls.com/2025/10/29/ayn-thor-simple-setup-guide/).
 
 ### SNES
 
