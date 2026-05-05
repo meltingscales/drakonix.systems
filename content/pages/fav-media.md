@@ -98,6 +98,7 @@ Use at your own legal risk.
 - Castlevania: Mirror of Fate
 - Shantae and the Pirate's Curse
 - Azure Striker Gunvolt
+- Rhythm Heaven Megamix
 
 ### PS2
 
