@@ -104,6 +104,7 @@ Use at your own legal risk.
 ### PS2
 
 - .hack//INFECTION
+- Killer7
 
 ### PSP
 
