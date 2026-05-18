@@ -323,6 +323,12 @@ systemd-restart:
 # Nginx Config Management
 # =======================
 
+# Renew TLS certs if expiring soon (or force-renew if already expired).
+# Wildcard certs require a manual DNS TXT challenge -- you'll be prompted.
+# Run with sudo.
+cert-renew:
+    sudo bash nginx/setup-nginx.sh --renew
+
 # Install/update nginx config and reload nginx (requires sudo)
 nginx-install:
     sudo cp nginx/drakonix.systems.conf /etc/nginx/conf.d/drakonix.systems.conf

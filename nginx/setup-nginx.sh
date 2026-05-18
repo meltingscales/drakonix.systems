@@ -7,6 +7,34 @@ NGINX_CONF="${DOMAIN}.conf"
 # Set your email for Let's Encrypt notifications
 CERTBOT_EMAIL="henryfbp@gmail.com"
 
+MODE="${1:-}"
+
+# --- Cert renewal mode ---
+if [[ "${MODE}" == "--renew" ]]; then
+    echo "=== drakonix.systems TLS cert renewal ==="
+    if [[ $EUID -ne 0 ]]; then
+        echo "Error: This script must be run as root (use sudo)."
+        exit 1
+    fi
+    echo ""
+    echo "Running certbot renew..."
+    echo "NOTE: Wildcard certs require a manual DNS TXT challenge."
+    echo "      Add/update the _acme-challenge.${DOMAIN} TXT record when prompted."
+    echo ""
+    # --force-renewal bypasses the 30-day window; remove it for routine cron use.
+    certbot renew --cert-name "${DOMAIN}" || {
+        echo ""
+        echo "ERROR: certbot renew failed. To force renewal regardless of expiry:"
+        echo "  sudo certbot renew --cert-name ${DOMAIN} --force-renewal"
+        exit 1
+    }
+    echo ""
+    echo "Reloading nginx..."
+    systemctl reload nginx
+    echo "Done. Certs renewed and nginx reloaded."
+    exit 0
+fi
+
 echo "=== drakonix.systems infrastructure setup (Debian 12) ==="
 
 # --- Preflight checks ---
