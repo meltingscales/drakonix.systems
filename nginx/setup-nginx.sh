@@ -17,15 +17,17 @@ if [[ "${MODE}" == "--renew" ]]; then
         exit 1
     fi
     echo ""
-    echo "Running certbot renew..."
-    echo "NOTE: Wildcard certs require a manual DNS TXT challenge."
-    echo "      Add/update the _acme-challenge.${DOMAIN} TXT record when prompted."
+    echo "Renewing wildcard cert via manual DNS challenge..."
+    echo "NOTE: You will be prompted to add/update a DNS TXT record:"
+    echo "      _acme-challenge.${DOMAIN}"
     echo ""
-    # --force-renewal bypasses the 30-day window; remove it for routine cron use.
-    certbot renew --cert-name "${DOMAIN}" || {
+    # certbot renew doesn't work with --manual (no auth hook); re-issue instead.
+    certbot certonly --manual --preferred-challenges dns \
+        -d "${DOMAIN}" -d "*.${DOMAIN}" \
+        --email "${CERTBOT_EMAIL}" --agree-tos || {
         echo ""
-        echo "ERROR: certbot renew failed. To force renewal regardless of expiry:"
-        echo "  sudo certbot renew --cert-name ${DOMAIN} --force-renewal"
+        echo "ERROR: certbot failed. Check the output above and retry manually:"
+        echo "  sudo certbot certonly --manual --preferred-challenges dns -d ${DOMAIN} -d *.${DOMAIN}"
         exit 1
     }
     echo ""
