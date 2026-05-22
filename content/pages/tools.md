@@ -201,6 +201,7 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 
 - [tor](https://www.torproject.org/) - onion routing anonymity network
 - [i2p](https://geti2p.net/) - garlic routing anonymity network
+- [freenet](https://freenet.org/) - decentralized, censorship-resistant peer-to-peer network
 - [ahmia](https://ahmia.fi/) - clearnet Tor search engine
 - torch - Tor search engine (`.onion`)
 - dread - Reddit-like forum on Tor (`.onion`)
