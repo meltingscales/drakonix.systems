@@ -250,6 +250,7 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 - [evilginx2](https://github.com/meltingscales/evilginx2/tree/restored) - adversary-in-the-middle phishing framework, bypasses 2FA by proxying real login pages and capturing session cookies
 
 #### To investigate
+- [YellowKey](https://github.com/meltingscales/YellowKey) - BitLocker bypass vulnerability demo for Windows 11 / Server 2022/2025 via crafted files on external storage or EFI partitions
 - [BlueHammer](https://github.com/Nightmare-Eclipse/BlueHammer/) - tool to investigate
   - [meltingscales/BlueHammer](https://github.com/meltingscales/BlueHammer) - my fork
 - [RedSun](https://github.com/Nightmare-Eclipse/RedSun) - windows LPE
