@@ -129,6 +129,11 @@ Use at your own legal risk.
 
 ### PC
 
+### Doom WADs
+
+- [Time Tripper](https://heckscaper.com/tt/#download)
+- [Doom the Golden Souls](https://batandy.itch.io/goldensouls)
+
 ## Music
 
 <https://bandcamp.com/meltingscales>
