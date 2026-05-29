@@ -18,6 +18,8 @@ Use at your own legal risk.
 
 ## Hardware/Software stack
 
+- [Steam Deck Emulation Starter Guide](https://retrogamecorps.com/2022/10/16/steam-deck-emulation-starter-guide/)
+
 - `romm`: [Retro game library software running on docker-compose on some linux box.](https://romm.app/)
 
 - [AYN Thor](https://www.ayntec.com/products/ayn-thor)
