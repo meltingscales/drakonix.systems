@@ -29,10 +29,78 @@ impl DogboxLiteManager {
     pub fn new() -> std::io::Result<Self> {
         let upload_dir = PathBuf::from("temp_dogbox_lite");
         std::fs::create_dir_all(&upload_dir)?;
-        Ok(DogboxLiteManager {
-            uploads: Arc::new(RwLock::new(HashMap::new())),
-            upload_dir,
-        })
+
+        let uploads: Arc<RwLock<HashMap<Uuid, UploadRecord>>> =
+            Arc::new(RwLock::new(HashMap::new()));
+
+        // On startup, recover files left over from a previous run.
+        // Files whose name is a valid UUID are ours; use mtime as a proxy
+        // for upload time to decide how much TTL remains.
+        let now = std::time::SystemTime::now();
+        for entry in std::fs::read_dir(&upload_dir)?.flatten() {
+            let path = entry.path();
+            if !path.is_file() {
+                continue;
+            }
+            let Some(stem) = path.file_name().and_then(|n| n.to_str()) else {
+                continue;
+            };
+            let Ok(id) = stem.parse::<Uuid>() else {
+                continue;
+            };
+
+            let age_secs = entry
+                .metadata()
+                .ok()
+                .and_then(|m| m.modified().ok())
+                .and_then(|mtime| now.duration_since(mtime).ok())
+                .map(|d| d.as_secs())
+                .unwrap_or(TTL_SECS); // if we can't read mtime, expire immediately
+
+            if age_secs >= TTL_SECS {
+                // Already expired — delete now.
+                let _ = std::fs::remove_file(&path);
+                tracing::info!("dogbox-lite: removed expired orphan {}", id);
+            } else {
+                // Still within TTL — re-register and schedule remaining cleanup.
+                let remaining = TTL_SECS - age_secs;
+                let uploads_clone = uploads.clone();
+                let path_clone = path.clone();
+
+                // We don't have the original filename/content-type on disk, so
+                // use placeholder values; the file is still downloadable by GUID.
+                {
+                    let mut map = uploads.blocking_write();
+                    map.insert(
+                        id,
+                        UploadRecord {
+                            file_path: path.clone(),
+                            original_filename: stem.to_string(),
+                            content_type: "application/octet-stream".to_string(),
+                        },
+                    );
+                }
+
+                tokio::spawn(async move {
+                    tokio::time::sleep(tokio::time::Duration::from_secs(remaining)).await;
+                    if let Some(record) = uploads_clone.write().await.remove(&id) {
+                        let _ = fs::remove_file(record.file_path).await;
+                        tracing::info!("dogbox-lite: cleaned up recovered file {}", id);
+                    } else {
+                        // Already removed (e.g. downloaded and deleted), clean path directly.
+                        let _ = fs::remove_file(&path_clone).await;
+                    }
+                });
+
+                tracing::info!(
+                    "dogbox-lite: recovered orphan {} ({} s remaining)",
+                    id,
+                    remaining
+                );
+            }
+        }
+
+        Ok(DogboxLiteManager { uploads, upload_dir })
     }
 
     pub async fn store_file(
