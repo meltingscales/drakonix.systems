@@ -1125,3 +1125,103 @@ pub async fn catch_all_honeypot(
 
     StatusCode::NOT_FOUND
 }
+
+// ---------------------------------------------------------------------------
+// Dogbox Lite — temporary file sharing (5 GB max, 1 hour TTL)
+// ---------------------------------------------------------------------------
+
+/// Dogbox Lite page handler
+pub async fn dogbox_lite_page(
+    State(state): State<Arc<AppState>>,
+) -> Result<Html<String>, AppError> {
+    let mut context = Context::new();
+    add_honeypot_urls(&mut context);
+    let html = state
+        .tera
+        .render("dogbox_lite.html", &context)
+        .map_err(|e| AppError::TemplateError(e.to_string()))?;
+    Ok(Html(html))
+}
+
+/// Upload a file; returns a JSON object with the GUID
+pub async fn dogbox_lite_upload(
+    State(state): State<Arc<AppState>>,
+    mut multipart: Multipart,
+) -> Result<axum::Json<serde_json::Value>, AppError> {
+    let mut file_data: Option<Vec<u8>> = None;
+    let mut original_filename = "upload".to_string();
+    let mut content_type = "application/octet-stream".to_string();
+
+    while let Some(field) = multipart
+        .next_field()
+        .await
+        .map_err(|e| AppError::InternalError(anyhow::anyhow!("Multipart error: {}", e)))?
+    {
+        if field.name() == Some("file") {
+            if let Some(fname) = field.file_name() {
+                original_filename = fname.to_string();
+            }
+            if let Some(ct) = field.content_type() {
+                content_type = ct.to_string();
+            }
+            let data = field
+                .bytes()
+                .await
+                .map_err(|e| AppError::InternalError(anyhow::anyhow!("Read error: {}", e)))?;
+            file_data = Some(data.to_vec());
+        }
+    }
+
+    let data = file_data
+        .ok_or_else(|| AppError::InternalError(anyhow::anyhow!("No file provided")))?;
+
+    let guid = state
+        .dogbox_lite_manager
+        .store_file(data, original_filename, content_type)
+        .await
+        .map_err(|e| AppError::InternalError(anyhow::anyhow!("Storage error: {}", e)))?;
+
+    Ok(axum::Json(serde_json::json!({ "guid": guid.to_string() })))
+}
+
+/// Download a file by GUID
+pub async fn dogbox_lite_download(
+    State(state): State<Arc<AppState>>,
+    Path(guid): Path<String>,
+) -> Result<Response, AppError> {
+    let id = guid
+        .parse::<uuid::Uuid>()
+        .map_err(|_| AppError::NotFound)?;
+
+    let info = state
+        .dogbox_lite_manager
+        .get_file(&id)
+        .await
+        .ok_or(AppError::NotFound)?;
+
+    let file = File::open(&info.file_path)
+        .await
+        .map_err(|_| AppError::NotFound)?;
+
+    let stream = ReaderStream::new(file);
+    let body = Body::from_stream(stream);
+
+    let disposition = format!(
+        "attachment; filename=\"{}\"",
+        info.original_filename.replace('"', "")
+    );
+
+    let mut headers = HeaderMap::new();
+    headers.insert(
+        axum::http::header::CONTENT_TYPE,
+        info.content_type.parse().unwrap_or_else(|_| {
+            "application/octet-stream".parse().unwrap()
+        }),
+    );
+    headers.insert(
+        axum::http::header::CONTENT_DISPOSITION,
+        disposition.parse().unwrap(),
+    );
+
+    Ok((headers, body).into_response())
+}

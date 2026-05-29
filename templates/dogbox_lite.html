@@ -1,0 +1,302 @@
+{% extends "base.html" %} {% block content %}
+<div class="dogbox-container">
+    <h1>dogbox-lite</h1>
+    <p>Drop a file, get a link. Files up to 5&nbsp;GB. Gone after 1&nbsp;hour.</p>
+
+    <div class="upload-area" id="drop-zone">
+        <input type="file" id="file-input" />
+        <label for="file-input" id="drop-label">
+            <span id="drop-text">Choose a file or drag it here</span>
+        </label>
+    </div>
+
+    <div id="file-info" style="display:none">
+        <p><strong>File:</strong> <span id="fname"></span></p>
+        <p><strong>Size:</strong> <span id="fsize"></span></p>
+    </div>
+
+    <button id="upload-btn" disabled>Upload</button>
+
+    <div id="progress-wrap" style="display:none">
+        <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+        <p id="status-text">Uploading…</p>
+    </div>
+
+    <div id="result-wrap" style="display:none">
+        <p>Share this link (expires in 1 hour):</p>
+        <div class="link-row">
+            <input type="text" id="share-link" readonly />
+            <button id="copy-btn">Copy</button>
+        </div>
+        <a id="dl-link" class="dl-btn">Download</a>
+    </div>
+
+    <div id="error-wrap" style="display:none">
+        <p class="error-msg" id="error-text"></p>
+    </div>
+</div>
+
+<style>
+    .dogbox-container {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .upload-area {
+        margin: 2rem 0;
+    }
+
+    #file-input {
+        display: none;
+    }
+
+    #drop-label {
+        display: block;
+        padding: 3rem;
+        border: 2px dashed #888;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color 0.2s, background 0.2s;
+    }
+
+    #drop-label:hover,
+    #drop-label.over {
+        border-color: #4a9eff;
+        background: rgba(74, 158, 255, 0.06);
+    }
+
+    #drop-text {
+        font-size: 1.1rem;
+        color: #888;
+    }
+
+    #file-info {
+        margin: 1rem 0;
+    }
+
+    #file-info p {
+        margin: 0.4rem 0;
+    }
+
+    #upload-btn {
+        padding: 0.7rem 1.6rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 5px;
+        background: #4a9eff;
+        color: #fff;
+        cursor: pointer;
+    }
+
+    #upload-btn:disabled {
+        background: #666;
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    #upload-btn:hover:not(:disabled) {
+        background: #2277dd;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 24px;
+        background: #333;
+        border-radius: 12px;
+        overflow: hidden;
+        margin: 1rem 0 0.5rem;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #4a9eff, #2277dd);
+        width: 0%;
+        transition: width 0.2s ease;
+    }
+
+    #status-text {
+        color: #aaa;
+        font-size: 0.9rem;
+        text-align: center;
+    }
+
+    #result-wrap {
+        margin-top: 2rem;
+    }
+
+    .link-row {
+        display: flex;
+        gap: 0.5rem;
+        margin: 0.75rem 0 1rem;
+    }
+
+    #share-link {
+        flex: 1;
+        padding: 0.5rem 0.75rem;
+        font-family: monospace;
+        font-size: 0.95rem;
+        border: 1px solid #555;
+        border-radius: 4px;
+        background: #1a1a1a;
+        color: #eee;
+    }
+
+    #copy-btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        background: #555;
+        color: #eee;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+
+    #copy-btn:hover {
+        background: #777;
+    }
+
+    .dl-btn {
+        display: inline-block;
+        padding: 0.6rem 1.4rem;
+        background: #28a745;
+        color: #fff;
+        border-radius: 5px;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .dl-btn:hover {
+        background: #1e7e34;
+    }
+
+    .error-msg {
+        color: #dc3545;
+        background: #2a1015;
+        border: 1px solid #dc3545;
+        border-radius: 5px;
+        padding: 0.8rem 1rem;
+        font-weight: 600;
+    }
+</style>
+
+<script>
+    const dropZone   = document.getElementById("drop-zone");
+    const dropLabel  = document.getElementById("drop-label");
+    const dropText   = document.getElementById("drop-text");
+    const fileInput  = document.getElementById("file-input");
+    const fileInfo   = document.getElementById("file-info");
+    const fname      = document.getElementById("fname");
+    const fsize      = document.getElementById("fsize");
+    const uploadBtn  = document.getElementById("upload-btn");
+    const progWrap   = document.getElementById("progress-wrap");
+    const progFill   = document.getElementById("progress-fill");
+    const statusText = document.getElementById("status-text");
+    const resultWrap = document.getElementById("result-wrap");
+    const shareLink  = document.getElementById("share-link");
+    const copyBtn    = document.getElementById("copy-btn");
+    const dlLink     = document.getElementById("dl-link");
+    const errorWrap  = document.getElementById("error-wrap");
+    const errorText  = document.getElementById("error-text");
+
+    let selectedFile = null;
+
+    fileInput.addEventListener("change", e => pick(e.target.files[0]));
+
+    dropLabel.addEventListener("dragover", e => { e.preventDefault(); dropLabel.classList.add("over"); });
+    dropLabel.addEventListener("dragleave", () => dropLabel.classList.remove("over"));
+    dropLabel.addEventListener("drop", e => {
+        e.preventDefault();
+        dropLabel.classList.remove("over");
+        pick(e.dataTransfer.files[0]);
+    });
+
+    function pick(file) {
+        if (!file) return;
+        selectedFile = file;
+        fname.textContent = file.name;
+        fsize.textContent = fmt(file.size);
+        fileInfo.style.display = "block";
+        dropText.textContent = file.name + " — click to change";
+        uploadBtn.disabled = false;
+        resultWrap.style.display = "none";
+        errorWrap.style.display = "none";
+    }
+
+    function fmt(b) {
+        if (b < 1024) return b + " B";
+        if (b < 1024 ** 2) return (b / 1024).toFixed(1) + " KB";
+        if (b < 1024 ** 3) return (b / 1024 ** 2).toFixed(1) + " MB";
+        return (b / 1024 ** 3).toFixed(2) + " GB";
+    }
+
+    function showError(msg) {
+        errorText.textContent = msg;
+        errorWrap.style.display = "block";
+        progWrap.style.display = "none";
+        uploadBtn.disabled = false;
+    }
+
+    uploadBtn.addEventListener("click", async () => {
+        if (!selectedFile) return;
+
+        resultWrap.style.display = "none";
+        errorWrap.style.display = "none";
+        progWrap.style.display = "block";
+        progFill.style.width = "0%";
+        statusText.textContent = "Uploading…";
+        uploadBtn.disabled = true;
+
+        const fd = new FormData();
+        fd.append("file", selectedFile);
+
+        const xhr = new XMLHttpRequest();
+
+        xhr.upload.addEventListener("progress", e => {
+            if (e.lengthComputable) {
+                const pct = Math.round((e.loaded / e.total) * 100);
+                progFill.style.width = pct + "%";
+                statusText.textContent = `Uploading… ${pct}%`;
+            }
+        });
+
+        xhr.addEventListener("load", () => {
+            if (xhr.status === 200) {
+                progFill.style.width = "100%";
+                statusText.textContent = "Done!";
+                const resp = JSON.parse(xhr.responseText);
+                const url = `${location.origin}/api/dogbox-lite/download/${resp.guid}`;
+                shareLink.value = url;
+                dlLink.href = url;
+                dlLink.download = selectedFile.name;
+                setTimeout(() => {
+                    progWrap.style.display = "none";
+                    resultWrap.style.display = "block";
+                    uploadBtn.disabled = false;
+                }, 400);
+            } else {
+                try {
+                    const err = JSON.parse(xhr.responseText);
+                    showError(err.error || "Upload failed.");
+                } catch {
+                    showError("Upload failed (status " + xhr.status + ").");
+                }
+            }
+        });
+
+        xhr.addEventListener("error", () => showError("Network error."));
+
+        xhr.open("POST", "/api/dogbox-lite/upload");
+        xhr.send(fd);
+    });
+
+    copyBtn.addEventListener("click", () => {
+        navigator.clipboard.writeText(shareLink.value).then(() => {
+            copyBtn.textContent = "Copied!";
+            setTimeout(() => copyBtn.textContent = "Copy", 1500);
+        });
+    });
+</script>
+{% endblock %}

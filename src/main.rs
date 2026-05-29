@@ -1,5 +1,6 @@
 mod constants;
 mod converter;
+mod dogbox_lite;
 mod favicon;
 mod handlers;
 mod honeypot_db;
@@ -128,6 +129,9 @@ async fn main() -> anyhow::Result<()> {
     let twitch_emote_gen_manager = twitch_emote_gen::TwitchEmoteGenManager::new()
         .map_err(|e| anyhow::anyhow!("Failed to initialize twitch emote gen: {}", e))?;
 
+    let dogbox_lite_manager = dogbox_lite::DogboxLiteManager::new()
+        .map_err(|e| anyhow::anyhow!("Failed to initialize dogbox-lite: {}", e))?;
+
     let markov_generator = markov::MarkovGenerator::new();
 
     let db_path = std::env::var("HONEYPOT_DB_PATH").unwrap_or_else(|_| "honeypot.db".to_string());
@@ -152,6 +156,7 @@ async fn main() -> anyhow::Result<()> {
         converter_manager,
         twitch_icon_gen_manager,
         twitch_emote_gen_manager,
+        dogbox_lite_manager,
         markov_generator,
         honeypot_db,
         http_client,
@@ -226,6 +231,17 @@ async fn main() -> anyhow::Result<()> {
             "/api/twitch-emotes/download/:job_id",
             get(handlers::download_twitch_emote_pack),
         )
+        // Dogbox Lite - temp file sharing (5GB, 1 hour TTL)
+        .route("/services/dogbox-lite", get(handlers::dogbox_lite_page))
+        .route(
+            "/api/dogbox-lite/upload",
+            post(handlers::dogbox_lite_upload)
+                .layer(DefaultBodyLimit::max(5 * 1024 * 1024 * 1024)), // 5GB limit
+        )
+        .route(
+            "/api/dogbox-lite/download/:guid",
+            get(handlers::dogbox_lite_download),
+        )
         // Honeypot endpoint - slow markov babble to trap scrapers
         .route(
             "/api/markov-babble/:slug/gen",
@@ -277,6 +293,7 @@ pub struct AppState {
     pub converter_manager: converter::ConverterManager,
     pub twitch_icon_gen_manager: twitch_icon_gen::TwitchIconGenManager,
     pub twitch_emote_gen_manager: twitch_emote_gen::TwitchEmoteGenManager,
+    pub dogbox_lite_manager: dogbox_lite::DogboxLiteManager,
     pub markov_generator: markov::MarkovGenerator,
     pub honeypot_db: honeypot_db::HoneypotDb,
     pub http_client: reqwest::Client,
