@@ -30,12 +30,12 @@ impl DogboxLiteManager {
         let upload_dir = PathBuf::from("temp_dogbox_lite");
         std::fs::create_dir_all(&upload_dir)?;
 
-        let uploads: Arc<RwLock<HashMap<Uuid, UploadRecord>>> =
-            Arc::new(RwLock::new(HashMap::new()));
-
         // On startup, recover files left over from a previous run.
-        // Files whose name is a valid UUID are ours; use mtime as a proxy
-        // for upload time to decide how much TTL remains.
+        // Build the map synchronously before wrapping in Arc<RwLock<>> to
+        // avoid calling blocking_write() inside the tokio runtime.
+        let mut initial_map: HashMap<Uuid, UploadRecord> = HashMap::new();
+        let mut to_spawn: Vec<(Uuid, PathBuf, u64)> = Vec::new(); // (id, path, remaining_secs)
+
         let now = std::time::SystemTime::now();
         for entry in std::fs::read_dir(&upload_dir)?.flatten() {
             let path = entry.path();
@@ -55,49 +55,41 @@ impl DogboxLiteManager {
                 .and_then(|m| m.modified().ok())
                 .and_then(|mtime| now.duration_since(mtime).ok())
                 .map(|d| d.as_secs())
-                .unwrap_or(TTL_SECS); // if we can't read mtime, expire immediately
+                .unwrap_or(TTL_SECS);
 
             if age_secs >= TTL_SECS {
-                // Already expired — delete now.
                 let _ = std::fs::remove_file(&path);
                 tracing::info!("dogbox-lite: removed expired orphan {}", id);
             } else {
-                // Still within TTL — re-register and schedule remaining cleanup.
                 let remaining = TTL_SECS - age_secs;
-                let uploads_clone = uploads.clone();
-                let path_clone = path.clone();
-
-                // We don't have the original filename/content-type on disk, so
-                // use placeholder values; the file is still downloadable by GUID.
-                {
-                    let mut map = uploads.blocking_write();
-                    map.insert(
-                        id,
-                        UploadRecord {
-                            file_path: path.clone(),
-                            original_filename: stem.to_string(),
-                            content_type: "application/octet-stream".to_string(),
-                        },
-                    );
-                }
-
-                tokio::spawn(async move {
-                    tokio::time::sleep(tokio::time::Duration::from_secs(remaining)).await;
-                    if let Some(record) = uploads_clone.write().await.remove(&id) {
-                        let _ = fs::remove_file(record.file_path).await;
-                        tracing::info!("dogbox-lite: cleaned up recovered file {}", id);
-                    } else {
-                        // Already removed (e.g. downloaded and deleted), clean path directly.
-                        let _ = fs::remove_file(&path_clone).await;
-                    }
-                });
-
-                tracing::info!(
-                    "dogbox-lite: recovered orphan {} ({} s remaining)",
+                initial_map.insert(
                     id,
-                    remaining
+                    UploadRecord {
+                        file_path: path.clone(),
+                        original_filename: stem.to_string(),
+                        content_type: "application/octet-stream".to_string(),
+                    },
                 );
+                to_spawn.push((id, path, remaining));
+                tracing::info!("dogbox-lite: recovered orphan {} ({} s remaining)", id, remaining);
             }
+        }
+
+        let uploads: Arc<RwLock<HashMap<Uuid, UploadRecord>>> =
+            Arc::new(RwLock::new(initial_map));
+
+        // Now that we're inside the runtime we can safely spawn.
+        for (id, path, remaining) in to_spawn {
+            let uploads_clone = uploads.clone();
+            tokio::spawn(async move {
+                tokio::time::sleep(tokio::time::Duration::from_secs(remaining)).await;
+                if let Some(record) = uploads_clone.write().await.remove(&id) {
+                    let _ = fs::remove_file(record.file_path).await;
+                } else {
+                    let _ = fs::remove_file(&path).await;
+                }
+                tracing::info!("dogbox-lite: cleaned up recovered file {}", id);
+            });
         }
 
         Ok(DogboxLiteManager { uploads, upload_dir })
