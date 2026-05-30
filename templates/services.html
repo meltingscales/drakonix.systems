@@ -1,6 +1,14 @@
 {% extends "base.html" %} {% block title %}~/services — drakonix.systems{% endblock %} {% block content %}
 <h1>~/services</h1>
-<p style="color: var(--text-secondary); margin-top: 0.5rem; margin-bottom: 2rem;">Tools and projects running on drakonix.systems.</p>
+<p
+    style="
+        color: var(--text-secondary);
+        margin-top: 0.5rem;
+        margin-bottom: 2rem;
+    "
+>
+    Tools and projects running on drakonix.systems.
+</p>
 
 <div class="services-grid">
     <a href="/services/egg-timer" class="service-card">
@@ -17,7 +25,9 @@
     </a>
     <a href="/services/twitch-icon-gen-generic" class="service-card">
         <h3>./twitch-icon-gen-generic</h3>
-        <p>Generate Twitch sub badge icon packs at 18×18, 36×36, and 72×72 px.</p>
+        <p>
+            Generate Twitch sub badge icon packs at 18×18, 36×36, and 72×72 px.
+        </p>
     </a>
     <a href="/services/twitch-emoji-gen" class="service-card">
         <h3>./twitch-emoji-gen</h3>
@@ -45,17 +55,35 @@
     </a>
     <a href="/swagger-ui/" class="service-card">
         <h3>./api-docs</h3>
-        <p>Swagger UI — interactive documentation for the drakonix.systems API.</p>
+        <p>
+            Swagger UI — interactive documentation for the drakonix.systems API.
+        </p>
+    </a>
+    <a href="//digitalkhole.drakonix.systems/" class="service-card external">
+        <h3>digitalkhole.drakonix.systems</h3>
+        <p>A poetry site.</p>
+    </a>
+    <a
+        href="https://github.com/meltingscales/dogbox.moe"
+        class="service-card external"
+        target="_blank"
+        rel="noopener noreferrer"
+    >
+        <h3>//dogbox.moe</h3>
+        <p>The full dogbox file sharing service. Source on GitHub.</p>
     </a>
     <a href="//meowderall.drakonix.systems/" class="service-card external">
         <h3>meowderall.drakonix.systems</h3>
-        <p>Meowderall — a cat-themed project.</p>
+        <p>Meowderall — a cat medication tracker.</p>
     </a>
     <a href="//carethermometer.drakonix.systems/" class="service-card external">
         <h3>carethermometer.drakonix.systems</h3>
-        <p>Care Thermometer — tracking care metrics.</p>
+        <p>Care Thermometer — tracking care donation metrics.</p>
     </a>
-    <a href="//donationaggregator.drakonix.systems/" class="service-card external">
+    <a
+        href="//donationaggregator.drakonix.systems/"
+        class="service-card external"
+    >
         <h3>donationaggregator.drakonix.systems</h3>
         <p>Donation Aggregator — aggregate donation data.</p>
     </a>
@@ -65,15 +93,7 @@
     </a>
     <a href="//carecatstatus.drakonix.systems/" class="service-card external">
         <h3>carecatstatus.drakonix.systems</h3>
-        <p>Care Cat Status — status page for care cat services.</p>
-    </a>
-    <a href="//digitalkhole.drakonix.systems/" class="service-card external">
-        <h3>digitalkhole.drakonix.systems</h3>
-        <p>A poetry site.</p>
-    </a>
-    <a href="https://github.com/meltingscales/dogbox.moe" class="service-card external" target="_blank" rel="noopener noreferrer">
-        <h3>//dogbox.moe</h3>
-        <p>The full dogbox file sharing service. Source on GitHub.</p>
+        <p>Care Cat Status — Cat food tracker.</p>
     </a>
 </div>
 {% endblock %}
