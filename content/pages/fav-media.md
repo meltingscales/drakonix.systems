@@ -18,9 +18,15 @@ Use at your own legal risk.
 
 ## Hardware/Software stack
 
+
+### Steam Deck
 - [Steam Deck Emulation Starter Guide](https://retrogamecorps.com/2022/10/16/steam-deck-emulation-starter-guide/)
 
+### RomM
+
 - `romm`: [Retro game library software running on docker-compose on some linux box.](https://romm.app/)
+
+### Ayn THOR
 
 - [AYN Thor](https://www.ayntec.com/products/ayn-thor)
   - AYN Thor is a DS clone running Android.
@@ -30,6 +36,13 @@ Use at your own legal risk.
     - Citra can run `.3ds` and `.cia` files.
     - [You can use this tool to decrypt 3DS rom files.](https://gbatemp.net/threads/batch-cia-3ds-decryptor-a-simple-batch-file-to-decrypt-cia-3ds.512385/)
   - GBA/SNES/etc: [use RetroArch.](https://www.adinwalls.com/2025/10/29/ayn-thor-simple-setup-guide/).
+
+### PS3
+
+- <https://consolemods.org/wiki/PS3:Getting_Started>
+- <https://consolemods.org/wiki/PS3:PS3Xploit>
+
+## Games
 
 ### SNES
 
