@@ -176,6 +176,8 @@ async fn main() -> anyhow::Result<()> {
         .route("/rss.xml", get(handlers::rss_feed))
         .route("/robots.txt", get(handlers::robots_txt))
         .route("/search.json", get(handlers::search_index))
+        // Services index
+        .route("/services", get(handlers::services_index))
         // Egg timer service
         .route("/services/egg-timer", get(handlers::egg_timer_page))
         .route("/api/timer/start", post(handlers::start_timer))

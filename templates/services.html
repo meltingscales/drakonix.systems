@@ -1,0 +1,75 @@
+{% extends "base.html" %} {% block title %}~/services — drakonix.systems{% endblock %} {% block content %}
+<h1>~/services</h1>
+<p style="color: var(--text-secondary); margin-top: 0.5rem; margin-bottom: 2rem;">Tools and projects running on drakonix.systems.</p>
+
+<div class="services-grid">
+    <a href="/services/egg-timer" class="service-card">
+        <h3>./egg-timer</h3>
+        <p>A countdown timer. Good for cooking, pomodoros, or anything else.</p>
+    </a>
+    <a href="/services/death-timer" class="service-card">
+        <h3>./death-timer</h3>
+        <p>How long do you have left? A morbid little timer.</p>
+    </a>
+    <a href="/services/ffmpeg-mp4-to-mp3" class="service-card">
+        <h3>./ffmpeg-mp4-to-mp3</h3>
+        <p>Convert MP4 videos to MP3 audio. Up to 100 MB.</p>
+    </a>
+    <a href="/services/twitch-icon-gen-generic" class="service-card">
+        <h3>./twitch-icon-gen-generic</h3>
+        <p>Generate Twitch sub badge icon packs at 18×18, 36×36, and 72×72 px.</p>
+    </a>
+    <a href="/services/twitch-emoji-gen" class="service-card">
+        <h3>./twitch-emoji-gen</h3>
+        <p>Generate Twitch emote packs at 28×28, 56×56, and 112×112 px.</p>
+    </a>
+    <a href="/services/dogbox-lite" class="service-card">
+        <h3>./dogbox-lite</h3>
+        <p>Temporary file sharing. Up to 5 GB, gone after 1 hour.</p>
+    </a>
+    <a href="/services/linked-list-learning" class="service-card">
+        <h3>./linked-list-learning</h3>
+        <p>An interactive REPL for learning about linked lists.</p>
+    </a>
+    <a href="/services/bifurcation-diagram-viewer" class="service-card">
+        <h3>./bifurcation-diagram-viewer</h3>
+        <p>Explore bifurcation diagrams interactively.</p>
+    </a>
+    <a href="/services/honeypot-dummies" class="service-card">
+        <h3>./honeypot-dummies</h3>
+        <p>Live dashboard of recent honeypot hits — IPs, slugs, headers.</p>
+    </a>
+    <a href="/services/honeypot-dummies-map-timeline" class="service-card">
+        <h3>./honeypot-dummies-map-timeline</h3>
+        <p>Animated world map showing honeypot hits over time.</p>
+    </a>
+    <a href="/swagger-ui/" class="service-card">
+        <h3>./api-docs</h3>
+        <p>Swagger UI — interactive documentation for the drakonix.systems API.</p>
+    </a>
+    <a href="//meowderall.drakonix.systems/" class="service-card external">
+        <h3>meowderall.drakonix.systems</h3>
+        <p>Meowderall — a cat-themed project.</p>
+    </a>
+    <a href="//carethermometer.drakonix.systems/" class="service-card external">
+        <h3>carethermometer.drakonix.systems</h3>
+        <p>Care Thermometer — tracking care metrics.</p>
+    </a>
+    <a href="//donationaggregator.drakonix.systems/" class="service-card external">
+        <h3>donationaggregator.drakonix.systems</h3>
+        <p>Donation Aggregator — aggregate donation data.</p>
+    </a>
+    <a href="//carerabiesstats.drakonix.systems/" class="service-card external">
+        <h3>carerabiesstats.drakonix.systems</h3>
+        <p>Care Rabies Stats — rabies statistics dashboard.</p>
+    </a>
+    <a href="//carecatstatus.drakonix.systems/" class="service-card external">
+        <h3>carecatstatus.drakonix.systems</h3>
+        <p>Care Cat Status — status page for care cat services.</p>
+    </a>
+    <a href="https://github.com/meltingscales/dogbox.moe" class="service-card external" target="_blank" rel="noopener noreferrer">
+        <h3>//dogbox.moe</h3>
+        <p>The full dogbox file sharing service. Source on GitHub.</p>
+    </a>
+</div>
+{% endblock %}

@@ -242,6 +242,20 @@ impl IntoResponse for AppError {
     }
 }
 
+/// Services index page handler
+pub async fn services_index(State(state): State<Arc<AppState>>) -> Result<Html<String>, AppError> {
+    let mut context = Context::new();
+    context.insert("title", "~/services — drakonix.systems");
+    add_honeypot_urls(&mut context);
+
+    let html = state
+        .tera
+        .render("services.html", &context)
+        .map_err(|e| AppError::TemplateError(e.to_string()))?;
+
+    Ok(Html(html))
+}
+
 /// Egg timer page handler
 pub async fn egg_timer_page(State(state): State<Arc<AppState>>) -> Result<Html<String>, AppError> {
     let mut context = Context::new();
