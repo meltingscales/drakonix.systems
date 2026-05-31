@@ -48,6 +48,7 @@ Use at your own legal risk.
 - [Anyone who can't reach evilnat's GitHub can still get CFW](https://www.reddit.com/r/ps3piracy/comments/1s6bvcv/anyone_who_cant_reach_evilnats_github_can_still/)
 - [ps3.aldostools.org/dkey.html](https://ps3.aldostools.org/dkey.html) - Redump decryption key (.dkey) database for PS3 disc images
 - [ps3dec](https://github.com/Redrrx/ps3dec) - decrypts PS3 redump ISOs using AES-128 with parallel processing
+- [How to decrypt your PS3 game (Windows)](https://www.reddit.com/r/ps3piracy/comments/105ohec/how_to_decrypt_your_ps3_game_windows/)
 
 ## Games
 
