@@ -41,6 +41,11 @@ Use at your own legal risk.
 
 - <https://consolemods.org/wiki/PS3:Getting_Started>
 - <https://consolemods.org/wiki/PS3:PS3Xploit>
+- [aldostools flashwriter](https://aldostools.github.io/flashwriter)
+- [pyps3tools](https://github.com/littlebalup/pyps3tools)
+- [writer](https://github.com/ps3addict/writer) - host locally with `python3 -m http.server 80`, visit on LAN with PS3
+- [psx-place.com](https://psx-place.com) - place to get CFW
+- [Anyone who can't reach evilnat's GitHub can still get CFW](https://www.reddit.com/r/ps3piracy/comments/1s6bvcv/anyone_who_cant_reach_evilnats_github_can_still/)
 
 ## Games
 
