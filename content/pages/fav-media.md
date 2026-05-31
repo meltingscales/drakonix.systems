@@ -124,6 +124,12 @@ Use at your own legal risk.
 - Azure Striker Gunvolt
 - Rhythm Heaven Megamix
 
+### PS3
+
+- No More Heroes
+- Chainsaw Lollipop
+- Uncharted 2
+
 ### PS2
 
 - .hack//INFECTION
