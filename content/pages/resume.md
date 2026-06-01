@@ -57,3 +57,137 @@ Throughout my education and career at U.S. Bank and Bayview, I have prioritized 
     <p>Your browser does not support iframes. Please visit the link above to download a copy of my resume.</p>
     <p><a href="/static/Henry-Post-Resume.pdf">Or, view it here.</a></p>
 </iframe>
+
+## Resume (Text Version)
+
+<div class="resume-text">
+
+<div class="resume-header">
+  <h1>Henry Post</h1>
+  <p>Northeast Skokie, IL &bull; <a href="mailto:henryfbp@gmail.com">henryfbp@gmail.com</a></p>
+  <p>
+    <a href="http://henrypost.github.io">henrypost.github.io</a> &bull;
+    <a href="https://www.github.com/meltingscales/">github.com/meltingscales</a> &bull;
+    <a href="https://drakonix.systems/">drakonix.systems</a> &bull;
+    <a href="https://drakonix.systems/pages/social-media">social media?</a>
+  </p>
+</div>
+
+---
+
+### Work Experience
+
+**Lead Application Security Engineer** &mdash; *March 2023 &ndash; Current, 2 years 10 months*
+Bayview Asset Management &mdash; Skokie, Remote
+
+- Summary: Led secure coding training, tracked hundreds of internally-developed software applications, reduced volume of software risk by 60% within a year, assisted with various pentests and vulnerability fixes
+- 0-day fixes: Gave guidance on emergency 0-day fixes when discovered by pentests.
+- Vulnerability Fixes: Met with software developers to quickly and accurately fix vulnerabilities within source code.
+- Created PowerBI + Python + Pandas automation for execs to track various metrics
+- Assisted with governance+risk+compliance (GRC) evidence collection and advised on automated collection. For example, "a sample of all vulnerabilities within an infrastructure scanning tool between 2 dates"
+- Created and published a series of Controls patterns that require code scanning and developer training
+
+---
+
+**Assistant Vice President &mdash; Info Security Engineer** &mdash; *August 2022 &ndash; March 2023, 8 months*
+U.S. Bank &mdash; Chicago
+
+- Summary: Developed, tested, deployed, and helped devs integrate with Code Scanning Pipeline. Add support for new build tools and languages. Add integration with Evidence Collection systems.
+- Integrating code scanning pipelines with evidence collection systems
+- Working with my team and other teams to integrate code scanning
+- Prototyping support for new languages and tools to be scanned
+
+---
+
+**Senior Security Engineer** &mdash; *Jan 2022 &ndash; August 2022, 8 months*
+U.S. Bank &mdash; Chicago
+
+- Summary: Migrated team to modern development tooling. Improved existing monolithic Java apps by adding Spring Boot, GSON, unit testing, swagger to allow teams to consume data from apps. Worked on a few side projects for my team and another team. Planned and diagrammed/architected upgrade to Microservice architecture. Deployed vendor Helm apps and custom helm apps in k8s.
+- Implementing Kubernetes and Helm applications to production
+- Creating and deploying Application Security Code Scanning Pipelines for developers to self-integrate with
+- Teaching my team members and coworkers about Helm and containerization
+- Writing clean documentation for deployed systems for L1 support
+- Maintaining and diagnosing infrastructure integration issues and challenges
+
+---
+
+**Security Analyst** &mdash; *May 2019 &ndash; Jan 2022, 2 years 8 months*
+U.S. Bank &mdash; Chicago
+
+- Summary: Triaging vulnerabilities. Wrote a comprehensive field guide to cover specific scenarios (SQL Injection, XSS, SSRF, but also more specific vulnerabilities like Apple Keychain best practices, Java Certificate mismanagement, Java OGNL Injection, PHP-specific XSS, etc)
+- Analyzing C#, Java, ASP.NET, PHP, and JS source code
+- Discussing implementation and security vulnerabilities with developers
+- Managing workload between multiple co-workers and prioritizing work items
+- Creating, disseminating, and maintaining documentation
+
+---
+
+### Education
+
+**OFFSEC** &mdash; *August 2026 (planned)*
+OSCP+ Certification (Penetration Testing)
+
+**New York University, New York** &mdash; *October 2021 &ndash; May 2025*
+Master's in Cybersecurity
+
+**Illinois Institute of Technology, Chicago** &mdash; *September 2015 &ndash; December 2019*
+Bachelor's in Information Technology Management
+Dean's List: *Spring 2016, Fall 2018, Fall 2019*
+
+---
+
+### Projects
+
+**Twitter Disaster Data Analysis** &mdash; *March 2019*
+Co-author and co-maintainer of a <a href="https://pypi.org/project/twitter-fire-scraper/">Python package</a> that allows developers and data scientists to gather thousands of tweets from Twitter for sentiment and regression analysis. <a href="https://github.com/HenryFBP/IPRO497-Analytics-Team/blob/master/Research/IPRO%20-%20Improving%20Incident%20Response%20of%20the%20American%20Red%20Cross%20in%20the%20Greater%20Chicago%20Area%20by%20Using%20Text%20Classification%20of%20Posts%20From%20Twitter.pdf">Our research whitepaper is available at this link.</a>
+
+**Replacement of library reference computers** &mdash; *2018*
+Designed a custom linux-based microcomputer (Raspberry Pi) solution for aging Windows PCs at the Oak Bluffs Public Library of Massachusetts that saved thousands of dollars of the cost of new Windows Desktop PCs and was much safer.
+
+**ASCII compression algorithm** &mdash; *June 2015*
+Over the summer, I enrolled in an IIT summer Mathematica course where I coded an ASCII compression algorithm that took 256 of the most common duplets of characters in an ASCII file and compressed them into a file containing a dictionary followed by compressed data.
+
+**Arduino soil tester** &mdash; *2013*
+Soil sensor built by simple circuitry and C coding in an arduino. Resistance measurements of soil by recording averages of AC current through two electrodes were how the moisture levels in the soil were determined.
+
+---
+
+### Technical Strengths
+
+| | |
+|---|---|
+| **Skills** | REST APIs (6y), Kubernetes (3y), Helm (2y), Groovy (4y), Programming (10y), Linux (7y), IT Administration (6y), Software Design (8y), Technical Documentation (6y), Computer Repair (5y), Circuitry (1y) |
+| **Programming Languages** | C# (2y), C++ (3y), C (2y), ASP.NET (3y), Python (8y), Java (8y), Kotlin (2y), Ruby (2y), Bash (6y), PowerShell (6y), MySQL (6y) |
+| **Software & Tools** | Visual Studio, Git, MS Office, LaTeX, AutoDesk Inventor |
+
+---
+
+### Extra-Curricular
+
+- Part of a student-led schoolwide computer repair club at Northside College Preparatory High School. Serviced laptops, servers, and desktops. *(2012&ndash;2013)*
+- Worked for "Dirt Actualizers", a landscaping club at Northside College Preparatory High School. *(2012&ndash;2015)*
+- Part of "Electronic Gaming Club" at Illinois Institute of Technology. *(2016&ndash;2018)*
+
+---
+
+### Personal Traits
+
+- Actively learning in and outside of work &mdash; just check my GitHub/personal site.
+- Loves working in group settings with diverse team members.
+- Skilled in writing concise and descriptive documentation with working examples.
+
+---
+
+### Why should you choose me?
+
+I have an intense drive to explain, document, and teach programming and technology concepts. I am comprehensive and concise in my work, and I enjoy creating examples, demonstrations, and diagrams with the purpose of teaching.
+
+When creating code, I make reusable, clean, and well-documented code. I often find myself re-using code techniques such as programming by contract, using factory functions, and using inner functions or subroutines to keep my code DRY, to name a few. I use techniques that work well for me, are reusable, and that provide overarching structure and patterns to my code.
+
+I enjoy creating reusable coding examples with the purpose of teaching things to people, and ensuring that everyone is given the chance to try them out.
+
+I have a wide and deep history of programming projects, all under version control and most on <a href="https://www.github.com/meltingscales/">my GitHub</a> that are all well-documented and meant to be reused by anyone.
+
+In short, I love to program, teach, and document my work; and I would say that I'm very good at it.
+
+</div>
