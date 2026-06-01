@@ -21,7 +21,13 @@
       "Bash(wc:*)",
       "Bash(cargo check:*)",
       "Bash(git pull:*)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "Bash(gh repo:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:ps3.aldostools.org)",
+      "WebFetch(domain:web.archive.org)",
+      "WebSearch",
+      "WebFetch(domain:www.reddit.com)"
     ]
   }
 }
