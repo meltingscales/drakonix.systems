@@ -140,6 +140,10 @@ Use at your own legal risk.
 - Ratchet and Clank
 - Work Time Fun
 
+### Minecraft Servers
+
+- mc.furryrefuge.com
+
 ### Minecraft Modpacks/Mods
 
 - GregTech!
