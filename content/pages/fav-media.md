@@ -152,6 +152,8 @@ Use at your own legal risk.
 - Beyond Mines Exosphere
 - ThaumCraft 4
 - Agrarian Skies
+- [Ferret Business](https://www.curseforge.com/minecraft/modpacks/the-ferret-business)
+- [Ferret Business 2](https://www.curseforge.com/minecraft/modpacks/the-ferret-business-2-vaults-of-fortune)
 - [Exponential Energy](https://www.curseforge.com/minecraft/modpacks/exponential-energy)
 - Material Energy Exponential series
   - <https://www.curseforge.com/members/parcel31u/projects>
