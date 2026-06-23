@@ -251,6 +251,7 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 
 #### To investigate
 - [YellowKey](https://github.com/meltingscales/YellowKey) - BitLocker bypass vulnerability demo for Windows 11 / Server 2022/2025 via crafted files on external storage or EFI partitions
+- [NightmareEclipse git forge](https://git.projectnightcrawler.dev/NightmareEclipse/) - self-hosted repos
 - [BlueHammer](https://github.com/Nightmare-Eclipse/BlueHammer/) - tool to investigate
   - [meltingscales/BlueHammer](https://github.com/meltingscales/BlueHammer) - my fork
 - [RedSun](https://github.com/Nightmare-Eclipse/RedSun) - windows LPE

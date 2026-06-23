@@ -64,6 +64,7 @@ Here's a list without 88x31 buttons:
     <li><a href="//vmfunc.re/blog/persona">vmfunc.re</a></li>
     <li><a href="https://lynndotpy.dev/posts/stoat-chat/">https://lynndotpy.dev/posts/stoat-chat/</a></li>
     <li><a href="https://msx.horse/landing.php">msx.horse</a></li>
+    <li><a href="https://git.projectnightcrawler.dev/NightmareEclipse/">git.projectnightcrawler.dev/NightmareEclipse</a></li>
 </ul>
 
 Here's a list of non-personal websites that are just good alternatives to
