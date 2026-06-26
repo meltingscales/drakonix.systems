@@ -162,6 +162,10 @@ Use at your own legal risk.
 - [FTB StoneBlock 4](https://www.feed-the-beast.com/modpacks/130-ftb-stoneblock-4)
   - [Resource Automation in Stoneblock 4 is UNIQUE!](https://www.youtube.com/watch?v=mnpHhIp7hd4)
 
+### MSX
+
+- <https://msx.horse/eos/>
+
 ### PC
 
 ### Doom WADs
