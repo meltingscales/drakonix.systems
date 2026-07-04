@@ -174,6 +174,7 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp): youtube downloader, before youtube killed it with session cookie enforcement.
 - [transmission](https://transmissionbt.com/): torrent client
+- [torlink](https://github.com/baairon/torlink) - torrent link tool
 - [jellyfin](https://jellyfin.org/): media server
 - [romm](https://github.com/rommapp/romm): emulation ROM/retro game database
 - [seanime: anime media server](https://seanime.rahim.app/)
