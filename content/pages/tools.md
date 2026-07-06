@@ -211,6 +211,7 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 
 ### References & resources
 
+- [0xdf](https://0xdf.gitlab.io/) - HackTheBox writeups blog
 - [gandalf](https://gandalf.lakera.ai/baseline) - AI prompt injection challenge/game
 - [gtfobins](https://gtfobins.org/) - Unix binaries that can be exploited for privilege escalation/bypasses
 - [hacktricks](https://book.hacktricks.xyz/welcome/readme) - pentesting/CTF reference book
