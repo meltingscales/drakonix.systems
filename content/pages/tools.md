@@ -250,6 +250,7 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 - [GodPotato](https://github.com/BeichenDream/GodPotato) - Windows privilege escalation via impersonation (SeImpersonatePrivilege / Potato family)
 - [msfvenom](https://docs.metasploit.com/docs/using-metasploit/basics/how-to-use-msfvenom.html) - Metasploit payload and shellcode generator
 - [evilginx2](https://github.com/meltingscales/evilginx2/tree/restored) - adversary-in-the-middle phishing framework, bypasses 2FA by proxying real login pages and capturing session cookies
+- [c2](https://github.com/meltingscales/c2) - command and control framework
 
 #### To investigate
 - [YellowKey](https://github.com/meltingscales/YellowKey) - BitLocker bypass vulnerability demo for Windows 11 / Server 2022/2025 via crafted files on external storage or EFI partitions
