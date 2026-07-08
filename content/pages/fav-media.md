@@ -37,6 +37,7 @@ Use at your own legal risk.
     - [You can use this tool to decrypt 3DS rom files.](https://gbatemp.net/threads/batch-cia-3ds-decryptor-a-simple-batch-file-to-decrypt-cia-3ds.512385/)
   - GBA/SNES/etc: [use RetroArch.](https://www.adinwalls.com/2025/10/29/ayn-thor-simple-setup-guide/).
   - [Ayn Thor Setup Guide Mega Thread](https://www.reddit.com/r/AynThor/comments/1oe9ulm/ayn_thor_setup_guide_mega_thread/)
+  - [Ayn Thor Setup Guide](https://www.joeysretrohandhelds.com/guides/ayn-thor-setup-guide/)
 
 ### PS3
 
