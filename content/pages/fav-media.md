@@ -15,6 +15,7 @@ Use at your own legal risk.
 
 - <https://romsfun.com>
 - <https://vimm.net/vault>
+- [IPS Patch Tool](https://bbbradsmith.github.io/ipstool/) - apply romhack IPS patches in-browser
 
 ## Hardware/Software stack
 
@@ -58,6 +59,8 @@ Use at your own legal risk.
 
 - Super Metroid
   - ROMHACK: Super Metroid Ascent
+  - ROMHACK: [Metroid Spooky Mission](https://www.romhacking.net/hacks/3900/)
+  - ROMHACK: [Super Metroid X-Fusion](https://www.romhacking.net/hacks/9454/)
 - Castlevania IV
 - Contra III: The Alien Wars
 - Chrono Trigger
