@@ -118,6 +118,7 @@ Current working stack:
 - [llama.cpp](https://github.com/ggerganov/llama.cpp): text generation backend (works with ROCm)
 - [koboldcpp](https://github.com/LostRuins/koboldcpp): easier to setup than llama.cpp.
 - [exo](https://github.com/exo-explore/exo) - run your own AI cluster across multiple devices (phones, laptops, etc.), no specialized hardware needed
+- [colibri](https://github.com/JustVugg/colibri) - run huge MoE models (e.g. GLM-5.2, 744B params) on ~25GB RAM by streaming experts from disk, no GPU needed
 - [openwebui](https://openwebui.com/): frontend for LLM interaction (TBD)
 - [comfyui](https://github.com/comfyanonymous/ComfyUI): image/video/audio generation (TBD)
   - [ComfyUI-Zluda](https://github.com/patientx/ComfyUI-Zluda) - ComfyUI with ZLUDA for AMD GPUs on Windows
