@@ -1,4 +1,5 @@
 use crate::converter::ConvertResponse;
+use crate::doggypastebin::{CreatePasteRequest, CreatePasteResponse};
 use crate::markdown::MarkdownProcessor;
 use crate::markov;
 use crate::models::SearchEntry;
@@ -1238,4 +1239,93 @@ pub async fn dogbox_lite_download(
     );
 
     Ok((headers, body).into_response())
+}
+
+// ---------------------------------------------------------------------------
+// Doggypastebin — simple pastebin clone (30 day TTL)
+// ---------------------------------------------------------------------------
+
+/// Doggypastebin create-paste page handler
+pub async fn doggypastebin_page(
+    State(state): State<Arc<AppState>>,
+) -> Result<Html<String>, AppError> {
+    let mut context = Context::new();
+    add_honeypot_urls(&mut context);
+    let html = state
+        .tera
+        .render("doggypastebin.html", &context)
+        .map_err(|e| AppError::TemplateError(e.to_string()))?;
+    Ok(Html(html))
+}
+
+/// Create a paste; returns a JSON object with the paste ID
+pub async fn doggypastebin_create(
+    State(state): State<Arc<AppState>>,
+    Json(req): Json<CreatePasteRequest>,
+) -> Result<Json<CreatePasteResponse>, AppError> {
+    if req.content.trim().is_empty() {
+        return Err(AppError::InternalError(anyhow::anyhow!(
+            "Paste content cannot be empty"
+        )));
+    }
+
+    let id = state
+        .doggypastebin_manager
+        .create_paste(req.content, req.language)
+        .await
+        .map_err(|e| AppError::InternalError(anyhow::anyhow!("Storage error: {}", e)))?;
+
+    Ok(Json(CreatePasteResponse { id: id.to_string() }))
+}
+
+/// View a paste, syntax-highlighted
+pub async fn doggypastebin_view(
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<String>,
+) -> Result<Html<String>, AppError> {
+    let uuid = id.parse::<uuid::Uuid>().map_err(|_| AppError::NotFound)?;
+
+    let paste = state
+        .doggypastebin_manager
+        .get_paste(&uuid)
+        .await
+        .ok_or(AppError::NotFound)?;
+
+    let highlighted = state
+        .doggypastebin_manager
+        .highlight(&paste.content, &paste.language);
+
+    let mut context = Context::new();
+    context.insert("id", &id);
+    context.insert("language", &paste.language);
+    context.insert("content_html", &highlighted);
+    add_honeypot_urls(&mut context);
+
+    let html = state
+        .tera
+        .render("doggypastebin_view.html", &context)
+        .map_err(|e| AppError::TemplateError(e.to_string()))?;
+    Ok(Html(html))
+}
+
+/// Fetch a paste's raw, unhighlighted content
+pub async fn doggypastebin_raw(
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<String>,
+) -> Result<Response, AppError> {
+    let uuid = id.parse::<uuid::Uuid>().map_err(|_| AppError::NotFound)?;
+
+    let paste = state
+        .doggypastebin_manager
+        .get_paste(&uuid)
+        .await
+        .ok_or(AppError::NotFound)?;
+
+    let mut headers = HeaderMap::new();
+    headers.insert(
+        axum::http::header::CONTENT_TYPE,
+        "text/plain; charset=utf-8".parse().unwrap(),
+    );
+
+    Ok((headers, paste.content).into_response())
 }

@@ -1,0 +1,210 @@
+{% extends "base.html" %} {% block title %}doggypastebin — drakonix.systems{% endblock %} {% block content %}
+<div class="pastebin-container">
+    <h1>doggypastebin</h1>
+    <p>Paste some text, get a link. Gone after 30&nbsp;days.</p>
+
+    <textarea id="paste-input" placeholder="Paste your text or code here..." spellcheck="false"></textarea>
+
+    <div class="paste-controls">
+        <select id="language-select">
+            <option value="text">Plain text</option>
+            <option value="rs">Rust</option>
+            <option value="py">Python</option>
+            <option value="js">JavaScript</option>
+            <option value="ts">TypeScript</option>
+            <option value="go">Go</option>
+            <option value="java">Java</option>
+            <option value="c">C</option>
+            <option value="cpp">C++</option>
+            <option value="cs">C#</option>
+            <option value="rb">Ruby</option>
+            <option value="php">PHP</option>
+            <option value="sh">Shell</option>
+            <option value="json">JSON</option>
+            <option value="yaml">YAML</option>
+            <option value="toml">TOML</option>
+            <option value="html">HTML</option>
+            <option value="css">CSS</option>
+            <option value="sql">SQL</option>
+            <option value="md">Markdown</option>
+        </select>
+        <button id="paste-btn">Create paste</button>
+    </div>
+
+    <div id="error-wrap" style="display:none">
+        <p class="error-msg" id="error-text"></p>
+    </div>
+
+    <div id="result-wrap" style="display:none">
+        <p>Share this link (expires in 30 days):</p>
+        <div class="link-row">
+            <input type="text" id="share-link" readonly />
+            <button id="copy-btn">Copy</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .pastebin-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    #paste-input {
+        width: 100%;
+        min-height: 360px;
+        margin-top: 1.5rem;
+        padding: 0.9rem;
+        font-family: monospace;
+        font-size: 0.95rem;
+        line-height: 1.4;
+        border: 1px solid #555;
+        border-radius: 6px;
+        background: #1a1a1a;
+        color: #eee;
+        resize: vertical;
+        box-sizing: border-box;
+    }
+
+    .paste-controls {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+
+    #language-select {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.95rem;
+        border: 1px solid #555;
+        border-radius: 5px;
+        background: #1a1a1a;
+        color: #eee;
+    }
+
+    #paste-btn {
+        padding: 0.7rem 1.6rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 5px;
+        background: #4a9eff;
+        color: #fff;
+        cursor: pointer;
+    }
+
+    #paste-btn:hover:not(:disabled) {
+        background: #2277dd;
+    }
+
+    #paste-btn:disabled {
+        background: #666;
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    #result-wrap {
+        margin-top: 1.5rem;
+    }
+
+    .link-row {
+        display: flex;
+        gap: 0.5rem;
+        margin: 0.75rem 0 1rem;
+    }
+
+    #share-link {
+        flex: 1;
+        padding: 0.5rem 0.75rem;
+        font-family: monospace;
+        font-size: 0.95rem;
+        border: 1px solid #555;
+        border-radius: 4px;
+        background: #1a1a1a;
+        color: #eee;
+    }
+
+    #copy-btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        background: #555;
+        color: #eee;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+
+    #copy-btn:hover {
+        background: #777;
+    }
+
+    .error-msg {
+        margin-top: 1rem;
+        color: #dc3545;
+        background: #2a1015;
+        border: 1px solid #dc3545;
+        border-radius: 5px;
+        padding: 0.8rem 1rem;
+        font-weight: 600;
+    }
+</style>
+
+<script>
+    const pasteInput   = document.getElementById("paste-input");
+    const langSelect   = document.getElementById("language-select");
+    const pasteBtn     = document.getElementById("paste-btn");
+    const errorWrap    = document.getElementById("error-wrap");
+    const errorText    = document.getElementById("error-text");
+    const resultWrap   = document.getElementById("result-wrap");
+    const shareLink    = document.getElementById("share-link");
+    const copyBtn      = document.getElementById("copy-btn");
+
+    function showError(msg) {
+        errorText.textContent = msg;
+        errorWrap.style.display = "block";
+        pasteBtn.disabled = false;
+    }
+
+    pasteBtn.addEventListener("click", async () => {
+        const content = pasteInput.value;
+        if (!content.trim()) {
+            showError("Paste content cannot be empty.");
+            return;
+        }
+
+        errorWrap.style.display = "none";
+        resultWrap.style.display = "none";
+        pasteBtn.disabled = true;
+
+        try {
+            const res = await fetch("/api/doggypastebin/create", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ content, language: langSelect.value }),
+            });
+
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                showError(err.error || `Failed to create paste (status ${res.status}).`);
+                return;
+            }
+
+            const data = await res.json();
+            const url = `${location.origin}/services/doggypastebin/${data.id}`;
+            shareLink.value = url;
+            resultWrap.style.display = "block";
+        } catch (e) {
+            showError("Network error.");
+        } finally {
+            pasteBtn.disabled = false;
+        }
+    });
+
+    copyBtn.addEventListener("click", () => {
+        navigator.clipboard.writeText(shareLink.value).then(() => {
+            copyBtn.textContent = "Copied!";
+            setTimeout(() => copyBtn.textContent = "Copy", 1500);
+        });
+    });
+</script>
+{% endblock %}

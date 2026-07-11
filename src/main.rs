@@ -1,6 +1,7 @@
 mod constants;
 mod converter;
 mod dogbox_lite;
+mod doggypastebin;
 mod favicon;
 mod handlers;
 mod honeypot_db;
@@ -132,6 +133,9 @@ async fn main() -> anyhow::Result<()> {
     let dogbox_lite_manager = dogbox_lite::DogboxLiteManager::new()
         .map_err(|e| anyhow::anyhow!("Failed to initialize dogbox-lite: {}", e))?;
 
+    let doggypastebin_manager = doggypastebin::DoggyPastebinManager::new()
+        .map_err(|e| anyhow::anyhow!("Failed to initialize doggypastebin: {}", e))?;
+
     let markov_generator = markov::MarkovGenerator::new();
 
     let db_path = std::env::var("HONEYPOT_DB_PATH").unwrap_or_else(|_| "honeypot.db".to_string());
@@ -157,6 +161,7 @@ async fn main() -> anyhow::Result<()> {
         twitch_icon_gen_manager,
         twitch_emote_gen_manager,
         dogbox_lite_manager,
+        doggypastebin_manager,
         markov_generator,
         honeypot_db,
         http_client,
@@ -244,6 +249,20 @@ async fn main() -> anyhow::Result<()> {
             "/api/dogbox-lite/download/:guid",
             get(handlers::dogbox_lite_download),
         )
+        // Doggypastebin - simple pastebin clone (30 day TTL)
+        .route("/services/doggypastebin", get(handlers::doggypastebin_page))
+        .route(
+            "/api/doggypastebin/create",
+            post(handlers::doggypastebin_create),
+        )
+        .route(
+            "/services/doggypastebin/:id",
+            get(handlers::doggypastebin_view),
+        )
+        .route(
+            "/api/doggypastebin/raw/:id",
+            get(handlers::doggypastebin_raw),
+        )
         // Honeypot endpoint - slow markov babble to trap scrapers
         .route(
             "/api/markov-babble/:slug/gen",
@@ -296,6 +315,7 @@ pub struct AppState {
     pub twitch_icon_gen_manager: twitch_icon_gen::TwitchIconGenManager,
     pub twitch_emote_gen_manager: twitch_emote_gen::TwitchEmoteGenManager,
     pub dogbox_lite_manager: dogbox_lite::DogboxLiteManager,
+    pub doggypastebin_manager: doggypastebin::DoggyPastebinManager,
     pub markov_generator: markov::MarkovGenerator,
     pub honeypot_db: honeypot_db::HoneypotDb,
     pub http_client: reqwest::Client,

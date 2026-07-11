@@ -1,0 +1,66 @@
+{% extends "base.html" %} {% block title %}paste {{ id }} — doggypastebin{% endblock %} {% block content %}
+<div class="pastebin-view-container">
+    <div class="paste-toolbar">
+        <h1>doggypastebin</h1>
+        <div class="paste-actions">
+            <a href="/api/doggypastebin/raw/{{ id }}" target="_blank">Raw</a>
+            <a href="/services/doggypastebin">New paste</a>
+        </div>
+    </div>
+    <p class="paste-meta">Language: {{ language }} &middot; Expires in 30 days</p>
+
+    <div class="paste-content">{{ content_html | safe }}</div>
+</div>
+
+<style>
+    .pastebin-view-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .paste-toolbar {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .paste-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .paste-actions a {
+        color: #4a9eff;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .paste-actions a:hover {
+        text-decoration: underline;
+    }
+
+    .paste-meta {
+        color: var(--text-secondary, #888);
+        margin: 0.5rem 0 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .paste-content {
+        border-radius: 6px;
+        overflow-x: auto;
+    }
+
+    .paste-content pre {
+        margin: 0;
+        padding: 1rem;
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        overflow-x: auto;
+    }
+</style>
+{% endblock %}
