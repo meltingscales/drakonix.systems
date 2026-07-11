@@ -12,7 +12,8 @@ use syntect::parsing::SyntaxSet;
 
 const TTL_SECS: u64 = 30 * 24 * 3600; // 30 days
 const ID_LEN: usize = 6;
-const ID_CHARS: &[u8] = b"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+/// Unambiguous, single-case charset: no 0/O, 1/I/L confusion.
+const ID_CHARS: &[u8] = b"23456789ABCDEFGHJKMNPQRSTUVWXYZ";
 
 #[derive(Deserialize)]
 pub struct CreatePasteRequest {
