@@ -1275,7 +1275,7 @@ pub async fn doggypastebin_create(
         .await
         .map_err(|e| AppError::InternalError(anyhow::anyhow!("Storage error: {}", e)))?;
 
-    Ok(Json(CreatePasteResponse { id: id.to_string() }))
+    Ok(Json(CreatePasteResponse { id }))
 }
 
 /// View a paste, syntax-highlighted
@@ -1283,11 +1283,9 @@ pub async fn doggypastebin_view(
     State(state): State<Arc<AppState>>,
     Path(id): Path<String>,
 ) -> Result<Html<String>, AppError> {
-    let uuid = id.parse::<uuid::Uuid>().map_err(|_| AppError::NotFound)?;
-
     let paste = state
         .doggypastebin_manager
-        .get_paste(&uuid)
+        .get_paste(&id)
         .await
         .ok_or(AppError::NotFound)?;
 
@@ -1313,11 +1311,9 @@ pub async fn doggypastebin_raw(
     State(state): State<Arc<AppState>>,
     Path(id): Path<String>,
 ) -> Result<Response, AppError> {
-    let uuid = id.parse::<uuid::Uuid>().map_err(|_| AppError::NotFound)?;
-
     let paste = state
         .doggypastebin_manager
-        .get_paste(&uuid)
+        .get_paste(&id)
         .await
         .ok_or(AppError::NotFound)?;
 

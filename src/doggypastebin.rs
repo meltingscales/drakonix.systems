@@ -1,16 +1,18 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
+use rand::Rng;
 use serde::{Deserialize, Serialize};
 use tokio::fs;
 use tokio::sync::RwLock;
-use uuid::Uuid;
 
 use syntect::highlighting::ThemeSet;
 use syntect::html::highlighted_html_for_string;
 use syntect::parsing::SyntaxSet;
 
 const TTL_SECS: u64 = 30 * 24 * 3600; // 30 days
+const ID_LEN: usize = 6;
+const ID_CHARS: &[u8] = b"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 #[derive(Deserialize)]
 pub struct CreatePasteRequest {
@@ -41,13 +43,13 @@ pub struct PasteInfo {
 
 #[derive(Clone)]
 pub struct DoggyPastebinManager {
-    pastes: Arc<RwLock<HashMap<Uuid, PasteRecord>>>,
+    pastes: Arc<RwLock<HashMap<String, PasteRecord>>>,
     paste_dir: PathBuf,
     syntax_set: Arc<SyntaxSet>,
     theme_set: Arc<ThemeSet>,
 }
 
-/// A paste is stored on disk as `<uuid>.paste`: first line is the language
+/// A paste is stored on disk as `<id>.paste`: first line is the language
 /// token, remaining lines are the raw paste content.
 fn encode(language: &str, content: &str) -> Vec<u8> {
     format!("{}\n{}", language, content).into_bytes()
@@ -60,6 +62,13 @@ fn decode(raw: &str) -> (String, String) {
     }
 }
 
+fn generate_short_id() -> String {
+    let mut rng = rand::thread_rng();
+    (0..ID_LEN)
+        .map(|_| ID_CHARS[rng.gen_range(0..ID_CHARS.len())] as char)
+        .collect()
+}
+
 impl DoggyPastebinManager {
     pub fn new() -> std::io::Result<Self> {
         let paste_dir = PathBuf::from("temp_doggypastebin");
@@ -68,21 +77,19 @@ impl DoggyPastebinManager {
         // On startup, recover pastes left over from a previous run.
         // Build the map synchronously before wrapping in Arc<RwLock<>> to
         // avoid calling blocking_write() inside the tokio runtime.
-        let mut initial_map: HashMap<Uuid, PasteRecord> = HashMap::new();
-        let mut to_spawn: Vec<(Uuid, PathBuf, u64)> = Vec::new(); // (id, path, remaining_secs)
+        let mut initial_map: HashMap<String, PasteRecord> = HashMap::new();
+        let mut to_spawn: Vec<(String, PathBuf, u64)> = Vec::new(); // (id, path, remaining_secs)
 
         let now = std::time::SystemTime::now();
         for entry in std::fs::read_dir(&paste_dir)?.flatten() {
             let path = entry.path();
-            if !path.is_file() {
+            if !path.is_file() || path.extension().and_then(|e| e.to_str()) != Some("paste") {
                 continue;
             }
-            let Some(stem) = path.file_stem().and_then(|n| n.to_str()) else {
+            let Some(id) = path.file_stem().and_then(|n| n.to_str()) else {
                 continue;
             };
-            let Ok(id) = stem.parse::<Uuid>() else {
-                continue;
-            };
+            let id = id.to_string();
 
             let age_secs = entry
                 .metadata()
@@ -99,24 +106,21 @@ impl DoggyPastebinManager {
                 let raw = std::fs::read_to_string(&path).unwrap_or_default();
                 let (language, content) = decode(&raw);
                 let remaining = TTL_SECS - age_secs;
-                initial_map.insert(id, PasteRecord { content, language });
-                to_spawn.push((id, path, remaining));
+                initial_map.insert(id.clone(), PasteRecord { content, language });
+                to_spawn.push((id.clone(), path, remaining));
                 tracing::info!("doggypastebin: recovered orphan {} ({} s remaining)", id, remaining);
             }
         }
 
-        let pastes: Arc<RwLock<HashMap<Uuid, PasteRecord>>> = Arc::new(RwLock::new(initial_map));
+        let pastes: Arc<RwLock<HashMap<String, PasteRecord>>> = Arc::new(RwLock::new(initial_map));
 
         // Now that we're inside the runtime we can safely spawn.
         for (id, path, remaining) in to_spawn {
             let pastes_clone = pastes.clone();
             tokio::spawn(async move {
                 tokio::time::sleep(tokio::time::Duration::from_secs(remaining)).await;
-                if pastes_clone.write().await.remove(&id).is_some() {
-                    let _ = fs::remove_file(&path).await;
-                } else {
-                    let _ = fs::remove_file(&path).await;
-                }
+                pastes_clone.write().await.remove(&id);
+                let _ = fs::remove_file(&path).await;
                 tracing::info!("doggypastebin: cleaned up recovered paste {}", id);
             });
         }
@@ -129,8 +133,18 @@ impl DoggyPastebinManager {
         })
     }
 
-    pub async fn create_paste(&self, content: String, language: String) -> Result<Uuid, String> {
-        let id = Uuid::new_v4();
+    pub async fn create_paste(&self, content: String, language: String) -> Result<String, String> {
+        // Generate a short id, retrying on the (very unlikely) collision.
+        let id = {
+            let pastes = self.pastes.read().await;
+            loop {
+                let candidate = generate_short_id();
+                if !pastes.contains_key(&candidate) {
+                    break candidate;
+                }
+            }
+        };
+
         let file_path = self.paste_dir.join(format!("{}.paste", id));
 
         fs::write(&file_path, encode(&language, &content))
@@ -140,7 +154,7 @@ impl DoggyPastebinManager {
         {
             let mut pastes = self.pastes.write().await;
             pastes.insert(
-                id,
+                id.clone(),
                 PasteRecord {
                     content,
                     language,
@@ -149,7 +163,7 @@ impl DoggyPastebinManager {
         }
 
         // Schedule deletion after TTL
-        let id_clone = id;
+        let id_clone = id.clone();
         let pastes_clone = self.pastes.clone();
         tokio::spawn(async move {
             tokio::time::sleep(tokio::time::Duration::from_secs(TTL_SECS)).await;
@@ -165,7 +179,7 @@ impl DoggyPastebinManager {
         Ok(id)
     }
 
-    pub async fn get_paste(&self, id: &Uuid) -> Option<PasteInfo> {
+    pub async fn get_paste(&self, id: &str) -> Option<PasteInfo> {
         let pastes = self.pastes.read().await;
         pastes.get(id).map(|r| PasteInfo {
             content: r.content.clone(),
