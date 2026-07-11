@@ -1,7 +1,8 @@
 {% extends "base.html" %} {% block title %}doggypastebin — drakonix.systems{% endblock %} {% block content %}
 <div class="pastebin-container">
     <h1>doggypastebin</h1>
-    <p>Paste some text, get a link. Gone after 30&nbsp;days.</p>
+    <p>Paste some text, get a link. Gone after 30&nbsp;days. <a href="/services/doggypastebin/browse">Browse pastes</a></p>
+    <p class="warning-msg">⚠️ Warning: pastes are public. Anyone with the link — or who browses the paste list — can read it. Don't paste secrets.</p>
 
     <textarea id="paste-input" placeholder="Paste your text or code here..." spellcheck="false"></textarea>
 
@@ -138,7 +139,8 @@
         background: #777;
     }
 
-    .error-msg {
+    .error-msg,
+    .warning-msg {
         margin-top: 1rem;
         color: #dc3545;
         background: #2a1015;

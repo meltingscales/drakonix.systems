@@ -252,6 +252,10 @@ async fn main() -> anyhow::Result<()> {
         // Doggypastebin - simple pastebin clone (30 day TTL)
         .route("/services/doggypastebin", get(handlers::doggypastebin_page))
         .route(
+            "/services/doggypastebin/browse",
+            get(handlers::doggypastebin_browse),
+        )
+        .route(
             "/api/doggypastebin/create",
             post(handlers::doggypastebin_create),
         )

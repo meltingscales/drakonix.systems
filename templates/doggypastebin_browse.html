@@ -1,0 +1,100 @@
+{% extends "base.html" %} {% block title %}browse pastes — doggypastebin{% endblock %} {% block content %}
+<div class="pastebin-browse-container">
+    <div class="paste-toolbar">
+        <h1>doggypastebin — all pastes</h1>
+        <div class="paste-actions">
+            <a href="/services/doggypastebin">New paste</a>
+        </div>
+    </div>
+
+    <p class="warning-msg">⚠️ Warning: all pastes are public. Anyone with this list, or a paste's link, can read it. Don't paste secrets.</p>
+
+    {% if pastes | length == 0 %}
+    <p class="empty-msg">No pastes yet.</p>
+    {% else %}
+    <table class="paste-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Language</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for paste in pastes %}
+            <tr>
+                <td><a href="/services/doggypastebin/{{ paste.id }}">{{ paste.id }}</a></td>
+                <td>{{ paste.language }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</div>
+
+<style>
+    .pastebin-browse-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .paste-toolbar {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .paste-actions a {
+        color: #4a9eff;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .paste-actions a:hover {
+        text-decoration: underline;
+    }
+
+    .warning-msg {
+        margin: 1rem 0 1.5rem;
+        color: #dc3545;
+        background: #2a1015;
+        border: 1px solid #dc3545;
+        border-radius: 5px;
+        padding: 0.8rem 1rem;
+        font-weight: 600;
+    }
+
+    .empty-msg {
+        color: var(--text-secondary, #888);
+    }
+
+    .paste-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .paste-table th,
+    .paste-table td {
+        text-align: left;
+        padding: 0.6rem 0.8rem;
+        border-bottom: 1px solid #444;
+    }
+
+    .paste-table th {
+        color: var(--text-secondary, #888);
+        font-weight: 600;
+    }
+
+    .paste-table a {
+        color: #4a9eff;
+        text-decoration: none;
+        font-family: monospace;
+    }
+
+    .paste-table a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}

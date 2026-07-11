@@ -1258,6 +1258,22 @@ pub async fn doggypastebin_page(
     Ok(Html(html))
 }
 
+/// List all currently stored pastes
+pub async fn doggypastebin_browse(
+    State(state): State<Arc<AppState>>,
+) -> Result<Html<String>, AppError> {
+    let pastes = state.doggypastebin_manager.list_pastes().await;
+
+    let mut context = Context::new();
+    context.insert("pastes", &pastes);
+    add_honeypot_urls(&mut context);
+    let html = state
+        .tera
+        .render("doggypastebin_browse.html", &context)
+        .map_err(|e| AppError::TemplateError(e.to_string()))?;
+    Ok(Html(html))
+}
+
 /// Create a paste; returns a JSON object with the paste ID
 pub async fn doggypastebin_create(
     State(state): State<Arc<AppState>>,

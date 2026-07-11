@@ -42,6 +42,12 @@ pub struct PasteInfo {
     pub language: String,
 }
 
+#[derive(Serialize)]
+pub struct PasteSummary {
+    pub id: String,
+    pub language: String,
+}
+
 #[derive(Clone)]
 pub struct DoggyPastebinManager {
     pastes: Arc<RwLock<HashMap<String, PasteRecord>>>,
@@ -178,6 +184,20 @@ impl DoggyPastebinManager {
         });
 
         Ok(id)
+    }
+
+    /// List all currently stored pastes, sorted by id.
+    pub async fn list_pastes(&self) -> Vec<PasteSummary> {
+        let pastes = self.pastes.read().await;
+        let mut list: Vec<PasteSummary> = pastes
+            .iter()
+            .map(|(id, r)| PasteSummary {
+                id: id.clone(),
+                language: r.language.clone(),
+            })
+            .collect();
+        list.sort_by(|a, b| a.id.cmp(&b.id));
+        list
     }
 
     pub async fn get_paste(&self, id: &str) -> Option<PasteInfo> {
