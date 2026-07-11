@@ -27,7 +27,10 @@
       "WebFetch(domain:ps3.aldostools.org)",
       "WebFetch(domain:web.archive.org)",
       "WebSearch",
-      "WebFetch(domain:www.reddit.com)"
+      "WebFetch(domain:www.reddit.com)",
+      "Bash(PORT=8099 nohup ./target/debug/rust-blog)",
+      "Bash(curl -s -o /dev/null -w \"page: %{http_code}\\\\n\" http://localhost:8099/services/doggypastebin)",
+      "Bash(curl -s -X POST http://localhost:8099/api/doggypastebin/create -H \"Content-Type: application/json\" -d '{\"content\":\"fn main\\(\\) {\\\\n    println!\\(\\\\\"hello\\\\\"\\);\\\\n}\",\"language\":\"rs\"}')"
     ]
   }
 }
