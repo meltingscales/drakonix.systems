@@ -254,6 +254,7 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 - [c2](https://github.com/meltingscales/c2) - command and control framework
 
 #### To investigate
+- [LLMNR/NBT-NS poisoning](https://medium.com/@TheHuskyHacker/llmnr-nbt-ns-posing-my-favorite-attack-05b3f70bfb92) - Responder-style attack, poison name resolution to grab NTLM hashes
 - [YellowKey](https://github.com/meltingscales/YellowKey) - BitLocker bypass vulnerability demo for Windows 11 / Server 2022/2025 via crafted files on external storage or EFI partitions
 - [NightmareEclipse git forge](https://git.projectnightcrawler.dev/NightmareEclipse/) - self-hosted repos
 - [BlueHammer](https://github.com/Nightmare-Eclipse/BlueHammer/) - tool to investigate
