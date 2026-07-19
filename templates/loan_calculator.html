@@ -1,0 +1,365 @@
+{% extends "base.html" %}
+
+{% block title %}Loan Amortization + Risks — drakonix.systems{% endblock %}
+
+{% block content %}
+<div class="loan-container">
+    <h1>&#x1f3e0;&#x1f4ca; Loan Amortization + Risks</h1>
+    <p class="subtitle">
+        Home loan amortization with equity vs. bank-profit visualization.<br />
+        See exactly how much the bank makes, and how disasters, low down
+        payments, and extra principal change the picture.
+    </p>
+
+    <div class="loan-layout">
+        <div class="loan-form">
+            <h3>Loan parameters</h3>
+            <div class="loan-row">
+                <label for="lc-price">Home price ($)</label>
+                <input type="number" id="lc-price" min="10000" step="10000" value="450000" />
+            </div>
+            <div class="loan-row">
+                <label for="lc-down">Down payment (%)</label>
+                <input type="number" id="lc-down" min="0" max="100" step="0.5" value="20" />
+            </div>
+            <div class="loan-row">
+                <label for="lc-rate">Interest rate (%)</label>
+                <input type="number" id="lc-rate" min="0" max="25" step="0.125" value="6.5" />
+            </div>
+            <div class="loan-row">
+                <label for="lc-term">Loan term (years)</label>
+                <input type="number" id="lc-term" min="1" max="50" step="1" value="30" />
+            </div>
+            <div class="loan-row">
+                <label for="lc-appr">Appreciation (%/yr)</label>
+                <input type="number" id="lc-appr" min="-10" max="20" step="0.5" value="3" />
+            </div>
+            <div class="loan-row">
+                <label for="lc-extra">Extra principal ($/mo)</label>
+                <input type="number" id="lc-extra" min="0" step="50" value="200" />
+            </div>
+
+            <h3>Scenarios</h3>
+            <div class="loan-checks" id="lc-scenarios"></div>
+
+            <div class="loan-row">
+                <label for="lc-tab">Chart scenario</label>
+                <select id="lc-tab"></select>
+            </div>
+        </div>
+
+        <div class="loan-main">
+            <div class="loan-summary" id="lc-summary"></div>
+            <div class="loan-chart-wrap">
+                <canvas id="lc-chart"></canvas>
+            </div>
+            <h3>Scenario comparison (end of term)</h3>
+            <div style="overflow-x: auto">
+                <table class="loan-table" id="lc-table"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .loan-container {
+        max-width: 1344px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    .loan-container h1 {
+        font-size: 2.2rem;
+        margin-bottom: 0.4rem;
+    }
+    .subtitle {
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        line-height: 1.5;
+    }
+    .loan-layout {
+        display: flex;
+        gap: 2rem;
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+    .loan-form {
+        flex: 0 0 320px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    .loan-form h3 {
+        margin: 0.5rem 0 0.25rem;
+    }
+    .loan-main {
+        flex: 1 1 500px;
+        min-width: 0;
+    }
+    .loan-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .loan-row label {
+        font-weight: 600;
+        flex: 1;
+    }
+    .loan-row input,
+    .loan-row select {
+        padding: 0.45rem 0.65rem;
+        border: 1px solid var(--border-primary);
+        border-radius: 4px;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        font-size: 1rem;
+        width: 130px;
+    }
+    .loan-checks {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+    .loan-checks label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+    }
+    .loan-summary {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+    .loan-stat {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: 6px;
+        padding: 0.6rem 1rem;
+    }
+    .loan-stat .v {
+        font-size: 1.3rem;
+        font-weight: 700;
+        display: block;
+    }
+    .loan-stat .k {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+    .loan-chart-wrap {
+        position: relative;
+        height: 420px;
+        margin-bottom: 1.5rem;
+    }
+    .loan-table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    .loan-table th,
+    .loan-table td {
+        border: 1px solid var(--border-primary);
+        padding: 0.45rem 0.7rem;
+        text-align: right;
+        white-space: nowrap;
+    }
+    .loan-table th:first-child,
+    .loan-table td:first-child {
+        text-align: left;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script>
+    "use strict";
+
+    // Direct port of LoanCalculator::calculate_schedule from
+    // github LoanAmortizationPlusRisks (Rust).
+    function calcSchedule(homePrice, downPct, ratePct, termYears, apprPct, extraMonthly) {
+        const downPayment = (homePrice * downPct) / 100;
+        const loanAmount = homePrice - downPayment;
+        const monthlyRate = ratePct / 100 / 12;
+        const n = termYears * 12;
+
+        let basePayment;
+        if (monthlyRate > 0) {
+            const growth = Math.pow(1 + monthlyRate, n);
+            basePayment = (loanAmount * (monthlyRate * growth)) / (growth - 1);
+        } else {
+            basePayment = loanAmount / n;
+        }
+        const payment = basePayment + extraMonthly;
+
+        let balance = loanAmount;
+        let homeValue = homePrice;
+        let cumPrincipal = downPayment;
+        let cumInterest = 0;
+
+        const out = {
+            years: [], balance: [], equity: [], interestPaid: [],
+            homeValue: [], monthlyPayment: payment, basePayment: basePayment,
+        };
+        for (let m = 1; m <= n; m++) {
+            const interest = balance * monthlyRate;
+            const principal = Math.min(payment - interest, balance);
+            balance -= principal;
+            cumPrincipal += principal;
+            cumInterest += interest;
+            if (m % 12 === 0) homeValue *= 1 + apprPct / 100;
+            out.years.push(m / 12);
+            out.balance.push(balance);
+            out.equity.push(cumPrincipal + (homeValue - homePrice));
+            out.interestPaid.push(cumInterest);
+            out.homeValue.push(homeValue);
+        }
+        return out;
+    }
+
+    // Sanity check: $360k @ 6.5%/30yr => $2275.44/mo
+    console.assert(
+        Math.abs(calcSchedule(450000, 20, 6.5, 30, 3, 0).basePayment - 2275.44) < 0.01,
+        "loan math broken"
+    );
+
+    const SCENARIOS = [
+        { key: "base", label: "Base Case", on: true },
+        { key: "highRate", label: "High Rate (8%)", on: true },
+        { key: "lowDown", label: "Low Down (3.5%)", on: true },
+        { key: "extra", label: "Extra Principal", on: true },
+        { key: "disasters", label: "With Disasters", on: true },
+        { key: "biweekly", label: "Bi-weekly Payments", on: true },
+    ];
+
+    function params() {
+        return {
+            price: +document.getElementById("lc-price").value || 0,
+            down: +document.getElementById("lc-down").value || 0,
+            rate: +document.getElementById("lc-rate").value || 0,
+            term: Math.max(1, Math.min(50, +document.getElementById("lc-term").value || 30)),
+            appr: +document.getElementById("lc-appr").value || 0,
+            extra: +document.getElementById("lc-extra").value || 0,
+        };
+    }
+
+    function computeScenarios(p) {
+        const out = {};
+        out.base = calcSchedule(p.price, p.down, p.rate, p.term, p.appr, 0);
+        out.highRate = calcSchedule(p.price, p.down, 8.0, p.term, p.appr, 0);
+        out.lowDown = calcSchedule(p.price, 3.5, p.rate, p.term, p.appr, 0);
+        out.extra = calcSchedule(p.price, p.down, p.rate, p.term, p.appr, p.extra);
+        // Disasters: lower appreciation (2%) plus $40k of disaster costs off equity.
+        out.disasters = calcSchedule(p.price, p.down, p.rate, p.term, 2.0, 0);
+        out.disasters.equity = out.disasters.equity.map((e) => e - 40000);
+        // Bi-weekly: 26 half-payments/yr = 1 extra payment/yr.
+        out.biweekly = calcSchedule(p.price, p.down, p.rate, p.term, p.appr, out.base.basePayment / 12);
+        return out;
+    }
+
+    const fmtK = (v) => "$" + Math.round(v / 1000) + "K";
+    const fmt = (v) =>
+        v.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+
+    let chart = null;
+
+    function render() {
+        const p = params();
+        const scen = computeScenarios(p);
+        const active = SCENARIOS.filter((s) => s.on);
+
+        // Tab select keeps its choice if still active
+        const tabSel = document.getElementById("lc-tab");
+        const prev = tabSel.value;
+        tabSel.innerHTML = "";
+        for (const s of active) {
+            const o = document.createElement("option");
+            o.value = s.key;
+            o.textContent = s.label;
+            tabSel.appendChild(o);
+        }
+        if (active.some((s) => s.key === prev)) tabSel.value = prev;
+        const sel = scen[tabSel.value] || scen.base;
+
+        // Summary stats
+        const last = sel.equity.length - 1;
+        document.getElementById("lc-summary").innerHTML = [
+            ["Monthly payment", fmt(sel.monthlyPayment)],
+            ["Final equity", fmt(sel.equity[last])],
+            ["Bank profit (interest)", fmt(sel.interestPaid[last])],
+            ["Final home value", fmt(sel.homeValue[last])],
+        ]
+            .map(([k, v]) => `<div class="loan-stat"><span class="v">${v}</span><span class="k">${k}</span></div>`)
+            .join("");
+
+        // Chart: selected scenario detail
+        const css = getComputedStyle(document.documentElement);
+        const textColor = css.getPropertyValue("--text-primary").trim() || "#ccc";
+        const gridColor = css.getPropertyValue("--border-primary").trim() || "#444";
+        const labels = sel.years.filter((_, i) => i % 12 === 11).map((y) => "Yr " + Math.round(y));
+        const yearly = (arr) => arr.filter((_, i) => i % 12 === 11);
+
+        const data = {
+            labels,
+            datasets: [
+                { label: "Your Equity", data: yearly(sel.equity), borderColor: "#2ecc71", backgroundColor: "#2ecc7133", fill: true },
+                { label: "Bank Profit (Interest)", data: yearly(sel.interestPaid), borderColor: "#e74c3c", backgroundColor: "#e74c3c33", fill: true },
+                { label: "Loan Balance", data: yearly(sel.balance), borderColor: "#3498db", fill: false },
+                { label: "Home Value", data: yearly(sel.homeValue), borderColor: "#f39c12", fill: false, borderDash: [6, 4] },
+            ],
+        };
+        const opts = {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: "index", intersect: false },
+            plugins: {
+                legend: { labels: { color: textColor } },
+                tooltip: { callbacks: { label: (c) => c.dataset.label + ": " + fmt(c.parsed.y) } },
+            },
+            scales: {
+                x: { ticks: { color: textColor }, grid: { color: gridColor } },
+                y: { ticks: { color: textColor, callback: fmtK }, grid: { color: gridColor } },
+            },
+        };
+        if (chart) {
+            chart.data = data;
+            chart.options = opts;
+            chart.update();
+        } else {
+            chart = new Chart(document.getElementById("lc-chart"), { type: "line", data, options: opts });
+        }
+
+        // Comparison table
+        const rows = active.map((s) => {
+            const sc = scen[s.key];
+            const i = sc.equity.length - 1;
+            const eq = sc.equity[i];
+            const bank = sc.interestPaid[i];
+            const pct = ((bank / (eq + bank)) * 100).toFixed(1);
+            return `<tr><td>${s.label}</td><td>${fmt(sc.monthlyPayment)}</td><td>${fmt(eq)}</td><td>${fmt(bank)}</td><td>${pct}%</td></tr>`;
+        });
+        document.getElementById("lc-table").innerHTML =
+            "<tr><th>Scenario</th><th>Monthly Pmt</th><th>Your Equity</th><th>Bank Profit</th><th>Bank Share</th></tr>" +
+            rows.join("");
+    }
+
+    // Build scenario checkboxes
+    const checksDiv = document.getElementById("lc-scenarios");
+    for (const s of SCENARIOS) {
+        const label = document.createElement("label");
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.checked = s.on;
+        cb.addEventListener("change", () => {
+            s.on = cb.checked;
+            render();
+        });
+        label.appendChild(cb);
+        label.appendChild(document.createTextNode(" " + s.label));
+        checksDiv.appendChild(label);
+    }
+
+    document.querySelectorAll(".loan-form input[type=number]").forEach((el) =>
+        el.addEventListener("input", render)
+    );
+    document.getElementById("lc-tab").addEventListener("change", render);
+    render();
+</script>
+{% endblock %}

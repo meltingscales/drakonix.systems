@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% block title %}Solar Panel Payoff Calculator — drakonix.systems{% endblock %}
+
+{% block content %}
+<div class="solar-container">
+    <h1>&#x2600;&#xfe0f; Solar Panel Payoff Calculator</h1>
+    <p class="subtitle">
+        When does a solar installation pay for itself?<br />
+        Cumulative net cash position over time, with the break-even point
+        where the curve crosses zero.
+    </p>
+
+    <div class="solar-layout">
+        <div class="solar-form">
+            <div class="solar-row">
+                <label for="sp-cost">Install cost ($)</label>
+                <input type="number" id="sp-cost" min="0" step="1000" value="25000" />
+            </div>
+            <div class="solar-row">
+                <label for="sp-credit">Tax credit / incentives (%)</label>
+                <input type="number" id="sp-credit" min="0" max="100" step="1" value="30" />
+            </div>
+            <div class="solar-row">
+                <label for="sp-prod">Annual production (kWh)</label>
+                <input type="number" id="sp-prod" min="0" step="500" value="10000" />
+            </div>
+            <div class="solar-row">
+                <label for="sp-price">Electricity price ($/kWh)</label>
+                <input type="number" id="sp-price" min="0" step="0.01" value="0.15" />
+            </div>
+            <div class="solar-row">
+                <label for="sp-infl">Price inflation (%/yr)</label>
+                <input type="number" id="sp-infl" min="-10" max="20" step="0.5" value="3" />
+            </div>
+            <div class="solar-row">
+                <label for="sp-degr">Panel degradation (%/yr)</label>
+                <input type="number" id="sp-degr" min="0" max="5" step="0.1" value="0.5" />
+            </div>
+            <div class="solar-row">
+                <label for="sp-maint">Maintenance ($/yr)</label>
+                <input type="number" id="sp-maint" min="0" step="50" value="150" />
+            </div>
+            <div class="solar-row">
+                <label for="sp-years">Horizon (years)</label>
+                <input type="number" id="sp-years" min="1" max="50" step="1" value="30" />
+            </div>
+        </div>
+
+        <div class="solar-main">
+            <div class="solar-summary" id="sp-summary"></div>
+            <div class="solar-chart-wrap">
+                <canvas id="sp-chart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .solar-container {
+        max-width: 1344px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    .solar-container h1 {
+        font-size: 2.2rem;
+        margin-bottom: 0.4rem;
+    }
+    .subtitle {
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        line-height: 1.5;
+    }
+    .solar-layout {
+        display: flex;
+        gap: 2rem;
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+    .solar-form {
+        flex: 0 0 340px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    .solar-main {
+        flex: 1 1 500px;
+        min-width: 0;
+    }
+    .solar-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .solar-row label {
+        font-weight: 600;
+        flex: 1;
+    }
+    .solar-row input {
+        padding: 0.45rem 0.65rem;
+        border: 1px solid var(--border-primary);
+        border-radius: 4px;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        font-size: 1rem;
+        width: 120px;
+    }
+    .solar-summary {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+    .solar-stat {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: 6px;
+        padding: 0.6rem 1rem;
+    }
+    .solar-stat .v {
+        font-size: 1.3rem;
+        font-weight: 700;
+        display: block;
+    }
+    .solar-stat .k {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+    .solar-chart-wrap {
+        position: relative;
+        height: 420px;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script>
+    "use strict";
+
+    function calcPayoff(p) {
+        const netCost = p.cost * (1 - p.credit / 100);
+        const years = [0];
+        const net = [-netCost];
+        const savings = [0];
+        let cumSavings = 0;
+        let breakEven = null;
+        for (let y = 1; y <= p.years; y++) {
+            const production = p.prod * Math.pow(1 - p.degr / 100, y - 1);
+            const price = p.price * Math.pow(1 + p.infl / 100, y - 1);
+            const yearSavings = production * price - p.maint;
+            const prevNet = cumSavings - netCost;
+            cumSavings += yearSavings;
+            const curNet = cumSavings - netCost;
+            if (breakEven === null && prevNet < 0 && curNet >= 0 && yearSavings > 0) {
+                // linear interpolation within the year
+                breakEven = y - 1 + -prevNet / yearSavings;
+            }
+            years.push(y);
+            net.push(curNet);
+            savings.push(cumSavings);
+        }
+        return { years, net, savings, netCost, breakEven };
+    }
+
+    // Sanity check: $10k net cost, $1k/yr flat savings => break-even at 10 yrs
+    (() => {
+        const r = calcPayoff({ cost: 10000, credit: 0, prod: 10000, price: 0.1, infl: 0, degr: 0, maint: 0, years: 15 });
+        console.assert(Math.abs(r.breakEven - 10) < 1e-9, "solar math broken");
+    })();
+
+    const fmt = (v) =>
+        v.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+
+    let chart = null;
+
+    function render() {
+        const p = {
+            cost: +document.getElementById("sp-cost").value || 0,
+            credit: +document.getElementById("sp-credit").value || 0,
+            prod: +document.getElementById("sp-prod").value || 0,
+            price: +document.getElementById("sp-price").value || 0,
+            infl: +document.getElementById("sp-infl").value || 0,
+            degr: +document.getElementById("sp-degr").value || 0,
+            maint: +document.getElementById("sp-maint").value || 0,
+            years: Math.max(1, Math.min(50, +document.getElementById("sp-years").value || 30)),
+        };
+        const r = calcPayoff(p);
+        const last = r.net.length - 1;
+
+        const beText =
+            r.breakEven === null
+                ? "never (within horizon)"
+                : r.breakEven.toFixed(1) + " years";
+        document.getElementById("sp-summary").innerHTML = [
+            ["Net cost after incentives", fmt(r.netCost)],
+            ["Break-even", beText],
+            ["Net gain at " + p.years + " yrs", fmt(r.net[last])],
+            ["First-year savings", fmt(p.prod * p.price - p.maint)],
+        ]
+            .map(([k, v]) => `<div class="solar-stat"><span class="v">${v}</span><span class="k">${k}</span></div>`)
+            .join("");
+
+        const css = getComputedStyle(document.documentElement);
+        const textColor = css.getPropertyValue("--text-primary").trim() || "#ccc";
+        const gridColor = css.getPropertyValue("--border-primary").trim() || "#444";
+
+        const data = {
+            labels: r.years.map((y) => "Yr " + y),
+            datasets: [
+                {
+                    label: "Net position (savings − cost)",
+                    data: r.net,
+                    borderColor: "#f39c12",
+                    backgroundColor: "#f39c1233",
+                    fill: { target: "origin", above: "#2ecc7133", below: "#e74c3c33" },
+                    pointRadius: 0,
+                },
+                {
+                    label: "Cumulative savings",
+                    data: r.savings,
+                    borderColor: "#2ecc71",
+                    fill: false,
+                    borderDash: [6, 4],
+                    pointRadius: 0,
+                },
+                ...(r.breakEven !== null
+                    ? [{
+                          label: "Break-even (" + beText + ")",
+                          data: r.years.map((y) =>
+                              Math.abs(y - Math.round(r.breakEven)) < 0.5 ? 0 : null
+                          ),
+                          borderColor: "#e74c3c",
+                          backgroundColor: "#e74c3c",
+                          pointRadius: 6,
+                          pointStyle: "crossRot",
+                          showLine: false,
+                      }]
+                    : []),
+            ],
+        };
+        const opts = {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: "index", intersect: false },
+            plugins: {
+                legend: { labels: { color: textColor } },
+                tooltip: {
+                    callbacks: {
+                        label: (c) => (c.parsed.y === null ? "" : c.dataset.label + ": " + fmt(c.parsed.y)),
+                    },
+                },
+            },
+            scales: {
+                x: { ticks: { color: textColor, maxTicksLimit: 16 }, grid: { color: gridColor } },
+                y: {
+                    ticks: { color: textColor, callback: (v) => "$" + Math.round(v / 1000) + "K" },
+                    grid: { color: gridColor },
+                },
+            },
+        };
+        if (chart) {
+            chart.data = data;
+            chart.options = opts;
+            chart.update();
+        } else {
+            chart = new Chart(document.getElementById("sp-chart"), { type: "line", data, options: opts });
+        }
+    }
+
+    document.querySelectorAll(".solar-form input").forEach((el) =>
+        el.addEventListener("input", render)
+    );
+    render();
+</script>
+{% endblock %}

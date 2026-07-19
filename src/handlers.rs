@@ -367,6 +367,32 @@ pub async fn death_timer_page(State(state): State<Arc<AppState>>) -> Result<Html
     Ok(Html(html))
 }
 
+/// Loan amortization calculator page handler
+pub async fn loan_calculator_page(State(state): State<Arc<AppState>>) -> Result<Html<String>, AppError> {
+    let mut context = Context::new();
+    add_honeypot_urls(&mut context);
+
+    let html = state
+        .tera
+        .render("loan_calculator.html", &context)
+        .map_err(|e| AppError::TemplateError(e.to_string()))?;
+
+    Ok(Html(html))
+}
+
+/// Solar panel payoff calculator page handler
+pub async fn solar_payoff_page(State(state): State<Arc<AppState>>) -> Result<Html<String>, AppError> {
+    let mut context = Context::new();
+    add_honeypot_urls(&mut context);
+
+    let html = state
+        .tera
+        .render("solar_payoff.html", &context)
+        .map_err(|e| AppError::TemplateError(e.to_string()))?;
+
+    Ok(Html(html))
+}
+
 /// Linked list learning REPL page handler
 pub async fn linked_list_learning_page(State(state): State<Arc<AppState>>) -> Result<Html<String>, AppError> {
     let mut context = Context::new();

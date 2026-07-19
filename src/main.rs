@@ -190,6 +190,10 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/timer/:timer_id/status", get(handlers::timer_status))
         // Death timer service
         .route("/services/death-timer", get(handlers::death_timer_page))
+        // Loan amortization calculator
+        .route("/services/loan-calculator", get(handlers::loan_calculator_page))
+        // Solar panel payoff calculator
+        .route("/services/solar-payoff", get(handlers::solar_payoff_page))
         // Linked list learning REPL
         .route("/services/linked-list-learning", get(handlers::linked_list_learning_page))
         // Bifurcation diagram viewer
