@@ -46,6 +46,12 @@
                 <label for="lc-tab">Chart scenario</label>
                 <select id="lc-tab"></select>
             </div>
+
+            <div class="loan-row">
+                <button id="lc-export" class="loan-btn">Export CSV</button>
+                <button id="lc-import" class="loan-btn">Import CSV</button>
+                <input type="file" id="lc-file" accept=".csv,text/csv" style="display: none" />
+            </div>
         </div>
 
         <div class="loan-main">
@@ -124,6 +130,18 @@
         align-items: center;
         gap: 0.5rem;
         cursor: pointer;
+    }
+    .loan-btn {
+        padding: 0.45rem 0.9rem;
+        border: 1px solid var(--border-primary);
+        border-radius: 4px;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        font-size: 0.95rem;
+        cursor: pointer;
+    }
+    .loan-btn:hover {
+        border-color: var(--text-secondary);
     }
     .loan-summary {
         display: flex;
@@ -355,6 +373,62 @@
         label.appendChild(document.createTextNode(" " + s.label));
         checksDiv.appendChild(label);
     }
+
+    // ── CSV import/export ──
+    // Format: "param,<input-id>,<value>" and "scenario,<key>,<0|1>" rows,
+    // then a yearly data table. Import reads only param/scenario rows.
+    const PARAM_IDS = ["lc-price", "lc-down", "lc-rate", "lc-term", "lc-appr", "lc-extra"];
+
+    function exportCsv() {
+        const lines = PARAM_IDS.map((id) => `param,${id},${document.getElementById(id).value}`);
+        for (const s of SCENARIOS) lines.push(`scenario,${s.key},${s.on ? 1 : 0}`);
+        lines.push("");
+        lines.push("scenario,year,monthly_payment,balance,equity,interest_paid,home_value");
+        const scen = computeScenarios(params());
+        for (const s of SCENARIOS.filter((s) => s.on)) {
+            const sc = scen[s.key];
+            for (let i = 11; i < sc.years.length; i += 12) {
+                lines.push(
+                    [s.key, Math.round(sc.years[i]), sc.monthlyPayment.toFixed(2),
+                     sc.balance[i].toFixed(2), sc.equity[i].toFixed(2),
+                     sc.interestPaid[i].toFixed(2), sc.homeValue[i].toFixed(2)].join(",")
+                );
+            }
+        }
+        const blob = new Blob([lines.join("\n") + "\n"], { type: "text/csv" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "loan_calculator.csv";
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
+
+    function importCsv(text) {
+        for (const line of text.split(/\r?\n/)) {
+            const [kind, key, value] = line.split(",");
+            if (kind === "param" && PARAM_IDS.includes(key)) {
+                document.getElementById(key).value = value;
+            } else if (kind === "scenario") {
+                const s = SCENARIOS.find((s) => s.key === key);
+                if (s) {
+                    s.on = value === "1";
+                    const idx = SCENARIOS.indexOf(s);
+                    checksDiv.querySelectorAll("input")[idx].checked = s.on;
+                }
+            }
+        }
+        render();
+    }
+
+    document.getElementById("lc-export").addEventListener("click", exportCsv);
+    document.getElementById("lc-import").addEventListener("click", () =>
+        document.getElementById("lc-file").click()
+    );
+    document.getElementById("lc-file").addEventListener("change", (e) => {
+        const f = e.target.files[0];
+        if (f) f.text().then(importCsv);
+        e.target.value = "";
+    });
 
     document.querySelectorAll(".loan-form input[type=number]").forEach((el) =>
         el.addEventListener("input", render)
