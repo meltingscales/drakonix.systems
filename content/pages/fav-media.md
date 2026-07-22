@@ -148,6 +148,7 @@ Use at your own legal risk.
 ### Minecraft Servers
 
 - mc.furryrefuge.com
+- box.berrysmp.net - claustrophobic SMP
 
 ### Minecraft Modpacks/Mods
 
