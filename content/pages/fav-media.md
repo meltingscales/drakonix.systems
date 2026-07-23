@@ -149,6 +149,7 @@ Use at your own legal risk.
 
 - mc.furryrefuge.com
 - box.berrysmp.net - claustrophobic SMP
+- mineinabyss.com - Made in Abyss-themed SMP, custom curse/abyss mechanics
 
 ### Minecraft Modpacks/Mods
 
