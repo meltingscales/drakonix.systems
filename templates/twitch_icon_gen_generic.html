@@ -8,7 +8,8 @@
         <h3>Nano Banana prompt ideas</h3>
         <p>No character art yet? Generate a subscriber badge series with <a href="https://ai.studio" target="_blank" rel="noopener">Nano Banana</a> first, then upload the results above.</p>
 
-        <p class="prompt-label">Full spread — ready to copy/paste as-is, one prompt per tier. Color and features escalate with tenure:</p>
+        <details class="prompt-tiers-details">
+            <summary class="prompt-label">Full spread — ready to copy/paste as-is, one prompt per tier. Color and features escalate with tenure.</summary>
         <div class="prompt-tiers">
             <pre class="prompt-box">generate a twitch subscriber badge with this character overlaid with text that says "2m" in large font with a yellow theme</pre>
             <pre class="prompt-box">generate a twitch subscriber badge with this character overlaid with text that says "3m" in large font with an amber theme</pre>
@@ -30,6 +31,7 @@
             <pre class="prompt-box">generate a twitch subscriber badge with this character overlaid with text that says "7.5y" in large font with a rainbow theme</pre>
             <pre class="prompt-box">generate a twitch subscriber badge with this character overlaid with text that says "8y" in large font with a cosmic galaxy theme, wearing a crown, a cape, and a glowing aura</pre>
         </div>
+        </details>
 
         <p class="prompt-label">Tips:</p>
         <ul class="prompt-list">
@@ -317,6 +319,19 @@
         font-family: monospace;
         white-space: pre-wrap;
         margin: 0 0 1rem;
+    }
+
+    .prompt-tiers-details {
+        margin-bottom: 1rem;
+    }
+
+    .prompt-tiers-details summary.prompt-label {
+        cursor: pointer;
+        margin-bottom: 0;
+    }
+
+    .prompt-tiers-details[open] summary.prompt-label {
+        margin-bottom: 0.75rem;
     }
 
     .prompt-tiers {
