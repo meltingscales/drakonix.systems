@@ -8,37 +8,33 @@
         <h3>Nano Banana prompt ideas</h3>
         <p>No character art yet? Generate a subscriber badge series with <a href="https://ai.studio" target="_blank" rel="noopener">Nano Banana</a> first, then upload the results above.</p>
 
-        <p class="prompt-label">Starter prompt (2 months):</p>
-        <pre class="prompt-box">generate a twitch subscriber badge with this character overlaid with text that says "2m"</pre>
-
-        <p class="prompt-label">Full spread — swap the badge text for each tier, reusing the same character/pose so the set looks consistent:</p>
-        <ul class="prompt-list">
-            <li><code>"2m"</code></li>
-            <li><code>"3m"</code></li>
-            <li><code>"6m"</code></li>
-            <li><code>"9m"</code></li>
-            <li><code>"1y"</code></li>
-            <li><code>"1.5y"</code></li>
-            <li><code>"2y"</code></li>
-            <li><code>"2.5y"</code></li>
-            <li><code>"3y"</code></li>
-            <li><code>"3.5y"</code></li>
-            <li><code>"4y"</code></li>
-            <li><code>"4.5y"</code></li>
-            <li><code>"5y"</code></li>
-            <li><code>"5.5y"</code></li>
-            <li><code>"6y"</code></li>
-            <li><code>"6.5y"</code></li>
-            <li><code>"7y"</code></li>
-            <li><code>"7.5y"</code></li>
-            <li><code>"8y"</code></li>
-        </ul>
+        <p class="prompt-label">Full spread — ready to copy/paste as-is, one prompt per tier. Color and features escalate with tenure:</p>
+        <div class="prompt-tiers">
+            <pre class="prompt-box">generate a twitch subscriber badge with this character overlaid with text that says "2m" with a yellow theme</pre>
+            <pre class="prompt-box">generate a twitch subscriber badge with this character overlaid with text that says "3m" with an amber theme</pre>
+            <pre class="prompt-box">generate a twitch subscriber badge with this character overlaid with text that says "6m" with an orange theme</pre>
+            <pre class="prompt-box">generate a twitch subscriber badge with this character overlaid with text that says "9m" with a green theme</pre>
+            <pre class="prompt-box">generate a twitch subscriber badge with this character overlaid with text that says "1y" with a teal theme, wearing a small crown</pre>
+            <pre class="prompt-box">generate a twitch subscriber badge with this character overlaid with text that says "1.5y" with a blue theme, wearing a small crown</pre>
+            <pre class="prompt-box">generate a twitch subscriber badge with this character overlaid with text that says "2y" with an indigo theme</pre>
+            <pre class="prompt-box">generate a twitch subscriber badge with this character overlaid with text that says "2.5y" with a purple theme</pre>
+            <pre class="prompt-box">generate a twitch subscriber badge with this character overlaid with text that says "3y" with a violet theme, wearing a cape</pre>
+            <pre class="prompt-box">generate a twitch subscriber badge with this character overlaid with text that says "3.5y" with a magenta theme, wearing a cape</pre>
+            <pre class="prompt-box">generate a twitch subscriber badge with this character overlaid with text that says "4y" with a crimson theme</pre>
+            <pre class="prompt-box">generate a twitch subscriber badge with this character overlaid with text that says "4.5y" with a red theme</pre>
+            <pre class="prompt-box">generate a twitch subscriber badge with this character overlaid with text that says "5y" with a bronze theme</pre>
+            <pre class="prompt-box">generate a twitch subscriber badge with this character overlaid with text that says "5.5y" with a silver theme</pre>
+            <pre class="prompt-box">generate a twitch subscriber badge with this character overlaid with text that says "6y" with a gold theme, with a glowing aura</pre>
+            <pre class="prompt-box">generate a twitch subscriber badge with this character overlaid with text that says "6.5y" with a platinum theme, with a glowing aura</pre>
+            <pre class="prompt-box">generate a twitch subscriber badge with this character overlaid with text that says "7y" with a diamond theme</pre>
+            <pre class="prompt-box">generate a twitch subscriber badge with this character overlaid with text that says "7.5y" with a rainbow theme</pre>
+            <pre class="prompt-box">generate a twitch subscriber badge with this character overlaid with text that says "8y" with a cosmic galaxy theme, wearing a crown, a cape, and a glowing aura</pre>
+        </div>
 
         <p class="prompt-label">Tips:</p>
         <ul class="prompt-list">
             <li>Feed the previous generation back in as the reference image for the next tier — keeps character, pose, and art style locked across the set.</li>
             <li>Add <code>, simple bold text, high contrast, readable at 18x18px</code> to the prompt so the label survives the resize down to sub-badge size.</li>
-            <li>For visual progression, layer in cosmetic escalation per tier, e.g. <code>, add a small crown</code> at 1y, <code>, add a cape</code> at 3y, <code>, add a glowing aura</code> at 6y+.</li>
         </ul>
     </div>
 
@@ -321,6 +317,15 @@
         font-family: monospace;
         white-space: pre-wrap;
         margin: 0 0 1rem;
+    }
+
+    .prompt-tiers {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .prompt-tiers .prompt-box {
+        margin-bottom: 0.6rem;
     }
 
     .prompt-list {
