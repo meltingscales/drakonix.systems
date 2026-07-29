@@ -2,7 +2,9 @@
 
 // ── Config ────────────────────────────────────────────────────────────────────
 const WORLD_URL    = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
-const HITS_URL     = "/api/honeypot/hits";
+// Slim endpoint (no headers/body) — this page only needs ip/country/timestamp
+// but wants the whole dataset at once, not a paginated chunk.
+const HITS_URL     = "/api/honeypot/stats";
 const FLASH_WALL_MS = 1400;  // real-ms a country stays "lit" after a new hit crosses the playhead
 const FEED_MAX     = 14;
 
