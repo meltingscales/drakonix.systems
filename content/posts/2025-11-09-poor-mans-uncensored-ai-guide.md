@@ -89,6 +89,20 @@ The [Framework Desktop](https://frame.work/desktop) is the consumer example: an 
 
 It's not free lunch, though. Memory bandwidth is the tradeoff: the 192GB config tops out around 273GB/s, well under a 3090's 936GB/s or a 4090's ~1TB/s, so token generation is slower than a discrete GPU with the same VRAM would give you — you're trading speed for capacity. Price has also crept up since launch: the 128GB config started at $1,999, and has been seen as high as $3,449 in 2026 depending on availability. Compared to PATH_D (build your own 3090 rig), a Framework Desktop is easier (no case/PSU/compatibility puzzle, just plug it in) and lets you run bigger models than a single 24GB card, but you'll pay more per token/sec and per dollar of raw VRAM than the used-GPU route. Good middle ground if you want big-model capacity without building a PC and can tolerate slower generation.
 
+## WTF? Uncensored??
+
+So how do people actually strip the "I can't help with that" out of a model without retraining the whole thing from scratch? The technique is called **abliteration** (ablation + obliteration), and [Maxime Labonne's writeup](https://huggingface.co/blog/mlabonne/abliteration) is the canonical explainer.
+
+The short version: refusal isn't spread evenly through a model's brain — it lives in one specific direction inside the residual stream (the vector "highway" running through every layer). Researchers found this by feeding the model a pile of harmless prompts and a pile of harmful ones, recording the internal activations for both, and averaging the difference. That difference *is* the refusal direction — a single vector you can point at and say "this is the part of the model that says no."
+
+Once you've found it, you either:
+- subtract it from every layer's output at inference time, or
+- surgically edit the model's weights so it can never write to that direction again (the permanent version, called "orthogonalization")
+
+No retraining, no dataset, no GPU cluster — just linear algebra on activations the model already produces. That's why it's epic: it's not "fine-tuning away the safety training," it's finding the model's literal on/off switch for refusal and flipping it. The tradeoff is it can dent general capability a bit, since you're lobotomizing one very specific circuit — which is why a lot of "abliterated" models on huggingface get a quick DPO pass afterward to patch that back up.
+
+This is why you'll see "abliterated" in a ton of model names throughout this guide (looking at you, PATH_A's `gemma-3-27b-it-abliterated`) — it means someone already did this surgery for you, so you can skip straight to running it.
+
 ## Actual Content
 
 This is where the guide actually starts ![](https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExMjlrYW1jbXZ4czVhemR6bTNrcnR4MThuYzBzbXFubTdubjQzaDdpeSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/Dps6uX4XPOKeA/200.webp)
