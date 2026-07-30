@@ -2,20 +2,10 @@ use crate::constants::HONEYPOT_MAX_ENTRIES;
 use rusqlite::{Connection, Result};
 use serde::Serialize;
 use std::sync::{Arc, Mutex};
-use std::time::{Duration, Instant};
-
-/// How long a cached /api/honeypot/stats result is served before re-querying.
-/// Kept under the dashboard's fastest auto-refresh option (15s) so cached
-/// data is never staler than what a manual refresh would show anyway.
-const STATS_CACHE_TTL: Duration = Duration::from_secs(10);
 
 #[derive(Clone)]
 pub struct HoneypotDb {
     conn: Arc<Mutex<Connection>>,
-    // Full-dataset scan for the heatmaps/top-stats charts — hit on every
-    // dashboard load and every auto-refresh tick, by every concurrent
-    // viewer, so it's worth short-TTL caching instead of re-scanning.
-    stats_cache: Arc<Mutex<Option<(Instant, Arc<Vec<HoneypotHitLight>>)>>>,
 }
 
 #[derive(Serialize, utoipa::ToSchema)]
@@ -77,13 +67,11 @@ impl HoneypotDb {
         );
         Ok(Self {
             conn: Arc::new(Mutex::new(conn)),
-            stats_cache: Arc::new(Mutex::new(None)),
         })
     }
 
     pub async fn log_hit(&self, slug: String, ip: String, headers_json: String, body: String, country: String, org: String) {
         let conn = Arc::clone(&self.conn);
-        let stats_cache = Arc::clone(&self.stats_cache);
         let timestamp = chrono::Utc::now().to_rfc3339();
         tokio::task::spawn_blocking(move || {
             let conn = conn.lock().unwrap();
@@ -102,9 +90,6 @@ impl HoneypotDb {
                     rusqlite::params![count - HONEYPOT_MAX_ENTRIES],
                 );
             }
-            // A new hit makes the cached stats stale — drop it rather than
-            // waiting out the TTL, so the dashboard picks it up right away.
-            *stats_cache.lock().unwrap() = None;
         })
         .await
         .ok();
@@ -112,17 +97,9 @@ impl HoneypotDb {
 
     /// Slim rows (no headers/body) across the whole retained dataset — used for
     /// charts/heatmaps/top-stats, which need every row but not the heavy blobs.
-    /// Cached for STATS_CACHE_TTL since this is a full-table scan hit by every
-    /// viewer on every load/refresh.
-    pub async fn get_stats_hits(&self) -> Arc<Vec<HoneypotHitLight>> {
-        if let Some((fetched_at, hits)) = self.stats_cache.lock().unwrap().clone() {
-            if fetched_at.elapsed() < STATS_CACHE_TTL {
-                return hits;
-            }
-        }
-
+    pub async fn get_stats_hits(&self) -> Vec<HoneypotHitLight> {
         let conn = Arc::clone(&self.conn);
-        let hits: Vec<HoneypotHitLight> = tokio::task::spawn_blocking(move || {
+        tokio::task::spawn_blocking(move || {
             let conn = conn.lock().unwrap();
             let mut stmt = conn
                 .prepare(
@@ -148,11 +125,7 @@ impl HoneypotDb {
         .await
         .ok()
         .flatten()
-        .unwrap_or_default();
-
-        let hits = Arc::new(hits);
-        *self.stats_cache.lock().unwrap() = Some((Instant::now(), Arc::clone(&hits)));
-        hits
+        .unwrap_or_default()
     }
 
     /// One page of full hit rows (including headers/body) for the hits table,

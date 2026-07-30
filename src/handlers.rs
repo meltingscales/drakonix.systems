@@ -924,7 +924,7 @@ pub async fn honeypot_hits_api(
 )]
 pub async fn honeypot_stats_api(
     State(state): State<Arc<AppState>>,
-) -> Result<Json<std::sync::Arc<Vec<honeypot_db::HoneypotHitLight>>>, AppError> {
+) -> Result<Json<Vec<honeypot_db::HoneypotHitLight>>, AppError> {
     let hits = state.honeypot_db.get_stats_hits().await;
     Ok(Json(hits))
 }
