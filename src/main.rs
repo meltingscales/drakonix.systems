@@ -40,7 +40,6 @@ use utoipa_swagger_ui::SwaggerUi;
         handlers::download_twitch_emote_pack,
         handlers::markov_babble_honeypot,
         handlers::honeypot_hits_api,
-        handlers::honeypot_stats_api,
         handlers::honeypot_config_api,
     ),
     components(
@@ -54,8 +53,6 @@ use utoipa_swagger_ui::SwaggerUi;
             twitch_emote_gen::EmoteGenResponse,
             twitch_emote_gen::EmoteResult,
             honeypot_db::HoneypotHit,
-            honeypot_db::HoneypotHitLight,
-            handlers::HitsPageResponse,
         )
     ),
     tags(
@@ -289,7 +286,6 @@ async fn main() -> anyhow::Result<()> {
             get(handlers::honeypot_map_timeline_dashboard),
         )
         .route("/api/honeypot/hits",   get(handlers::honeypot_hits_api))
-        .route("/api/honeypot/stats",  get(handlers::honeypot_stats_api))
         .route("/api/honeypot/config", get(handlers::honeypot_config_api))
         // Swagger UI for API documentation
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))

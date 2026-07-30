@@ -8,13 +8,8 @@ const _lastUpdatedEl = document.getElementById("hp-last-updated");
 let   _refreshTimer  = null;
 let   _dt            = null;
 
-// Wire up filter, debounced — each keystroke now costs a server round-trip
-// (search runs server-side against the DB), not a free in-memory re-filter.
-let _filterDebounce = null;
-_filterEl.addEventListener("input", () => {
-  clearTimeout(_filterDebounce);
-  _filterDebounce = setTimeout(applyFilter, 300);
-});
+// Wire up filter (input persists across re-renders; table is re-queried each time)
+_filterEl.addEventListener("input", applyFilter);
 
 // Wire up auto-refresh selector
 document.getElementById("hp-refresh-select").addEventListener("change", e => {
@@ -23,14 +18,7 @@ document.getElementById("hp-refresh-select").addEventListener("change", e => {
   if (secs > 0) _refreshTimer = setInterval(doRefresh, secs * 1000);
 });
 
-// Column index → DB column name, matching honeypot_db::SORTABLE_COLUMNS. Must
-// stay in sync with the <th> order built in buildTableShell().
-const SORT_COLUMNS = ["id", "slug", "ip", "country", "org", "timestamp"];
-
-// Initial load: fetch config once, build the (empty) table shell + server-side
-// DataTable, then load the stats-driven charts. The table lazy-loads its own
-// rows a page at a time via DataTable's serverSide ajax; only the charts need
-// the full (slim, headers/body-free) dataset up front.
+// Initial load: fetch config once, then render
 (async () => {
   const config = await fetch("/api/honeypot/config")
     .then(r => r.ok ? r.json() : null).catch(() => null);
@@ -40,39 +28,24 @@ const SORT_COLUMNS = ["id", "slug", "ip", "country", "org", "timestamp"];
       `Recent hits to the markov-babble honeypot and catch-all 404 endpoints. ` +
       `Showing up to ${maxEntries.toLocaleString()} most-recent entries (oldest auto-pruned).`;
   }
-
-  _root.innerHTML = "";
-  const chartsEl = el("div", "hp-charts");
-  _root.appendChild(chartsEl);
-  _root.appendChild(buildTableShell());
-  initTable();
-
-  await refreshCharts(chartsEl);
+  await doRefresh();
 })();
 
 async function doRefresh() {
-  const chartsEl = _root.querySelector(".hp-charts");
-  await refreshCharts(chartsEl);
-  if (_dt) _dt.ajax.reload(null, false); // false = keep current page
-  _lastUpdatedEl.textContent = `Updated ${new Date().toLocaleTimeString()}`;
-}
-
-// Fetches the slim, whole-dataset stats endpoint and (re)builds the
-// heatmaps/top-stats charts. Does not touch the (separately paginated) table.
-async function refreshCharts(chartsEl) {
+  _root.innerHTML = '<p class="hp-loading">Loading…</p>';
+  _countEl.textContent = '';
   let hits;
   try {
-    const res = await fetch("/api/honeypot/stats");
+    const res = await fetch("/api/honeypot/hits");
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     hits = await res.json();
   } catch (err) {
-    chartsEl.innerHTML = `<p class="hp-empty">Failed to load stats: ${err.message}</p>`;
+    _root.innerHTML = `<p class="hp-empty">Failed to load hits: ${err.message}</p>`;
     return;
   }
 
   if (!hits || hits.length === 0) {
-    chartsEl.innerHTML = `<p class="hp-empty">No hits recorded yet. The honeypot is waiting…</p>`;
-    _countEl.textContent = '';
+    _root.innerHTML = `<p class="hp-empty">No hits recorded yet. The honeypot is waiting…</p>`;
     return;
   }
 
@@ -91,39 +64,15 @@ async function refreshCharts(chartsEl) {
     byDateHour[key].push(hit);
   }
 
-  chartsEl.innerHTML = "";
-  chartsEl.appendChild(buildWeeklyHeatmap(byDate));
-  chartsEl.appendChild(buildDailyHeatmap(byDate, byDateHour));
-  chartsEl.appendChild(buildHourlyPattern(byDateHour));
-  chartsEl.appendChild(buildTopStats(hits));
-}
+  if (_dt) { _dt.destroy(); _dt = null; }
+  _root.innerHTML = "";
+  _root.appendChild(buildWeeklyHeatmap(byDate));
+  _root.appendChild(buildDailyHeatmap(byDate, byDateHour));
+  _root.appendChild(buildHourlyPattern(byDateHour));
+  _root.appendChild(buildTopStats(hits));
+  _root.appendChild(buildTable(hits));
 
-function initTable() {
   _dt = new DataTable(_root.querySelector(".hp-table"), {
-    serverSide: true,
-    processing:  true,
-    ajax: async (data, callback) => {
-      const params = new URLSearchParams({
-        offset: data.start,
-        limit:  data.length,
-        search: data.search.value || "",
-      });
-      const order = data.order?.[0];
-      if (order) {
-        params.set("sort", SORT_COLUMNS[order.column] || "id");
-        params.set("dir", order.dir);
-      }
-      let page;
-      try {
-        const res = await fetch(`/api/honeypot/hits?${params}`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        page = await res.json();
-      } catch (err) {
-        callback({ data: [], recordsTotal: 0, recordsFiltered: 0, error: err.message });
-        return;
-      }
-      callback({ data: page.rows, recordsTotal: page.total, recordsFiltered: page.filtered });
-    },
     layout: {
       topStart:    "info",
       topEnd:      "buttons",
@@ -132,31 +81,18 @@ function initTable() {
     },
     buttons: [{ extend: "colvis", text: "Columns" }],
     pageLength: 50,
-    lengthMenu: [[25, 50, 100], ["25", "50", "100"]], // no "All" — table is paginated server-side
+    lengthMenu: [[25, 50, 100, -1], ["25", "50", "100", "All"]],
     order:      [[5, "desc"]],
-    columns: [
-      { data: "id",        className: "hp-id" },
-      { data: "slug",      className: "hp-slug",    render: (v) => `<code>${escHtml(v)}</code>` },
-      { data: "ip",        className: "hp-ip",      render: (v) =>
-          `<a href="https://ipinfo.io/${escHtml(v)}" target="_blank" rel="noopener noreferrer"><code>${escHtml(v)}</code></a>` },
-      { data: "country",   className: "hp-country", render: (v) => v ? `${countryFlag(v)} ${escHtml(v)}` : '<span class="hp-unknown">—</span>' },
-      { data: "org",       className: "hp-org",     render: (v) => v ? escHtml(v) : '<span class="hp-unknown">—</span>' },
-      { data: "timestamp", className: "hp-ts",      render: (v) => escHtml(v) },
-      { data: "headers", className: "hp-headers", orderable: false, render: (v) => {
-          let pretty = v;
-          try { pretty = JSON.stringify(JSON.parse(v), null, 2); } catch (_) {}
-          return `<details><summary>show</summary><pre class="hp-json">${escHtml(pretty)}</pre></details>`;
-        } },
-      { data: "body", className: "hp-body", orderable: false, render: (v) =>
-          v ? `<details><summary>show</summary><pre class="hp-json">${escHtml(v)}</pre></details>` : '<span class="hp-unknown">—</span>' },
-    ],
+    columnDefs: [{ orderable: false, targets: [6, 7] }],
     language: {
       info:         "Showing _START_–_END_ of _TOTAL_ hits",
       infoFiltered: " (filtered from _MAX_)",
       lengthMenu:   "Show _MENU_ rows",
-      processing:   "Loading…",
     },
   });
+
+  applyFilter(); // re-apply any active search term to the fresh DataTable
+  _lastUpdatedEl.textContent = `Updated ${new Date().toLocaleTimeString()}`;
 }
 
 function applyFilter() {
@@ -419,14 +355,29 @@ function buildBarChart(title, entries, labelFn) {
 
 // ── Hits table ────────────────────────────────────────────────────────────────
 
-// Table rows are lazy-loaded a page at a time by DataTable's serverSide ajax
-// (see initTable()) — this just builds the empty shell it attaches to.
-function buildTableShell() {
+function buildTable(hits) {
   const wrap  = el("div", "hp-table-wrap");
   const table = el("table", "hp-table");
   table.innerHTML = `<thead><tr>
     <th>#</th><th>Slug</th><th>IP</th><th>Country</th><th>Org</th><th>Timestamp</th><th>Headers</th><th>Body</th>
-  </tr></thead><tbody></tbody>`;
+  </tr></thead>`;
+  const tbody = document.createElement("tbody");
+  for (const hit of hits) {
+    let pretty = hit.headers;
+    try { pretty = JSON.stringify(JSON.parse(hit.headers), null, 2); } catch (_) {}
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="hp-id">${hit.id}</td>
+      <td class="hp-slug"><code>${escHtml(hit.slug)}</code></td>
+      <td class="hp-ip"><a href="https://ipinfo.io/${escHtml(hit.ip)}" target="_blank" rel="noopener noreferrer"><code>${escHtml(hit.ip)}</code></a></td>
+      <td class="hp-country">${hit.country ? `${countryFlag(hit.country)} ${escHtml(hit.country)}` : '<span class="hp-unknown">—</span>'}</td>
+      <td class="hp-org">${hit.org ? escHtml(hit.org) : '<span class="hp-unknown">—</span>'}</td>
+      <td class="hp-ts">${escHtml(hit.timestamp)}</td>
+      <td class="hp-headers"><details><summary>show</summary><pre class="hp-json">${escHtml(pretty)}</pre></details></td>
+      <td class="hp-body">${hit.body ? `<details><summary>show</summary><pre class="hp-json">${escHtml(hit.body)}</pre></details>` : '<span class="hp-unknown">—</span>'}</td>`;
+    tbody.appendChild(tr);
+  }
+  table.appendChild(tbody);
   wrap.appendChild(table);
   return wrap;
 }

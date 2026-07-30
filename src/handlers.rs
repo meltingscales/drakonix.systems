@@ -10,12 +10,11 @@ use crate::twitch_emote_gen::EmoteGenResponse;
 use crate::{constants, honeypot_db, rss, AppState, CountryCache, OrgCache};
 use axum::{
     body::Body,
-    extract::{Multipart, Path, Query, Request, State},
+    extract::{Multipart, Path, Request, State},
     http::{HeaderMap, StatusCode},
     response::{Html, IntoResponse, Response},
     Json,
 };
-use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tera::Context;
 use tokio::fs::File;
@@ -830,12 +829,13 @@ pub async fn honeypot_map_timeline_dashboard(
     Ok(Html(html))
 }
 
-/// Honeypot dashboard - shows recent honeypot hits with IP, slug, timestamp, and headers.
-/// The table/charts are populated client-side from /api/honeypot/hits and /api/honeypot/stats.
+/// Honeypot dashboard - shows recent honeypot hits with IP, slug, timestamp, and headers
 pub async fn honeypot_dummies_dashboard(
     State(state): State<Arc<AppState>>,
 ) -> Result<Html<String>, AppError> {
+    let hits = state.honeypot_db.get_recent_hits().await;
     let mut context = Context::new();
+    context.insert("hits", &hits);
     context.insert("title", "Honeypot Dummies - drakonix.systems");
     let html = state
         .tera
@@ -844,88 +844,19 @@ pub async fn honeypot_dummies_dashboard(
     Ok(Html(html))
 }
 
-#[derive(Deserialize)]
-pub struct HitsPageQuery {
-    #[serde(default)]
-    offset: i64,
-    #[serde(default = "default_limit")]
-    limit: i64,
-    #[serde(default)]
-    search: Option<String>,
-    /// Column name to sort by; must be one of `honeypot_db::SORTABLE_COLUMNS`.
-    #[serde(default)]
-    sort: Option<String>,
-    #[serde(default)]
-    dir: Option<String>,
-}
-fn default_limit() -> i64 {
-    50
-}
-
-#[derive(Serialize, utoipa::ToSchema)]
-pub struct HitsPageResponse {
-    rows: Vec<honeypot_db::HoneypotHit>,
-    total: i64,
-    filtered: i64,
-}
-
-/// JSON API – one page of honeypot hits (headers/body included), for the hits table.
-/// Chunked via `offset`/`limit` instead of shipping the whole (up to 50k-row) dataset.
+/// JSON API – returns the most recent honeypot hits (up to HONEYPOT_MAX_ENTRIES)
 #[utoipa::path(
     get,
     path = "/api/honeypot/hits",
     tag = "Fun",
-    params(
-        ("offset" = Option<i64>, Query, description = "Row offset (default 0)"),
-        ("limit" = Option<i64>, Query, description = "Page size, capped at 500 (default 50)"),
-        ("search" = Option<String>, Query, description = "Substring filter across slug/ip/country/org"),
-        ("sort" = Option<String>, Query, description = "Column to sort by (id, slug, ip, country, org, timestamp)"),
-        ("dir" = Option<String>, Query, description = "asc or desc (default desc)"),
-    ),
     responses(
-        (status = 200, description = "One page of honeypot hits plus total/filtered counts", body = HitsPageResponse),
+        (status = 200, description = "List of recent honeypot hits (newest first)", body = Vec<honeypot_db::HoneypotHit>),
     )
 )]
 pub async fn honeypot_hits_api(
     State(state): State<Arc<AppState>>,
-    Query(q): Query<HitsPageQuery>,
-) -> Result<Json<HitsPageResponse>, AppError> {
-    let limit = q.limit.clamp(1, 500);
-    let offset = q.offset.max(0);
-    let sort_col = q
-        .sort
-        .as_deref()
-        .and_then(|s| honeypot_db::SORTABLE_COLUMNS.iter().find(|&&c| c == s))
-        .copied()
-        .unwrap_or("id");
-    let sort_dir = if q.dir.as_deref() == Some("asc") { "ASC" } else { "DESC" };
-    let search = q.search.filter(|s| !s.trim().is_empty());
-
-    let page = state
-        .honeypot_db
-        .get_hits_page(offset, limit, search, sort_col, sort_dir)
-        .await;
-    Ok(Json(HitsPageResponse {
-        rows: page.rows,
-        total: page.total,
-        filtered: page.filtered,
-    }))
-}
-
-/// JSON API – every retained hit, minus the heavy headers/body blobs. Used for
-/// charts/heatmaps/top-stats, which need the full dataset rather than a page of it.
-#[utoipa::path(
-    get,
-    path = "/api/honeypot/stats",
-    tag = "Fun",
-    responses(
-        (status = 200, description = "Slim hit records (no headers/body) for the whole retained dataset", body = Vec<honeypot_db::HoneypotHitLight>),
-    )
-)]
-pub async fn honeypot_stats_api(
-    State(state): State<Arc<AppState>>,
-) -> Result<Json<Vec<honeypot_db::HoneypotHitLight>>, AppError> {
-    let hits = state.honeypot_db.get_stats_hits().await;
+) -> Result<Json<Vec<honeypot_db::HoneypotHit>>, AppError> {
+    let hits = state.honeypot_db.get_recent_hits().await;
     Ok(Json(hits))
 }
 
