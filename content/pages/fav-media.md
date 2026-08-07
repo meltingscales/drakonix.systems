@@ -168,6 +168,7 @@ Use at your own legal risk.
 - [MC Eternal 2](https://www.curseforge.com/minecraft/modpacks/mc-eternal-2)
 - [FTB StoneBlock 4](https://www.feed-the-beast.com/modpacks/130-ftb-stoneblock-4)
   - [Resource Automation in Stoneblock 4 is UNIQUE!](https://www.youtube.com/watch?v=mnpHhIp7hd4)
+- [VerityCraft](https://www.curseforge.com/minecraft/modpacks/veritycraft)
 
 ### MSX
 
