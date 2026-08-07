@@ -30,7 +30,13 @@
       "WebFetch(domain:www.reddit.com)",
       "Bash(PORT=8099 nohup ./target/debug/rust-blog)",
       "Bash(curl -s -o /dev/null -w \"page: %{http_code}\\\\n\" http://localhost:8099/services/doggypastebin)",
-      "Bash(curl -s -X POST http://localhost:8099/api/doggypastebin/create -H \"Content-Type: application/json\" -d '{\"content\":\"fn main\\(\\) {\\\\n    println!\\(\\\\\"hello\\\\\"\\);\\\\n}\",\"language\":\"rs\"}')"
+      "Bash(curl -s -X POST http://localhost:8099/api/doggypastebin/create -H \"Content-Type: application/json\" -d '{\"content\":\"fn main\\(\\) {\\\\n    println!\\(\\\\\"hello\\\\\"\\);\\\\n}\",\"language\":\"rs\"}')",
+      "Bash(PORT=8099 timeout 25 cargo run)",
+      "Bash(curl -s -o /dev/null -w \"loan: %{http_code}\\\\n\" http://127.0.0.1:8099/services/loan-calculator)",
+      "Bash(curl -s -o /dev/null -w \"solar: %{http_code}\\\\n\" http://127.0.0.1:8099/services/solar-payoff)",
+      "Bash(curl -s http://127.0.0.1:8099/services)",
+      "Bash(wait)",
+      "Bash(sqlite3 honeypot.db \"select count\\(*\\) from hits;\")"
     ]
   }
 }
