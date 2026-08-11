@@ -1,14 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Riemann Zeta Zeros — Critical Line Visualizer</title>
+{% extends "base.html" %}
+
+{% block title %}Riemann Zeta Zeros — Critical Line Visualizer{% endblock %}
+
+{% block content %}
 <script>
   MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] } };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
 <style>
-  :root {
+  .rz-page {
     color-scheme: light dark;
     --bg: #0f1115;
     --panel: #171a21;
@@ -19,7 +19,7 @@
     --grid: #2a2f3a;
   }
   @media (prefers-color-scheme: light) {
-    :root {
+    .rz-page {
       --bg: #f7f8fa;
       --panel: #ffffff;
       --text: #1a1d24;
@@ -27,28 +27,28 @@
       --grid: #e2e5ea;
     }
   }
-  * { box-sizing: border-box; }
-  body {
+  .rz-page * { box-sizing: border-box; }
+  .rz-page {
     margin: 0;
     background: var(--bg);
     color: var(--text);
     font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   }
-  header {
+  .rz-page header {
     padding: 1.25rem 1.5rem 0.5rem;
   }
-  h1 { font-size: 1.25rem; margin: 0 0 0.25rem; }
-  p.sub { color: var(--muted); margin: 0; font-size: 0.9rem; }
-  .controls {
+  .rz-page h1 { font-size: 1.25rem; margin: 0 0 0.25rem; }
+  .rz-page p.sub { color: var(--muted); margin: 0; font-size: 0.9rem; }
+  .rz-page .controls {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
     align-items: end;
     padding: 1rem 1.5rem;
   }
-  .field { display: flex; flex-direction: column; gap: 0.25rem; }
-  label { font-size: 0.75rem; color: var(--muted); }
-  input[type="number"] {
+  .rz-page .field { display: flex; flex-direction: column; gap: 0.25rem; }
+  .rz-page label { font-size: 0.75rem; color: var(--muted); }
+  .rz-page input[type="number"] {
     background: var(--panel);
     border: 1px solid var(--grid);
     color: var(--text);
@@ -56,7 +56,7 @@
     border-radius: 6px;
     width: 7rem;
   }
-  button {
+  .rz-page button {
     background: var(--accent);
     border: none;
     color: #05131c;
@@ -65,25 +65,25 @@
     border-radius: 6px;
     cursor: pointer;
   }
-  button:hover { filter: brightness(1.08); }
-  main {
+  .rz-page button:hover { filter: brightness(1.08); }
+  .rz-page .rz-main {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
     padding: 0 1.5rem 1.5rem;
   }
   @media (max-width: 900px) {
-    main { grid-template-columns: 1fr; }
+    .rz-page .rz-main { grid-template-columns: 1fr; }
   }
-  .panel {
+  .rz-page .panel {
     background: var(--panel);
     border: 1px solid var(--grid);
     border-radius: 8px;
     padding: 0.75rem;
   }
-  .panel h2 { font-size: 0.9rem; margin: 0 0 0.5rem; color: var(--muted); font-weight: 600; }
-  canvas { width: 100%; height: 340px; display: block; background: transparent; }
-  .zeros {
+  .rz-page .panel h2 { font-size: 0.9rem; margin: 0 0 0.5rem; color: var(--muted); font-weight: 600; }
+  .rz-page canvas { width: 100%; height: 340px; display: block; background: transparent; }
+  .rz-page .zeros {
     grid-column: 1 / -1;
     background: var(--panel);
     border: 1px solid var(--grid);
@@ -91,8 +91,8 @@
     padding: 0.75rem 1rem;
     font-size: 0.85rem;
   }
-  .zeros h2 { font-size: 0.9rem; margin: 0 0 0.5rem; color: var(--muted); }
-  .zeros code {
+  .rz-page .zeros h2 { font-size: 0.9rem; margin: 0 0 0.5rem; color: var(--muted); }
+  .rz-page .zeros code {
     display: inline-block;
     background: var(--bg);
     border: 1px solid var(--grid);
@@ -100,22 +100,22 @@
     padding: 0.15rem 0.4rem;
     margin: 0.15rem;
   }
-  .gallery-title { padding: 0 1.5rem; font-size: 1.1rem; margin: 0.5rem 0 0; }
-  .gallery {
+  .rz-page .gallery-title { padding: 0 1.5rem; font-size: 1.1rem; margin: 0.5rem 0 0; }
+  .rz-page .gallery {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1rem;
     padding: 0.5rem 1.5rem 2rem;
   }
-  .card {
+  .rz-page .card {
     background: var(--panel);
     border: 1px solid var(--grid);
     border-radius: 8px;
     padding: 1rem;
   }
-  .card h3 { margin: 0 0 0.5rem; font-size: 0.95rem; }
-  .card p { font-size: 0.85rem; color: var(--muted); line-height: 1.4; margin: 0.5rem 0; }
-  .formula {
+  .rz-page .card h3 { margin: 0 0 0.5rem; font-size: 0.95rem; }
+  .rz-page .card p { font-size: 0.85rem; color: var(--muted); line-height: 1.4; margin: 0.5rem 0; }
+  .rz-page .formula {
     font-size: 0.9rem;
     background: var(--bg);
     border: 1px solid var(--grid);
@@ -123,16 +123,15 @@
     padding: 0.5rem 0.6rem;
     overflow-x: auto;
   }
-  .cite { font-size: 0.78rem; color: var(--muted); margin-top: 0.4rem; }
-  .cite a { color: var(--accent); }
-  .mini { width: 100%; height: 90px; display: block; margin-top: 0.5rem; }
-  .bar-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.4rem; }
-  .bar { flex: 1; height: 8px; background: var(--grid); border-radius: 4px; overflow: hidden; }
-  .bar-fill { height: 100%; background: var(--accent); }
-  .bar-label { font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+  .rz-page .cite { font-size: 0.78rem; color: var(--muted); margin-top: 0.4rem; }
+  .rz-page .cite a { color: var(--accent); }
+  .rz-page .mini { width: 100%; height: 90px; display: block; margin-top: 0.5rem; }
+  .rz-page .bar-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.4rem; }
+  .rz-page .bar { flex: 1; height: 8px; background: var(--grid); border-radius: 4px; overflow: hidden; }
+  .rz-page .bar-fill { height: 100%; background: var(--accent); }
+  .rz-page .bar-label { font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
 </style>
-</head>
-<body>
+<div class="rz-page">
 <header>
   <h1>Riemann Zeta Zeros — Critical Line Visualizer</h1>
   <p class="sub">
@@ -176,7 +175,7 @@
 </div>
 <p class="sub" style="padding: 0 1.5rem 0.5rem;">Scroll to zoom, drag to pan, double-click a chart to reset it.</p>
 
-<main>
+<div class="rz-main">
   <div class="panel">
     <h2>Z(t) vs t &mdash; zero crossings = zeta zeros</h2>
     <canvas id="zChart"></canvas>
@@ -193,7 +192,7 @@
     <h2>Detected zeros (t where Z(t) = 0)</h2>
     <div id="zeroList"></div>
   </div>
-</main>
+</div>
 
 <section class="gallery-wrap">
   <h2 class="gallery-title">Methods, visually</h2>
@@ -289,6 +288,7 @@
 
   </div>
 </section>
+</div>
 
 <script>
 // Riemann-Siegel theta function, asymptotic expansion (accurate for t >~ 2).
@@ -856,5 +856,4 @@ window.addEventListener('DOMContentLoaded', () => {
   render();
 });
 </script>
-</body>
-</html>
+{% endblock %}

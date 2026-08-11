@@ -422,9 +422,12 @@ pub async fn bifurcation_diagram_viewer_page(State(state): State<Arc<AppState>>)
 
 /// Riemann zeta zeros critical line visualizer page handler
 pub async fn riemann_zeta_zeros_page(State(state): State<Arc<AppState>>) -> Result<Html<String>, AppError> {
+    let mut context = Context::new();
+    add_honeypot_urls(&mut context);
+
     let html = state
         .tera
-        .render("riemann_zeta_zeros.html", &Context::new())
+        .render("riemann_zeta_zeros.html", &context)
         .map_err(|e| AppError::TemplateError(e.to_string()))?;
 
     Ok(Html(html))
