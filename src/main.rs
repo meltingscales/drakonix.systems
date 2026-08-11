@@ -198,6 +198,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/services/linked-list-learning", get(handlers::linked_list_learning_page))
         // Bifurcation diagram viewer
         .route("/services/bifurcation-diagram-viewer", get(handlers::bifurcation_diagram_viewer_page))
+        .route("/services/riemann-zeta-zeros", get(handlers::riemann_zeta_zeros_page))
         // FFmpeg converter service
         .route(
             "/services/ffmpeg-mp4-to-mp3",

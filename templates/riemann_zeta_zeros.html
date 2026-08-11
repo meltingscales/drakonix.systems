@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Riemann Zeta Zeros — Critical Line Visualizer</title>
+<script>
+  MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #0f1115;
+    --panel: #171a21;
+    --text: #e7e9ee;
+    --muted: #8b93a3;
+    --accent: #5ec8ff;
+    --zero: #ff5e6c;
+    --grid: #2a2f3a;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f7f8fa;
+      --panel: #ffffff;
+      --text: #1a1d24;
+      --muted: #5b6270;
+      --grid: #e2e5ea;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  }
+  header {
+    padding: 1.25rem 1.5rem 0.5rem;
+  }
+  h1 { font-size: 1.25rem; margin: 0 0 0.25rem; }
+  p.sub { color: var(--muted); margin: 0; font-size: 0.9rem; }
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: end;
+    padding: 1rem 1.5rem;
+  }
+  .field { display: flex; flex-direction: column; gap: 0.25rem; }
+  label { font-size: 0.75rem; color: var(--muted); }
+  input[type="number"] {
+    background: var(--panel);
+    border: 1px solid var(--grid);
+    color: var(--text);
+    padding: 0.4rem 0.5rem;
+    border-radius: 6px;
+    width: 7rem;
+  }
+  button {
+    background: var(--accent);
+    border: none;
+    color: #05131c;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  button:hover { filter: brightness(1.08); }
+  main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    padding: 0 1.5rem 1.5rem;
+  }
+  @media (max-width: 900px) {
+    main { grid-template-columns: 1fr; }
+  }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--grid);
+    border-radius: 8px;
+    padding: 0.75rem;
+  }
+  .panel h2 { font-size: 0.9rem; margin: 0 0 0.5rem; color: var(--muted); font-weight: 600; }
+  canvas { width: 100%; height: 340px; display: block; background: transparent; }
+  .zeros {
+    grid-column: 1 / -1;
+    background: var(--panel);
+    border: 1px solid var(--grid);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+  }
+  .zeros h2 { font-size: 0.9rem; margin: 0 0 0.5rem; color: var(--muted); }
+  .zeros code {
+    display: inline-block;
+    background: var(--bg);
+    border: 1px solid var(--grid);
+    border-radius: 4px;
+    padding: 0.15rem 0.4rem;
+    margin: 0.15rem;
+  }
+  .gallery-title { padding: 0 1.5rem; font-size: 1.1rem; margin: 0.5rem 0 0; }
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    padding: 0.5rem 1.5rem 2rem;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--grid);
+    border-radius: 8px;
+    padding: 1rem;
+  }
+  .card h3 { margin: 0 0 0.5rem; font-size: 0.95rem; }
+  .card p { font-size: 0.85rem; color: var(--muted); line-height: 1.4; margin: 0.5rem 0; }
+  .formula {
+    font-size: 0.9rem;
+    background: var(--bg);
+    border: 1px solid var(--grid);
+    border-radius: 6px;
+    padding: 0.5rem 0.6rem;
+    overflow-x: auto;
+  }
+  .cite { font-size: 0.78rem; color: var(--muted); margin-top: 0.4rem; }
+  .cite a { color: var(--accent); }
+  .mini { width: 100%; height: 90px; display: block; margin-top: 0.5rem; }
+  .bar-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.4rem; }
+  .bar { flex: 1; height: 8px; background: var(--grid); border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--accent); }
+  .bar-label { font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Riemann Zeta Zeros — Critical Line Visualizer</h1>
+  <p class="sub">
+    Plots the Riemann&ndash;Siegel Z(t) function (real, zero-crossings on
+    Re(s)=1/2 &equiv; zeros of &zeta;(s)) and the trace of &zeta;(1/2+it) in
+    the complex plane.
+  </p>
+</header>
+
+<div class="controls">
+  <div class="field">
+    <label for="tMin">t min</label>
+    <input type="number" id="tMin" value="0" step="1">
+  </div>
+  <div class="field">
+    <label for="tMax">t max</label>
+    <input type="number" id="tMax" value="60" step="1">
+  </div>
+  <div class="field">
+    <label for="samples">samples</label>
+    <input type="number" id="samples" value="2000" step="100" min="100">
+  </div>
+  <div class="field">
+    <label for="mollY">mollifier length (y)</label>
+    <input type="number" id="mollY" value="8" step="1" min="0" max="200">
+  </div>
+  <div class="field">
+    <label for="colorAccent">line color</label>
+    <input type="color" id="colorAccent" value="#5ec8ff">
+  </div>
+  <div class="field">
+    <label for="colorZero">zero marker color</label>
+    <input type="color" id="colorZero" value="#ff5e6c">
+  </div>
+  <div class="field">
+    <label for="colorMoll">mollifier color</label>
+    <input type="color" id="colorMoll" value="#ffb454">
+  </div>
+  <button id="plot">Plot</button>
+  <button id="resetView" type="button">Reset zoom</button>
+</div>
+<p class="sub" style="padding: 0 1.5rem 0.5rem;">Scroll to zoom, drag to pan, double-click a chart to reset it.</p>
+
+<main>
+  <div class="panel">
+    <h2>Z(t) vs t &mdash; zero crossings = zeta zeros</h2>
+    <canvas id="zChart"></canvas>
+  </div>
+  <div class="panel">
+    <h2>&zeta;(1/2 + it) traced in the complex plane</h2>
+    <canvas id="spiral"></canvas>
+  </div>
+  <div class="panel" style="grid-column: 1 / -1;">
+    <h2>Proportion of zeros proven on the critical line, by mathematician</h2>
+    <canvas id="timeline" style="height: 280px;"></canvas>
+  </div>
+  <div class="zeros">
+    <h2>Detected zeros (t where Z(t) = 0)</h2>
+    <div id="zeroList"></div>
+  </div>
+</main>
+
+<section class="gallery-wrap">
+  <h2 class="gallery-title">Methods, visually</h2>
+  <p class="sub" style="padding: 0 1.5rem 0.5rem;">
+    Each proof pushes the bound with a different tool. The formulas below are
+    the actual objects used &mdash; not illustrations of them.
+  </p>
+  <div class="gallery">
+
+    <div class="card">
+      <h3>1914 &middot; Hardy</h3>
+      <div class="formula">\(N_0(T) \to \infty \text{ as } T \to \infty\)</div>
+      <p>Studied Z(t) itself (the real function plotted above) and showed it
+        changes sign infinitely often on t &isin; (0, T) &mdash; each sign
+        change is a zero on the critical line. The chart below is literally
+        Hardy's argument: crossings that never stop.</p>
+      <canvas id="miniHardy" class="mini"></canvas>
+      <div class="cite">G. H. Hardy, <em>Sur les z&eacute;ros de la fonction &zeta;(s) de Riemann</em>, C. R. Acad. Sci. Paris 158 (1914), 1012&ndash;1014. Predates arXiv (est. 1991) &mdash; no open-access link.</div>
+    </div>
+
+    <div class="card">
+      <h3>1942 &middot; Selberg</h3>
+      <div class="formula">\(N_0(T) \ge c \cdot N(T), \quad c > 0\)</div>
+      <p>First proof that a <em>positive proportion</em> (not just an
+        infinite count) of zeros lie on the line, via mean-value estimates
+        of &zeta;. The original proof gives no explicit numeric c &mdash;
+        just that one exists.</p>
+      <div class="bar-row">
+        <div class="bar"><div class="bar-fill" style="width: 4%;"></div></div>
+        <span class="bar-label">c (unspecified, &gt; 0)</span>
+      </div>
+      <div class="cite">A. Selberg, <em>On the zeros of Riemann's zeta-function</em>, Skr. Norske Vid. Akad. Oslo I. 10 (1942), 1&ndash;59. Predates arXiv &mdash; no open-access link.</div>
+    </div>
+
+    <div class="card">
+      <h3>1974 &middot; Levinson</h3>
+      <div class="formula">\(\displaystyle \psi(s) = \sum_{n \le y} \mu(n)\, n^{-s} \left(1 - \frac{\ln n}{\ln y}\right), \quad y = T^{1/2-\varepsilon}\)</div>
+      <p>The mollifier: a short Dirichlet polynomial that, multiplied
+        against &zeta;, cancels its growth and straightens the spiral above
+        &mdash; turning zero-detection into counting sign changes of a
+        simpler function. This is the "mollifier length (y)" slider above.</p>
+      <canvas id="miniLevinson" class="mini"></canvas>
+      <div class="cite">N. Levinson, <em>More than one third of zeros of Riemann's zeta-function are on &sigma;=1/2</em>, Adv. Math. 13 (1974), 383&ndash;436. Predates arXiv &mdash; no confirmed open-access link.</div>
+    </div>
+
+    <div class="card">
+      <h3>1989 &middot; Conrey</h3>
+      <div class="formula">\(\text{same } \psi\text{, longer \& higher-degree:} \quad y = T^{4/7-\varepsilon}\)</div>
+      <p>Same mollifier idea as Levinson, pushed further: a longer, higher
+        degree Dirichlet polynomial combined with sharper 4th-moment
+        estimates for &zeta;. More terms &rarr; tighter cancellation &rarr;
+        more provable zeros.</p>
+      <div class="bar-row">
+        <div class="bar"><div class="bar-fill" style="width: 50%;"></div></div>
+        <span class="bar-label">Levinson: y-exponent 1/2</span>
+      </div>
+      <div class="bar-row">
+        <div class="bar"><div class="bar-fill" style="width: 57%;"></div></div>
+        <span class="bar-label">Conrey: y-exponent 4/7 &asymp; 0.571</span>
+      </div>
+      <div class="cite">J. B. Conrey, <em>At least two fifths of the zeros of the Riemann zeta function are on the critical line</em>, Bull. AMS 20 (1989), 79&ndash;81 &mdash; <a href="https://projecteuclid.org/journals/bulletin-of-the-american-mathematical-society-new-series/volume-20/issue-1/At-least-two-fifths-of-the-zeros-of-the-Riemann/bams/1183554910.full" target="_blank" rel="noopener">ProjectEuclid</a>. Full version: J. Reine Angew. Math. 399 (1989), 1&ndash;26.</div>
+    </div>
+
+    <div class="card">
+      <h3>2020 &middot; Pratt, Robles, Zaharescu, Zeindler</h3>
+      <div class="formula">\(\text{Levinson's method} + \text{twisted 2nd-moment} + \text{higher-degree mollifier} \Rightarrow 41.7\%\)</div>
+      <p>Layers a new zero-density input on top of the mollifier framework:
+        zeros are provably sparser away from Re(s)=1/2, which is what lets a
+        mollifier of bounded length catch a larger share of them. (Density
+        sketch, not measured data.)</p>
+      <canvas id="miniDensity" class="mini"></canvas>
+      <div class="cite">K. Pratt, N. Robles, A. Zaharescu, D. Zeindler, <em>More than five-twelfths of the zeros of &zeta; are on the critical line</em>, Res. Math. Sci. 7 (2020) &mdash; <a href="https://arxiv.org/abs/1802.10521" target="_blank" rel="noopener">arXiv:1802.10521</a>.</div>
+    </div>
+
+    <div class="card">
+      <h3>2026 &middot; Claude &mdash; <em>More Than Two Thirds&hellip;</em></h3>
+      <div class="formula">\(\displaystyle \liminf_{T\to\infty} \frac{N_0^*(T,2T)}{N(T,2T)} \ge \frac{2}{3} \quad (\text{optimised: } 0.6725)\)</div>
+      <p>A different tool than the mollifier line above: Montgomery's 1973
+        pair-correlation sum, unconditionally. Off-line zero pairs {&rho;,
+        1&minus;&rho;&#772;} contribute hyperbolic 2&times;2 blocks (signature
+        (1,1)) to a Gram matrix; on-line simple zeros contribute clean
+        positive-definite 1&times;1 blocks. Sylvester's law of inertia makes
+        that split basis-independent, and a rank&ndash;trace inequality
+        (proved via von&nbsp;Neumann's trace inequality &mdash; the matrix
+        analogue of Montgomery's real-number step m&sup2; &ge; 2m&minus;1)
+        bounds how much of the matrix the off-line pairs can occupy. RHS is
+        what used to need RH to read; here it's linear algebra instead.</p>
+      <canvas id="miniLinAlg" class="mini"></canvas>
+      <p style="margin-top: 0.4rem;">Preprint, not yet peer-reviewed &mdash;
+        the strongest claim in this README, but still a claim.</p>
+      <div class="cite">Claude, <em>More Than Two Thirds of the Zeros of the Riemann Zeta Function Lie on the Critical Line</em> (2026) &mdash; <a href="https://www-cdn.anthropic.com/564f962e60643842f5fcb4a17c9dbc8f608f1c37.pdf" target="_blank" rel="noopener">PDF</a>. Not indexed on arXiv; hosted on Anthropic's CDN.</div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+// Riemann-Siegel theta function, asymptotic expansion (accurate for t >~ 2).
+function theta(t) {
+  return (t / 2) * Math.log(t / (2 * Math.PI)) - t / 2 - Math.PI / 8
+    + 1 / (48 * t) + 7 / (5760 * Math.pow(t, 3)) + 31 / (80640 * Math.pow(t, 5));
+}
+
+// Riemann-Siegel formula, main sum + first correction term C0.
+// Main sum alone is off by several tenths near the first zeros; C0 brings
+// it within ~1e-3 of the true zero locations (verified against 14.134725,
+// 21.022040, 25.010858, ...).
+function Z(t) {
+  const th = theta(t);
+  const a = Math.sqrt(t / (2 * Math.PI));
+  const N = Math.floor(a);
+  let sum = 0;
+  for (let n = 1; n <= N; n++) {
+    sum += Math.cos(th - t * Math.log(n)) / Math.sqrt(n);
+  }
+  const p = a - N;
+  const C0 = Math.cos(2 * Math.PI * (p * p - p - 1 / 16)) / Math.cos(2 * Math.PI * p);
+  const corr = Math.pow(-1, N - 1) * Math.pow(t / (2 * Math.PI), -0.25) * C0;
+  return 2 * sum + corr;
+}
+
+// zeta(1/2 + it) = Z(t) * (cos(theta(t)) - i sin(theta(t)))
+function zetaOnLine(t) {
+  const z = Z(t);
+  const th = theta(t);
+  return { re: z * Math.cos(th), im: -z * Math.sin(th) };
+}
+
+// Mobius function via linear sieve, mu[1..limit].
+function mobiusSieve(limit) {
+  const mu = new Int8Array(limit + 1);
+  const primes = [];
+  const composite = new Uint8Array(limit + 1);
+  mu[1] = 1;
+  for (let i = 2; i <= limit; i++) {
+    if (!composite[i]) { primes.push(i); mu[i] = -1; }
+    for (let j = 0; j < primes.length && i * primes[j] <= limit; j++) {
+      const p = primes[j];
+      composite[i * p] = 1;
+      if (i % p === 0) { mu[i * p] = 0; break; }
+      mu[i * p] = -mu[i];
+    }
+  }
+  return mu;
+}
+
+// Levinson-style degree-1 mollifier: psi(1/2+it) = sum_{n<=y} mu(n)/sqrt(n) * n^{-it} * (1 - ln(n)/ln(y))
+// This is the actual Dirichlet polynomial Levinson/Conrey/Pratt-et-al use to
+// detect zeros — multiplying zeta by it shrinks the winding of the complex
+// trace, which is *why* the method finds more zeros than raw zeta alone.
+function mollifier(t, y, mu) {
+  const n1 = Math.max(2, Math.floor(y));
+  const lny = Math.log(n1);
+  let re = 1, im = 0; // n=1 term: mu(1)=1, taper=1
+  for (let n = 2; n <= n1; n++) {
+    if (mu[n] === 0) continue;
+    const taper = 1 - Math.log(n) / lny;
+    const w = mu[n] / Math.sqrt(n) * taper;
+    const ang = -t * Math.log(n);
+    re += w * Math.cos(ang);
+    im += w * Math.sin(ang);
+  }
+  return { re, im };
+}
+
+function complexMul(a, b) {
+  return { re: a.re * b.re - a.im * b.im, im: a.re * b.im + a.im * b.re };
+}
+
+function findZeros(tMin, tMax, samples) {
+  const zeros = [];
+  let tPrev = Math.max(tMin, 1e-3);
+  let zPrev = Z(tPrev);
+  const step = (tMax - tMin) / samples;
+  for (let i = 1; i <= samples; i++) {
+    const t = tMin + i * step;
+    if (t <= 0) { tPrev = t; continue; }
+    const z = Z(t);
+    if (zPrev !== 0 && z !== 0 && (zPrev < 0) !== (z < 0)) {
+      // bisection refine
+      let a = tPrev, b = t, fa = zPrev;
+      for (let k = 0; k < 50; k++) {
+        const m = (a + b) / 2;
+        const fm = Z(m);
+        if ((fa < 0) === (fm < 0)) { a = m; fa = fm; } else { b = m; }
+      }
+      zeros.push((a + b) / 2);
+    }
+    tPrev = t; zPrev = z;
+  }
+  return zeros;
+}
+
+// Milestones from the README. `pct` = proven lower bound on the proportion
+// of non-trivial zeros lying on Re(s)=1/2. Hardy and Selberg's results
+// predate a quantified percentage (infinitude, then "a positive proportion")
+// so they're plotted as flags, not points on the numeric curve.
+const MILESTONES = [
+  { year: 1914, who: 'Hardy', note: 'infinitely many zeros on the line', pct: null },
+  { year: 1942, who: 'Selberg', note: 'a positive proportion', pct: null },
+  { year: 1974, who: 'Levinson', note: 'mollifier method', pct: 33.3 },
+  { year: 1989, who: 'Conrey', note: '', pct: 40 },
+  { year: 2020, who: 'Pratt, Robles, Zaharescu, Zeindler', note: '', pct: 41.7 },
+  { year: 2026, who: 'Claude (agentic)', note: '', pct: 67.2 },
+];
+
+function drawTimeline(canvas) {
+  const { ctx, w, h } = setupCanvas(canvas);
+  ctx.clearRect(0, 0, w, h);
+
+  const padL = 44, padR = 16, padT = 16, padB = 60;
+  const plotW = w - padL - padR, plotH = h - padT - padB;
+  const yearMin = 1910, yearMax = 2030;
+  const xOf = year => padL + ((year - yearMin) / (yearMax - yearMin)) * plotW;
+  const yOf = pct => padT + plotH - (pct / 100) * plotH;
+
+  // y gridlines at 0/25/50/75/100%
+  ctx.strokeStyle = styleVar('--grid');
+  ctx.fillStyle = styleVar('--muted');
+  ctx.font = '11px system-ui, sans-serif';
+  ctx.lineWidth = 1;
+  [0, 25, 50, 75, 100].forEach(pct => {
+    const y = yOf(pct);
+    ctx.beginPath();
+    ctx.moveTo(padL, y);
+    ctx.lineTo(w - padR, y);
+    ctx.stroke();
+    ctx.fillText(pct + '%', 6, y + 3);
+  });
+
+  // data: step line + milestone markers pan/zoom, gridlines above stay put
+  pushView(ctx, canvas, { x: 0, y: 0, w, h });
+
+  // step line through the quantified milestones
+  const quantified = MILESTONES.filter(m => m.pct !== null);
+  ctx.strokeStyle = colors.accent;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  quantified.forEach((m, i) => {
+    const x = xOf(m.year), y = yOf(m.pct);
+    if (i === 0) { ctx.moveTo(padL, y); ctx.lineTo(x, y); }
+    else {
+      const prevY = yOf(quantified[i - 1].pct);
+      ctx.lineTo(x, prevY);
+    }
+    ctx.lineTo(x, y);
+  });
+  ctx.lineTo(w - padR, yOf(quantified[quantified.length - 1].pct));
+  ctx.stroke();
+
+  // every milestone: marker + label, qualitative ones flagged at the top
+  MILESTONES.forEach(m => {
+    const x = xOf(m.year);
+    const y = m.pct === null ? padT : yOf(m.pct);
+
+    if (m.pct === null) {
+      ctx.strokeStyle = styleVar('--grid');
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(x, padT);
+      ctx.lineTo(x, padT + plotH);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    ctx.fillStyle = m.pct === null ? styleVar('--muted') : colors.zero;
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, 2 * Math.PI);
+    ctx.fill();
+
+    ctx.fillStyle = styleVar('--text');
+    ctx.font = '11px system-ui, sans-serif';
+    const label = `${m.year} ${m.who}${m.pct !== null ? ' (' + m.pct + '%)' : ''}`;
+    ctx.save();
+    ctx.translate(x, padT + plotH + 14);
+    ctx.rotate(-Math.PI / 6);
+    ctx.textAlign = 'right';
+    ctx.fillText(label, 0, 0);
+    ctx.restore();
+  });
+
+  popView(ctx);
+}
+
+// Toggleable chart colors, shared by every draw function below.
+const colors = { accent: '#5ec8ff', zero: '#ff5e6c', moll: '#ffb454' };
+function syncColorsFromInputs() {
+  colors.accent = document.getElementById('colorAccent').value;
+  colors.zero = document.getElementById('colorZero').value;
+  colors.moll = document.getElementById('colorMoll').value;
+}
+
+function setupCanvas(canvas) {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr); // resets transform to identity first, since setting .width/.height clears it
+  return { ctx, w: rect.width, h: rect.height };
+}
+
+// Wrap data drawing (not axes/gridlines/labels) with this so pan/zoom moves
+// the plotted curve while the axes stay fixed in screen space. `clip`
+// (optional, in static screen coords) keeps panned/zoomed data from
+// drawing over the fixed axis labels.
+function pushView(ctx, canvas, clip) {
+  ctx.save();
+  if (clip) {
+    ctx.beginPath();
+    ctx.rect(clip.x, clip.y, clip.w, clip.h);
+    ctx.clip();
+  }
+  const view = canvas.__view;
+  if (view) { ctx.translate(view.tx, view.ty); ctx.scale(view.scale, view.scale); }
+}
+function popView(ctx) { ctx.restore(); }
+
+function styleVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+// Wheel to zoom (toward cursor), drag to pan, double-click to reset.
+// View state lives on the canvas element and is read back by setupCanvas.
+function attachPanZoom(canvas, redraw) {
+  canvas.__view = { scale: 1, tx: 0, ty: 0 };
+  canvas.style.cursor = 'grab';
+
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    const view = canvas.__view;
+    const newScale = Math.min(50, Math.max(0.2, view.scale * Math.exp(-e.deltaY * 0.001)));
+    view.tx = mx - (mx - view.tx) * (newScale / view.scale);
+    view.ty = my - (my - view.ty) * (newScale / view.scale);
+    view.scale = newScale;
+    redraw();
+  }, { passive: false });
+
+  let dragging = false, lastX = 0, lastY = 0;
+  canvas.addEventListener('mousedown', e => {
+    dragging = true; lastX = e.clientX; lastY = e.clientY;
+    canvas.style.cursor = 'grabbing';
+  });
+  window.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const view = canvas.__view;
+    view.tx += e.clientX - lastX;
+    view.ty += e.clientY - lastY;
+    lastX = e.clientX; lastY = e.clientY;
+    redraw();
+  });
+  window.addEventListener('mouseup', () => { dragging = false; canvas.style.cursor = 'grab'; });
+  canvas.addEventListener('dblclick', () => {
+    canvas.__view = { scale: 1, tx: 0, ty: 0 };
+    redraw();
+  });
+}
+
+function drawZChart(canvas, tMin, tMax, samples, zeros) {
+  const { ctx, w, h } = setupCanvas(canvas);
+  ctx.clearRect(0, 0, w, h);
+
+  const pts = [];
+  let maxAbs = 1e-6;
+  const step = (tMax - tMin) / samples;
+  for (let i = 0; i <= samples; i++) {
+    const t = tMin + i * step;
+    const v = t <= 0 ? 0 : Z(t);
+    pts.push([t, v]);
+    maxAbs = Math.max(maxAbs, Math.abs(v));
+  }
+
+  const padL = 40, padR = 10, padT = 10, padB = 24;
+  const plotW = w - padL - padR, plotH = h - padT - padB;
+  const xOf = t => padL + ((t - tMin) / (tMax - tMin)) * plotW;
+  const yOf = v => padT + plotH / 2 - (v / maxAbs) * (plotH / 2 - 4);
+
+  // grid + zero axis (static: outside the pan/zoom transform)
+  ctx.strokeStyle = styleVar('--grid');
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(padL, yOf(0));
+  ctx.lineTo(w - padR, yOf(0));
+  ctx.stroke();
+
+  // axis labels (static)
+  ctx.fillStyle = styleVar('--muted');
+  ctx.font = '11px system-ui, sans-serif';
+  ctx.fillText(tMin.toFixed(0), padL, h - 6);
+  ctx.fillText(tMax.toFixed(0), w - padR - 20, h - 6);
+
+  // data: curve + zero markers pan/zoom, axes above stay put
+  pushView(ctx, canvas, { x: padL, y: 0, w: plotW, h: h });
+
+  ctx.strokeStyle = colors.accent;
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  pts.forEach(([t, v], i) => {
+    const x = xOf(t), y = yOf(v);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  ctx.fillStyle = colors.zero;
+  zeros.forEach(t => {
+    const x = xOf(t), y = yOf(0);
+    ctx.beginPath();
+    ctx.arc(x, y, 3.5, 0, 2 * Math.PI);
+    ctx.fill();
+  });
+
+  popView(ctx);
+}
+
+function drawSpiral(canvas, tMin, tMax, samples, mollY) {
+  const { ctx, w, h } = setupCanvas(canvas);
+  ctx.clearRect(0, 0, w, h);
+
+  const mu = mollY > 1 ? mobiusSieve(Math.floor(mollY)) : null;
+  const pts = [], moll = [];
+  let maxMag = 1e-6;
+  const start = Math.max(tMin, 1e-3);
+  for (let i = 0; i <= samples; i++) {
+    const t = start + i * (tMax - start) / samples;
+    const p = zetaOnLine(t);
+    pts.push(p);
+    maxMag = Math.max(maxMag, Math.hypot(p.re, p.im));
+    if (mu) {
+      const q = complexMul(p, mollifier(t, mollY, mu));
+      moll.push(q);
+      maxMag = Math.max(maxMag, Math.hypot(q.re, q.im));
+    }
+  }
+
+  const cx = w / 2, cy = h / 2;
+  const scale = (Math.min(w, h) / 2 - 16) / maxMag;
+  const xOf = re => cx + re * scale;
+  const yOf = im => cy - im * scale;
+
+  // axes + origin marker (static: outside the pan/zoom transform)
+  ctx.strokeStyle = styleVar('--grid');
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(0, cy); ctx.lineTo(w, cy);
+  ctx.moveTo(cx, 0); ctx.lineTo(cx, h);
+  ctx.stroke();
+
+  ctx.fillStyle = colors.zero;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 3.5, 0, 2 * Math.PI);
+  ctx.fill();
+
+  // data: both traces pan/zoom, axes above stay put
+  pushView(ctx, canvas, { x: 0, y: 0, w, h });
+
+  ctx.strokeStyle = colors.accent;
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  pts.forEach((p, i) => (i === 0 ? ctx.moveTo : ctx.lineTo).call(ctx, xOf(p.re), yOf(p.im)));
+  ctx.stroke();
+
+  // mollified trace zeta(1/2+it)*psi(1/2+it) — Levinson/Conrey's technique.
+  // Winding this tightly around a point (vs. the raw spiral looping the
+  // origin) is *why* the mollifier makes zeros easier to detect.
+  if (mu) {
+    ctx.strokeStyle = colors.moll;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    moll.forEach((p, i) => {
+      const x = xOf(p.re), y = yOf(p.im);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+  }
+
+  popView(ctx);
+
+  // legend (static, drawn on top so it stays readable at any zoom)
+  if (mu) {
+    ctx.font = '11px system-ui, sans-serif';
+    ctx.fillStyle = colors.accent;
+    ctx.fillText('ζ(1/2+it)', 8, h - 22);
+    ctx.fillStyle = colors.moll;
+    ctx.fillText(`ζ·ψ mollified (y=${Math.floor(mollY)})`, 8, h - 8);
+  }
+}
+
+function render() {
+  const tMin = parseFloat(document.getElementById('tMin').value);
+  const tMax = parseFloat(document.getElementById('tMax').value);
+  const samples = parseInt(document.getElementById('samples').value, 10);
+  const mollY = parseFloat(document.getElementById('mollY').value);
+
+  const zeros = findZeros(tMin, tMax, samples);
+  drawZChart(document.getElementById('zChart'), tMin, tMax, samples, zeros);
+  drawSpiral(document.getElementById('spiral'), tMin, tMax, samples, mollY);
+  drawTimeline(document.getElementById('timeline'));
+
+  document.getElementById('zeroList').innerHTML = zeros.length
+    ? zeros.map(t => `<code>${t.toFixed(6)}</code>`).join('')
+    : '<em>none in range</em>';
+}
+
+document.getElementById('plot').addEventListener('click', () => {
+  // fresh t-range/mollifier data — old pan/zoom no longer lines up with it
+  document.getElementById('zChart').__view = { scale: 1, tx: 0, ty: 0 };
+  document.getElementById('spiral').__view = { scale: 1, tx: 0, ty: 0 };
+  render();
+});
+document.getElementById('resetView').addEventListener('click', () => {
+  ['zChart', 'spiral', 'timeline'].forEach(id => {
+    document.getElementById(id).__view = { scale: 1, tx: 0, ty: 0 };
+  });
+  render();
+});
+['colorAccent', 'colorZero', 'colorMoll'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => {
+    syncColorsFromInputs();
+    render();
+    renderGallery();
+  });
+});
+window.addEventListener('resize', render);
+function drawMiniHardy(canvas) {
+  const { ctx, w, h } = setupCanvas(canvas);
+  ctx.clearRect(0, 0, w, h);
+  const tMin = 5, tMax = 50, samples = 600;
+  const pts = [];
+  let maxAbs = 1e-6;
+  for (let i = 0; i <= samples; i++) {
+    const t = tMin + (i / samples) * (tMax - tMin);
+    const v = Z(t);
+    pts.push([t, v]);
+    maxAbs = Math.max(maxAbs, Math.abs(v));
+  }
+  const xOf = t => ((t - tMin) / (tMax - tMin)) * w;
+  const yOf = v => h / 2 - (v / maxAbs) * (h / 2 - 4);
+  ctx.strokeStyle = styleVar('--grid');
+  ctx.beginPath(); ctx.moveTo(0, h / 2); ctx.lineTo(w, h / 2); ctx.stroke();
+  ctx.strokeStyle = colors.accent;
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  pts.forEach(([t, v], i) => (i === 0 ? ctx.moveTo : ctx.lineTo).call(ctx, xOf(t), yOf(v)));
+  ctx.stroke();
+  ctx.fillStyle = colors.zero;
+  for (let i = 1; i < pts.length; i++) {
+    if ((pts[i - 1][1] < 0) !== (pts[i][1] < 0)) {
+      ctx.beginPath(); ctx.arc(xOf(pts[i][0]), h / 2, 3, 0, 2 * Math.PI); ctx.fill();
+    }
+  }
+}
+
+function drawMiniLevinson(canvas) {
+  const { ctx, w, h } = setupCanvas(canvas);
+  ctx.clearRect(0, 0, w, h);
+  const y = 8, mu = mobiusSieve(y);
+  const tMin = 1, tMax = 50, samples = 500;
+  const pts = [];
+  let maxMag = 1e-6;
+  for (let i = 0; i <= samples; i++) {
+    const t = tMin + (i / samples) * (tMax - tMin);
+    const q = complexMul(zetaOnLine(t), mollifier(t, y, mu));
+    pts.push(q);
+    maxMag = Math.max(maxMag, Math.hypot(q.re, q.im));
+  }
+  const cx = w / 2, cy = h / 2, scale = (Math.min(w, h) / 2 - 6) / maxMag;
+  ctx.strokeStyle = styleVar('--grid');
+  ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(w, cy); ctx.moveTo(cx, 0); ctx.lineTo(cx, h); ctx.stroke();
+  ctx.strokeStyle = colors.moll;
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  pts.forEach((p, i) => {
+    const x = cx + p.re * scale, yy = cy - p.im * scale;
+    i === 0 ? ctx.moveTo(x, yy) : ctx.lineTo(x, yy);
+  });
+  ctx.stroke();
+}
+
+function drawMiniDensity(canvas) {
+  const { ctx, w, h } = setupCanvas(canvas);
+  ctx.clearRect(0, 0, w, h);
+  const grad = ctx.createLinearGradient(0, 0, w, 0);
+  const accent = colors.accent;
+  grad.addColorStop(0, 'transparent');
+  grad.addColorStop(0.5, accent);
+  grad.addColorStop(1, 'transparent');
+  ctx.globalAlpha = 0.6;
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, w, h);
+  ctx.globalAlpha = 1;
+  ctx.strokeStyle = colors.zero;
+  ctx.setLineDash([4, 3]);
+  ctx.beginPath(); ctx.moveTo(w / 2, 0); ctx.lineTo(w / 2, h); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = styleVar('--muted');
+  ctx.font = '10px system-ui, sans-serif';
+  ctx.fillText('σ=0', 4, h - 4);
+  ctx.fillText('σ=1/2 (critical line)', w / 2 - 45, 12);
+  ctx.fillText('σ=1', w - 26, h - 4);
+}
+
+// Schematic (not computed data) of the Gram matrix G = A + E from the
+// paper: diagonal 1x1 blocks are on-line simple zeros (positive definite),
+// 2x2 blocks are off-line conjugate pairs (hyperbolic, signature (1,1)),
+// faint background is E (the o(1) error). Illustrates the block structure
+// the proof's linear algebra acts on, not real zero data.
+function drawMiniLinAlg(canvas) {
+  const { ctx, w, h } = setupCanvas(canvas);
+  ctx.clearRect(0, 0, w, h);
+  const n = 14;
+  const cell = Math.min(w, h) / n;
+  const ox = (w - cell * n) / 2, oy = (h - cell * n) / 2;
+
+  ctx.fillStyle = styleVar('--grid');
+  ctx.fillRect(ox, oy, cell * n, cell * n);
+
+  // pattern of blocks along the diagonal: alternate 1x1 (on-line) and
+  // 2x2 (off-line pair) blocks until the grid fills up
+  let i = 0;
+  const onColor = colors.accent, offColor = colors.moll;
+  while (i < n) {
+    const isPair = i % 3 === 2 && i + 1 < n;
+    const size = isPair ? 2 : 1;
+    ctx.fillStyle = isPair ? offColor : onColor;
+    ctx.globalAlpha = isPair ? 0.55 : 0.85;
+    ctx.fillRect(ox + i * cell, oy + i * cell, cell * size, cell * size);
+    i += size;
+  }
+  ctx.globalAlpha = 1;
+  ctx.strokeStyle = styleVar('--bg');
+  ctx.lineWidth = 1;
+  for (let k = 0; k <= n; k++) {
+    ctx.beginPath(); ctx.moveTo(ox + k * cell, oy); ctx.lineTo(ox + k * cell, oy + n * cell); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ox, oy + k * cell); ctx.lineTo(ox + n * cell, oy + k * cell); ctx.stroke();
+  }
+
+  ctx.font = '10px system-ui, sans-serif';
+  ctx.fillStyle = onColor;
+  ctx.fillText('on-line (1×1, definite)', 4, h - 18);
+  ctx.fillStyle = offColor;
+  ctx.fillText('off-line pair (2×2, hyperbolic)', 4, h - 6);
+}
+
+function renderGallery() {
+  drawMiniHardy(document.getElementById('miniHardy'));
+  drawMiniLevinson(document.getElementById('miniLevinson'));
+  drawMiniDensity(document.getElementById('miniDensity'));
+  drawMiniLinAlg(document.getElementById('miniLinAlg'));
+}
+
+window.addEventListener('resize', renderGallery);
+window.addEventListener('DOMContentLoaded', () => {
+  syncColorsFromInputs();
+  attachPanZoom(document.getElementById('zChart'), render);
+  attachPanZoom(document.getElementById('spiral'), render);
+  attachPanZoom(document.getElementById('timeline'), () => drawTimeline(document.getElementById('timeline')));
+  renderGallery();
+  render();
+});
+</script>
+</body>
+</html>

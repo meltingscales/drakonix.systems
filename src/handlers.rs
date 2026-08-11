@@ -420,6 +420,16 @@ pub async fn bifurcation_diagram_viewer_page(State(state): State<Arc<AppState>>)
     Ok(Html(html))
 }
 
+/// Riemann zeta zeros critical line visualizer page handler
+pub async fn riemann_zeta_zeros_page(State(state): State<Arc<AppState>>) -> Result<Html<String>, AppError> {
+    let html = state
+        .tera
+        .render("riemann_zeta_zeros.html", &Context::new())
+        .map_err(|e| AppError::TemplateError(e.to_string()))?;
+
+    Ok(Html(html))
+}
+
 /// FFmpeg converter page handler
 pub async fn ffmpeg_converter_page(
     State(state): State<Arc<AppState>>,
