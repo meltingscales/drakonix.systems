@@ -1,5 +1,6 @@
 use crate::aa_search::AaHit;
 use crate::converter::ConvertResponse;
+use crate::saa_search::SaaHit;
 use crate::doggypastebin::{CreatePasteRequest, CreatePasteResponse};
 use crate::markdown::MarkdownProcessor;
 use crate::markov;
@@ -490,6 +491,68 @@ struct DatamuseWord {
 pub async fn aa_similar_words(
     State(state): State<Arc<AppState>>,
     Query(params): Query<AaSimilarParams>,
+) -> Json<Vec<String>> {
+    let resp = state
+        .http_client
+        .get("https://api.datamuse.com/words")
+        .query(&[("ml", params.word.as_str()), ("max", "10")])
+        .send()
+        .await
+        .ok()
+        .and_then(|r| r.error_for_status().ok());
+    let Some(resp) = resp else {
+        return Json(Vec::new());
+    };
+    let parsed: Vec<DatamuseWord> = resp.json().await.unwrap_or_default();
+    Json(parsed.into_iter().map(|w| w.word).collect())
+}
+
+/// SAA full-text search page handler
+pub async fn saa_search_page(State(state): State<Arc<AppState>>) -> Result<Html<String>, AppError> {
+    let html = state
+        .tera
+        .render("saa_search.html", &Context::new())
+        .map_err(|e| AppError::TemplateError(e.to_string()))?;
+
+    Ok(Html(html))
+}
+
+#[derive(Deserialize)]
+pub struct SaaSearchParams {
+    q: String,
+}
+
+pub async fn saa_search_query(
+    State(state): State<Arc<AppState>>,
+    Query(params): Query<SaaSearchParams>,
+) -> Json<Vec<SaaHit>> {
+    Json(state.saa_search_manager.search(&params.q))
+}
+
+#[derive(Deserialize)]
+pub struct SaaPageParams {
+    page_num: u32,
+}
+
+pub async fn saa_get_page(
+    State(state): State<Arc<AppState>>,
+    Query(params): Query<SaaPageParams>,
+) -> Result<Json<SaaHit>, StatusCode> {
+    state
+        .saa_search_manager
+        .get_page(params.page_num)
+        .map(Json)
+        .ok_or(StatusCode::NOT_FOUND)
+}
+
+#[derive(Deserialize)]
+pub struct SaaSimilarParams {
+    word: String,
+}
+
+pub async fn saa_similar_words(
+    State(state): State<Arc<AppState>>,
+    Query(params): Query<SaaSimilarParams>,
 ) -> Json<Vec<String>> {
     let resp = state
         .http_client

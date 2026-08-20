@@ -10,6 +10,7 @@ mod markdown;
 mod markov;
 mod models;
 mod rss;
+mod saa_search;
 mod schizo_rng;
 mod timer;
 mod twitch_icon_gen;
@@ -140,6 +141,9 @@ async fn main() -> anyhow::Result<()> {
     let aa_search_manager = aa_search::AaSearchManager::new("aa-pages")
         .map_err(|e| anyhow::anyhow!("Failed to build AA search index: {}", e))?;
 
+    let saa_search_manager = saa_search::SaaSearchManager::new("saa-pages")
+        .map_err(|e| anyhow::anyhow!("Failed to build SAA search index: {}", e))?;
+
     let markov_generator = markov::MarkovGenerator::new();
 
     let db_path = std::env::var("HONEYPOT_DB_PATH").unwrap_or_else(|_| "honeypot.db".to_string());
@@ -167,6 +171,7 @@ async fn main() -> anyhow::Result<()> {
         dogbox_lite_manager,
         doggypastebin_manager,
         aa_search_manager,
+        saa_search_manager,
         markov_generator,
         honeypot_db,
         http_client,
@@ -209,6 +214,11 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/aa/search", get(handlers::aa_search_query))
         .route("/api/aa/page", get(handlers::aa_get_page))
         .route("/api/aa/similar", get(handlers::aa_similar_words))
+        // SAA full-text search
+        .route("/saa", get(handlers::saa_search_page))
+        .route("/api/saa/search", get(handlers::saa_search_query))
+        .route("/api/saa/page", get(handlers::saa_get_page))
+        .route("/api/saa/similar", get(handlers::saa_similar_words))
         // FFmpeg converter service
         .route(
             "/services/ffmpeg-mp4-to-mp3",
@@ -336,6 +346,7 @@ pub struct AppState {
     pub dogbox_lite_manager: dogbox_lite::DogboxLiteManager,
     pub doggypastebin_manager: doggypastebin::DoggyPastebinManager,
     pub aa_search_manager: aa_search::AaSearchManager,
+    pub saa_search_manager: saa_search::SaaSearchManager,
     pub markov_generator: markov::MarkovGenerator,
     pub honeypot_db: honeypot_db::HoneypotDb,
     pub http_client: reqwest::Client,
