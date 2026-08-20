@@ -30,6 +30,9 @@
   #reader-view { display: none; }
   #reader-view.active { display: block; }
   #search-view.hidden { display: none; }
+  #reader-controls { position: sticky; top: 0; background: #fff; display: flex; gap: 0.5rem; padding: 0.5rem 0; margin-bottom: 1rem; border-bottom: 1px solid #ddd; z-index: 1; }
+  #reader-controls button { flex: 1; padding: 0.6rem 0.4rem; font-size: 0.8rem; border: 1px solid #ccc; border-radius: 4px; background: #f7f7f7; cursor: pointer; }
+  #reader-controls button:hover { background: #eee; }
   .page-block { margin-bottom: 1.5rem; }
   .page-label { font-size: 0.8rem; color: #999; margin-bottom: 0.25rem; }
   .page-text { white-space: pre-wrap; }
@@ -65,6 +68,11 @@
   </div>
 
   <div id="reader-view">
+    <div id="reader-controls">
+      <button id="load-prev">↑ load previous page</button>
+      <button id="reset-view">reset view</button>
+      <button id="load-next">load next page ↓</button>
+    </div>
     <div id="reader-pages"></div>
     <div id="reader-status"></div>
   </div>
@@ -88,30 +96,32 @@ const BROWSE_HISTORY_KEY = 'saafts-browse-history';
 // -- search history (query terms) --
 
 function getSearchHistory() {
-  return JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY) || '[]');
+  const raw = JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY) || '[]');
+  // migrate old plain-string entries (pre match-count) to {term, count}
+  return raw.map(e => typeof e === 'string' ? { term: e, count: null } : e);
 }
 
-function pushSearchHistory(term) {
-  const h = getSearchHistory().filter(t => t !== term);
-  h.unshift(term);
+function pushSearchHistory(term, count) {
+  const h = getSearchHistory().filter(t => t.term !== term);
+  h.unshift({ term, count });
   localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(h.slice(0, 10)));
   renderSearchHistory();
 }
 
 function removeSearchHistory(term) {
-  localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(getSearchHistory().filter(t => t !== term)));
+  localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(getSearchHistory().filter(t => t.term !== term)));
   renderSearchHistory();
 }
 
 function renderSearchHistory() {
   searchHistoryEl.innerHTML = '';
-  for (const term of getSearchHistory()) {
+  for (const { term, count } of getSearchHistory()) {
     const row = document.createElement('div');
     row.className = 'hist-row';
     const btn = document.createElement('button');
     btn.className = 'nav';
-    btn.textContent = term;
-    btn.onclick = () => { showSearch(); q.value = term; search(term); };
+    btn.textContent = count === null ? term : `${term} (${count})`;
+    btn.onclick = async () => { showSearch(); q.value = term; pushSearchHistory(term, await search(term)); };
     const del = document.createElement('button');
     del.className = 'del';
     del.textContent = '×';
@@ -205,6 +215,7 @@ async function search(term) {
     el.onclick = () => openReader(hits[i].page_num, term);
   });
   loadSimilar(term);
+  return hits.length;
 }
 
 async function loadSimilar(term) {
@@ -227,15 +238,16 @@ let debounce;
 q.addEventListener('input', () => {
   clearTimeout(debounce);
   const term = q.value.trim();
-  debounce = setTimeout(() => {
-    search(term);
-    if (term) pushSearchHistory(term);
+  debounce = setTimeout(async () => {
+    const count = await search(term);
+    if (term) pushSearchHistory(term, count);
   }, SEARCH_DEBOUNCE_MS);
 });
 
 // -- reader --
 
 let readerTerm = null;
+let openedPageNum = null;
 let minLoaded = null;
 let maxLoaded = null;
 let loadingMore = false;
@@ -303,6 +315,7 @@ async function ensureBuffer(direction) {
 
 async function openReader(page_num, term = null) {
   readerTerm = term;
+  openedPageNum = page_num;
   minLoaded = page_num;
   maxLoaded = page_num;
   readerPages.innerHTML = '';
@@ -321,6 +334,13 @@ mainEl.addEventListener('scroll', () => {
   ensureBuffer('prev');
   ensureBuffer('next');
 });
+
+document.getElementById('load-prev').onclick = () => loadAdjacent('prev');
+document.getElementById('load-next').onclick = () => loadAdjacent('next');
+document.getElementById('reset-view').onclick = () => {
+  const el = readerPages.querySelector(`[data-page="${openedPageNum}"]`);
+  if (el) el.scrollIntoView({ block: 'start' });
+};
 
 renderSearchHistory();
 renderBrowseHistory();
