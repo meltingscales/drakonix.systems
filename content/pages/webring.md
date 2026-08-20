@@ -66,6 +66,7 @@ Here's a list without 88x31 buttons:
     <li><a href="https://msx.horse/landing.php">msx.horse</a></li>
     <li><a href="https://git.projectnightcrawler.dev/NightmareEclipse/">git.projectnightcrawler.dev/NightmareEclipse</a></li>
     <li><a href="https://illegal.solutions/">illegal.solutions</a></li>
+    <li><a href="https://tau.dev/2026/08/07/canon">Canon - a modern, web-based take on the classic MUDs of the Old Internet</a></li>
 </ul>
 
 Here's a list of non-personal websites that are just good alternatives to
