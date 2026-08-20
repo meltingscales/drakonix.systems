@@ -1,3 +1,4 @@
+mod aa_search;
 mod constants;
 mod converter;
 mod dogbox_lite;
@@ -136,6 +137,9 @@ async fn main() -> anyhow::Result<()> {
     let doggypastebin_manager = doggypastebin::DoggyPastebinManager::new()
         .map_err(|e| anyhow::anyhow!("Failed to initialize doggypastebin: {}", e))?;
 
+    let aa_search_manager = aa_search::AaSearchManager::new("aa-pages")
+        .map_err(|e| anyhow::anyhow!("Failed to build AA search index: {}", e))?;
+
     let markov_generator = markov::MarkovGenerator::new();
 
     let db_path = std::env::var("HONEYPOT_DB_PATH").unwrap_or_else(|_| "honeypot.db".to_string());
@@ -162,6 +166,7 @@ async fn main() -> anyhow::Result<()> {
         twitch_emote_gen_manager,
         dogbox_lite_manager,
         doggypastebin_manager,
+        aa_search_manager,
         markov_generator,
         honeypot_db,
         http_client,
@@ -199,6 +204,11 @@ async fn main() -> anyhow::Result<()> {
         // Bifurcation diagram viewer
         .route("/services/bifurcation-diagram-viewer", get(handlers::bifurcation_diagram_viewer_page))
         .route("/services/riemann-zeta-zeros", get(handlers::riemann_zeta_zeros_page))
+        // AA full-text search
+        .route("/aa", get(handlers::aa_search_page))
+        .route("/api/aa/search", get(handlers::aa_search_query))
+        .route("/api/aa/page", get(handlers::aa_get_page))
+        .route("/api/aa/similar", get(handlers::aa_similar_words))
         // FFmpeg converter service
         .route(
             "/services/ffmpeg-mp4-to-mp3",
@@ -325,6 +335,7 @@ pub struct AppState {
     pub twitch_emote_gen_manager: twitch_emote_gen::TwitchEmoteGenManager,
     pub dogbox_lite_manager: dogbox_lite::DogboxLiteManager,
     pub doggypastebin_manager: doggypastebin::DoggyPastebinManager,
+    pub aa_search_manager: aa_search::AaSearchManager,
     pub markov_generator: markov::MarkovGenerator,
     pub honeypot_db: honeypot_db::HoneypotDb,
     pub http_client: reqwest::Client,

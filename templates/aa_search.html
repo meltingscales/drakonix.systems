@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AA Full Text Search</title>
+<style>
+  * { -webkit-tap-highlight-color: transparent; }
+  body { font-family: system-ui, sans-serif; margin: 0; display: flex; }
+  #sidebar { width: 220px; flex: none; padding: 1rem; border-right: 1px solid #ddd; box-sizing: border-box; height: 100vh; overflow-y: auto; }
+  #sidebar h2 { font-size: 0.9rem; text-transform: uppercase; color: #777; margin: 1.25rem 0 0.5rem; }
+  #sidebar h2:first-child { margin-top: 0; }
+  .hist-row { display: flex; align-items: stretch; margin-bottom: 0.25rem; gap: 0.25rem; }
+  #sidebar button.nav { display: block; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; padding: 0.5rem 0.4rem; background: none; border: 1px solid #ccc; border-radius: 3px; cursor: pointer; font-size: 0.85rem; }
+  #sidebar button.nav.active { background: #eef; }
+  button.del { flex: none; width: 2rem; background: none; border: 1px solid #ccc; border-radius: 3px; cursor: pointer; color: #999; font-size: 0.9rem; line-height: 1; }
+  button.del:hover { background: #fee; color: #a00; border-color: #a00; }
+  #main { flex: 1; height: 100vh; overflow-y: auto; box-sizing: border-box; }
+  #main > div { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+
+  #q { width: 100%; font-size: 1.2rem; padding: 0.6rem; box-sizing: border-box; }
+  #similar { margin: 0.5rem 0 1rem; font-size: 0.85rem; color: #555; display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+  #similar button { background: #f0f0f0; border: 1px solid #ddd; border-radius: 12px; padding: 0.2rem 0.7rem; cursor: pointer; font-size: 0.8rem; }
+  .hit { border-bottom: 1px solid #ddd; padding: 0.75rem 0; cursor: pointer; }
+  .hit:hover { background: #f7f7f7; }
+  .hit h3 { margin: 0 0 0.25rem; font-size: 0.95rem; color: #333; }
+  .hit pre { white-space: pre-wrap; font-family: inherit; margin: 0; }
+  mark { background: #ff0; }
+
+  #reader-view { display: none; }
+  #reader-view.active { display: block; }
+  #search-view.hidden { display: none; }
+  .page-block { margin-bottom: 1.5rem; }
+  .page-label { font-size: 0.8rem; color: #999; margin-bottom: 0.25rem; }
+  .page-text { white-space: pre-wrap; }
+  #reader-status { text-align: center; color: #999; font-size: 0.85rem; padding: 1rem; }
+
+  @media (max-width: 700px) {
+    body { flex-direction: column; }
+    #sidebar { width: 100%; height: auto; max-height: 35vh; border-right: none; border-bottom: 1px solid #ddd; }
+    #main { height: auto; flex: 1; }
+    #main > div { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <h2>Navigate</h2>
+  <button class="nav active" id="nav-search">🔍 Search</button>
+
+  <h2>Search History</h2>
+  <div id="search-history"></div>
+
+  <h2>Browsing History</h2>
+  <div id="browse-history"></div>
+</div>
+
+<div id="main">
+  <div id="search-view">
+    <h1>AA Full Text Search</h1>
+    <input id="q" type="search" placeholder="Search the Big Book and 12&12..." autofocus>
+    <div id="similar"></div>
+    <div id="results"></div>
+  </div>
+
+  <div id="reader-view">
+    <div id="reader-pages"></div>
+    <div id="reader-status"></div>
+  </div>
+</div>
+
+<script>
+const q = document.getElementById('q');
+const results = document.getElementById('results');
+const similarEl = document.getElementById('similar');
+const searchHistoryEl = document.getElementById('search-history');
+const browseHistoryEl = document.getElementById('browse-history');
+const searchView = document.getElementById('search-view');
+const readerView = document.getElementById('reader-view');
+const readerPages = document.getElementById('reader-pages');
+const readerStatus = document.getElementById('reader-status');
+const navSearch = document.getElementById('nav-search');
+
+const SEARCH_HISTORY_KEY = 'aafts-search-history';
+const BROWSE_HISTORY_KEY = 'aafts-browse-history';
+const bookNames = { 'big-book': 'Big Book', 'twelve-and-twelve': '12 & 12' };
+
+// -- search history (query terms) --
+
+function getSearchHistory() {
+  return JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY) || '[]');
+}
+
+function pushSearchHistory(term) {
+  const h = getSearchHistory().filter(t => t !== term);
+  h.unshift(term);
+  localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(h.slice(0, 10)));
+  renderSearchHistory();
+}
+
+function removeSearchHistory(term) {
+  localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(getSearchHistory().filter(t => t !== term)));
+  renderSearchHistory();
+}
+
+function renderSearchHistory() {
+  searchHistoryEl.innerHTML = '';
+  for (const term of getSearchHistory()) {
+    const row = document.createElement('div');
+    row.className = 'hist-row';
+    const btn = document.createElement('button');
+    btn.className = 'nav';
+    btn.textContent = term;
+    btn.onclick = () => { showSearch(); q.value = term; search(term); };
+    const del = document.createElement('button');
+    del.className = 'del';
+    del.textContent = '×';
+    del.title = 'Remove';
+    del.onclick = (e) => { e.stopPropagation(); removeSearchHistory(term); };
+    row.append(btn, del);
+    searchHistoryEl.appendChild(row);
+  }
+}
+
+// -- browsing history (pages read) --
+
+function getBrowseHistory() {
+  return JSON.parse(localStorage.getItem(BROWSE_HISTORY_KEY) || '[]');
+}
+
+function pushBrowseHistory(book, page_num) {
+  const h = getBrowseHistory().filter(e => !(e.book === book && e.page_num === page_num));
+  h.unshift({ book, page_num });
+  localStorage.setItem(BROWSE_HISTORY_KEY, JSON.stringify(h.slice(0, 20)));
+  renderBrowseHistory();
+}
+
+function removeBrowseHistory(book, page_num) {
+  const h = getBrowseHistory().filter(e => !(e.book === book && e.page_num === page_num));
+  localStorage.setItem(BROWSE_HISTORY_KEY, JSON.stringify(h));
+  renderBrowseHistory();
+}
+
+function renderBrowseHistory() {
+  browseHistoryEl.innerHTML = '';
+  for (const { book, page_num } of getBrowseHistory()) {
+    const row = document.createElement('div');
+    row.className = 'hist-row';
+    const btn = document.createElement('button');
+    btn.className = 'nav';
+    btn.textContent = `${bookNames[book] || book} p${page_num}`;
+    btn.onclick = () => openReader(book, page_num);
+    const del = document.createElement('button');
+    del.className = 'del';
+    del.textContent = '×';
+    del.title = 'Remove';
+    del.onclick = (e) => { e.stopPropagation(); removeBrowseHistory(book, page_num); };
+    row.append(btn, del);
+    browseHistoryEl.appendChild(row);
+  }
+}
+
+// -- view switching --
+
+function showSearch() {
+  searchView.classList.remove('hidden');
+  readerView.classList.remove('active');
+  navSearch.classList.add('active');
+}
+
+function showReader() {
+  searchView.classList.add('hidden');
+  readerView.classList.add('active');
+  navSearch.classList.remove('active');
+}
+
+navSearch.onclick = showSearch;
+
+// -- search --
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function highlight(text, term) {
+  const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return escapeHtml(text).replace(new RegExp(`(${escaped})`, 'ig'), '<mark>$1</mark>');
+}
+
+async function search(term) {
+  if (!term) { results.innerHTML = ''; similarEl.innerHTML = ''; return; }
+  const res = await fetch(`/api/aa/search?q=${encodeURIComponent(term)}`);
+  const hits = await res.json();
+  results.innerHTML = hits.length
+    ? hits.map((h, i) => `
+        <div class="hit" data-i="${i}">
+          <h3>${bookNames[h.book] || h.book} — page ${h.page_num}</h3>
+          <pre>${highlight(h.snippet, term)}</pre>
+        </div>
+      `).join('')
+    : '<p>No matches.</p>';
+  results.querySelectorAll('.hit').forEach((el, i) => {
+    el.onclick = () => openReader(hits[i].book, hits[i].page_num, term);
+  });
+  loadSimilar(term);
+}
+
+async function loadSimilar(term) {
+  const firstWord = term.trim().split(/\s+/)[0];
+  if (!firstWord) { similarEl.innerHTML = ''; return; }
+  const res = await fetch(`/api/aa/similar?word=${encodeURIComponent(firstWord)}`);
+  const words = res.ok ? await res.json() : [];
+  similarEl.innerHTML = words.length ? '<span>Similar:</span>' : '';
+  for (const w of words) {
+    const btn = document.createElement('button');
+    btn.textContent = w;
+    btn.onclick = () => { q.value = w; search(w); pushSearchHistory(w); };
+    similarEl.appendChild(btn);
+  }
+}
+
+// auto-search debounce: fires this long after the user stops typing
+const SEARCH_DEBOUNCE_MS = 600;
+let debounce;
+q.addEventListener('input', () => {
+  clearTimeout(debounce);
+  const term = q.value.trim();
+  debounce = setTimeout(() => {
+    search(term);
+    if (term) pushSearchHistory(term);
+  }, SEARCH_DEBOUNCE_MS);
+});
+
+// -- reader --
+
+let readerBook = null;
+let readerTerm = null;
+let minLoaded = null;
+let maxLoaded = null;
+let loadingMore = false;
+const MAX_CONSECUTIVE_MISSES = 3; // some pages (blank/cover) were skipped during extraction
+
+async function fetchPage(book, page_num) {
+  const res = await fetch(`/api/aa/page?book=${encodeURIComponent(book)}&page_num=${page_num}`);
+  return res.ok ? res.json() : null;
+}
+
+function renderPage(page, prepend) {
+  const el = document.createElement('div');
+  el.className = 'page-block';
+  el.dataset.page = page.page_num;
+  const body = readerTerm ? highlight(page.snippet, readerTerm) : escapeHtml(page.snippet);
+  el.innerHTML = `<div class="page-label">${bookNames[page.book] || page.book} — page ${page.page_num}</div><div class="page-text">${body}</div>`;
+  if (prepend) {
+    const prevScrollHeight = mainEl.scrollHeight;
+    readerPages.prepend(el);
+    mainEl.scrollTop += mainEl.scrollHeight - prevScrollHeight;
+  } else {
+    readerPages.appendChild(el);
+  }
+}
+
+async function loadAdjacent(direction) {
+  if (loadingMore) return false;
+  loadingMore = true;
+  let misses = 0;
+  let n = direction === 'next' ? maxLoaded + 1 : minLoaded - 1;
+  while (misses < MAX_CONSECUTIVE_MISSES && n > 0) {
+    const page = await fetchPage(readerBook, n);
+    if (page) {
+      renderPage(page, direction === 'prev');
+      if (direction === 'next') maxLoaded = n; else minLoaded = n;
+      loadingMore = false;
+      return true;
+    }
+    misses++;
+    n += direction === 'next' ? 1 : -1;
+  }
+  loadingMore = false;
+  return false;
+}
+
+// Keep at least this many px of already-loaded content beyond each edge of
+// the viewport at all times. A fast mobile fling can cover 1000+ px before a
+// single fetch round-trip returns, so a large buffer (not just "load one
+// page when the edge is near") is what keeps scrolling from ever showing a
+// blank gap.
+const PRELOAD_PX = 1500;
+
+// Keep loading in one direction until the buffer is full or we run out of
+// pages. Also covers short passages that don't fill the viewport at all
+// (which never get a scrollbar, so the scroll listener below never fires).
+async function ensureBuffer(direction) {
+  while (readerView.classList.contains('active')) {
+    const margin = direction === 'next'
+      ? mainEl.scrollHeight - mainEl.scrollTop - mainEl.clientHeight
+      : mainEl.scrollTop;
+    if (margin >= PRELOAD_PX) break;
+    if (!(await loadAdjacent(direction))) break;
+  }
+}
+
+async function openReader(book, page_num, term = null) {
+  readerBook = book;
+  readerTerm = term;
+  minLoaded = page_num;
+  maxLoaded = page_num;
+  readerPages.innerHTML = '';
+  const page = await fetchPage(book, page_num);
+  if (!page) { readerStatus.textContent = 'Page not found.'; return; }
+  renderPage(page, false);
+  showReader();
+  pushBrowseHistory(book, page_num);
+  mainEl.scrollTop = 0;
+  ensureBuffer('next');
+}
+
+const mainEl = document.getElementById('main');
+mainEl.addEventListener('scroll', () => {
+  if (!readerView.classList.contains('active')) return;
+  ensureBuffer('prev');
+  ensureBuffer('next');
+});
+
+renderSearchHistory();
+renderBrowseHistory();
+</script>
+</body>
+</html>

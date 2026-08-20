@@ -73,8 +73,11 @@ zip = "2"
 # SQLite for honeypot hit logging
 rusqlite = { version = "0.32", features = ["bundled"] }
 
+# Full-text search index for the AA Big Book / 12&12 search tool
+tantivy = "0.26"
+
 # HTTP client for monitor utility
-reqwest = { version = "0.12", default-features = false, features = ["stream", "rustls-tls"] }
+reqwest = { version = "0.12", default-features = false, features = ["stream", "rustls-tls", "json"] }
 
 # TUI for monitor utility
 ratatui = "0.29"

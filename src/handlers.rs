@@ -1,3 +1,4 @@
+use crate::aa_search::AaHit;
 use crate::converter::ConvertResponse;
 use crate::doggypastebin::{CreatePasteRequest, CreatePasteResponse};
 use crate::markdown::MarkdownProcessor;
@@ -10,11 +11,12 @@ use crate::twitch_emote_gen::EmoteGenResponse;
 use crate::{constants, honeypot_db, rss, AppState, CountryCache, OrgCache};
 use axum::{
     body::Body,
-    extract::{Multipart, Path, Request, State},
+    extract::{Multipart, Path, Query, Request, State},
     http::{HeaderMap, StatusCode},
     response::{Html, IntoResponse, Response},
     Json,
 };
+use serde::Deserialize;
 use std::sync::Arc;
 use tera::Context;
 use tokio::fs::File;
@@ -431,6 +433,77 @@ pub async fn riemann_zeta_zeros_page(State(state): State<Arc<AppState>>) -> Resu
         .map_err(|e| AppError::TemplateError(e.to_string()))?;
 
     Ok(Html(html))
+}
+
+/// AA full-text search page handler
+pub async fn aa_search_page(State(state): State<Arc<AppState>>) -> Result<Html<String>, AppError> {
+    let html = state
+        .tera
+        .render("aa_search.html", &Context::new())
+        .map_err(|e| AppError::TemplateError(e.to_string()))?;
+
+    Ok(Html(html))
+}
+
+#[derive(Deserialize)]
+pub struct AaSearchParams {
+    q: String,
+}
+
+pub async fn aa_search_query(
+    State(state): State<Arc<AppState>>,
+    Query(params): Query<AaSearchParams>,
+) -> Json<Vec<AaHit>> {
+    Json(state.aa_search_manager.search(&params.q))
+}
+
+#[derive(Deserialize)]
+pub struct AaPageParams {
+    book: String,
+    page_num: u32,
+}
+
+pub async fn aa_get_page(
+    State(state): State<Arc<AppState>>,
+    Query(params): Query<AaPageParams>,
+) -> Result<Json<AaHit>, StatusCode> {
+    state
+        .aa_search_manager
+        .get_page(&params.book, params.page_num)
+        .map(Json)
+        .ok_or(StatusCode::NOT_FOUND)
+}
+
+#[derive(Deserialize)]
+pub struct AaSimilarParams {
+    word: String,
+}
+
+#[derive(Deserialize)]
+struct DatamuseWord {
+    word: String,
+}
+
+// "Similar words" via Datamuse (free, no API key). The original 164andmore
+// site uses Merriam-Webster's Thesaurus API, which requires a registered
+// key we don't have.
+pub async fn aa_similar_words(
+    State(state): State<Arc<AppState>>,
+    Query(params): Query<AaSimilarParams>,
+) -> Json<Vec<String>> {
+    let resp = state
+        .http_client
+        .get("https://api.datamuse.com/words")
+        .query(&[("ml", params.word.as_str()), ("max", "10")])
+        .send()
+        .await
+        .ok()
+        .and_then(|r| r.error_for_status().ok());
+    let Some(resp) = resp else {
+        return Json(Vec::new());
+    };
+    let parsed: Vec<DatamuseWord> = resp.json().await.unwrap_or_default();
+    Json(parsed.into_iter().map(|w| w.word).collect())
 }
 
 /// FFmpeg converter page handler
