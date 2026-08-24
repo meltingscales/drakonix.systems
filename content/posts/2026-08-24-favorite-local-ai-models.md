@@ -36,9 +36,10 @@ Can be pulled with `ollama pull <MODEL>`.
 
 ## Tools
 
-- ollama
-- Hermes Agent
+- ollama (llm backend)
+- Hermes Agent (cli)
   - Note: you may need to manually edit `~/.hermes/config.yaml` if you add/remove models from `ollama`.
+- Cline (Visual Studio Code plugin)
 
 ## Test prompts
 
