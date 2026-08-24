@@ -15,6 +15,21 @@ For now...
     ollama run huihui_ai/Qwen3.8-abliterated
     ollama
 
+## Models (ollama)
+
+Can be pulled with `ollama pull <MODEL>`.
+
+| Model | Human remarks | Memory usage | Recommendation for use with Hermes |
+|--|--|--|--|
+| `huihui_ai/Qwen3.8-abliterated` | Chokes on local tool use with Hermes Agent. Not sure why. | 14GB | Skip |
+| `thewindmom/hermes-3-llama-3.1-8b` | Lacks tool use, can't be loaded by Hermes Agent. | 17GB | Skip |
+| `hf.co/mlabonne/gemma-3-27b-it-abliterated-GGUF:Q4_K_M` | Human remarks: It is indeed abliterated. It will happily generate usable Python malware. | 30GB | Untested with Hermes |
+| `devstral:24b` | Hermes fails - doesn't support thinking | 14GB | Skip, unless `reasoning_overrides: off` set for it |
+| `qwen3.6:27b` | Pulled, confirmed locally: vision, tools, thinking. Ready for Hermes. | 17GB | Recommended |
+| `qwen3.6:35b` | Pulled, confirmed locally: vision, tools, thinking. Ready for Hermes. | 24GB | Recommended |
+| `qwen3-coder:30b` | tools only, no thinking badge - skip for Hermes reasoning_effort | 19GB | Skip, unless `reasoning_overrides: off` set for it |
+| `qwen3-coder:480b` | tools only, no thinking badge - skip for Hermes reasoning_effort | 290GB | Skip, unless `reasoning_overrides: off` set for it |
+
 ## Sites
 
 - Hugging Face
@@ -23,17 +38,13 @@ For now...
 
 - ollama
 - Hermes Agent
+  - Note: you may need to manually edit `~/.hermes/config.yaml` if you add/remove models from `ollama`.
 
-## Todo cleanup below...
+## Test prompts
 
-These models were intended for ollama but can be converted for llama.cpp. I plan on running my own benchmarks on each.
+```txt
+ref: https://archive.org/details/chop-suey-win31
+ref: https://github.com/meltingscales/cachyos-whitedragon-ai-lab/blob/main/REVERSE-ENGINEERING.md
 
-- llama3.2:3b
-  - TODO: Test.
-- yuiseki/devstral-small-2507:24b
-  - TODO: Test.
-- hf.co/bartowski/Qwen2.5-Coder-14B-Instruct-abliterated-GGUF:Q4_K_S
-  - TODO: Test.
-- hf.co/mlabonne/gemma-3-27b-it-abliterated-GGUF:Q4_K_M
-  - Human remarks: It is indeed abliterated. It will happily generate usable Python malware.
-  - TODO: Test.
+read @file:REVERSE-ENGINEERING.md and let's start reversing @file:setup-03602-chop_suey-PCDOS.exe. What tools might you need me to install or set up?
+```
