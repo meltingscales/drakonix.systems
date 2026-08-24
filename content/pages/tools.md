@@ -7,6 +7,10 @@ date: 2025-01-01
 
 A list of tools I use.
 
+## Local AI Stack
+
+See <https://drakonix.systems/posts/favorite-local-ai-models> please.
+
 ## Unformatted
 
 - <https://github.com/affaan-m/everything-claude-code>
@@ -139,20 +143,6 @@ Current working stack:
 
 The basic pattern to locally host is just to run `llama.cpp` (or `ollama` if you have NVIDIA GPUs) on a powerful PC, set up a VPN with `tailscale`, and then connect to the LLM endpoint with your less powerful computer via a coding agent like `aider` or a frontend like `openwebui`.
 
-### Local AI models
-
-These models were intended for ollama but can be converted for llama.cpp. I plan on running my own benchmarks on each.
-
-- llama3.2:3b
-  - TODO: Test.
-- yuiseki/devstral-small-2507:24b
-  - TODO: Test.
-- hf.co/bartowski/Qwen2.5-Coder-14B-Instruct-abliterated-GGUF:Q4_K_S
-  - TODO: Test.
-- hf.co/mlabonne/gemma-3-27b-it-abliterated-GGUF:Q4_K_M
-  - Human remarks: It is indeed abliterated. It will happily generate usable Python malware.
-  - TODO: Test.
-
 ### Anti AI/Anti Slop
 
 - [nepenthes](https://zadzmo.org/code/nepenthes/) - Markov chain babble generator, wastes the time/CPU of scrapers
@@ -210,6 +200,7 @@ These models were intended for ollama but can be converted for llama.cpp. I plan
 - exploit.in - Russian-language cybercrime/exploit forum
 - raidforums - data leak forum (seized by law enforcement)
 - leaks - data leak aggregator
+- [data leaks femboyforum](https://femboyforum.com/)
 
 ### References & resources
 
