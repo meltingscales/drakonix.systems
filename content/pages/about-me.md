@@ -28,6 +28,10 @@ I may host other infrastructure on that domain, but for now, this is my main sit
 
 ## Public keys
 
+You can snag them at:
+
+<https://github.com/meltingscales.keys>
+
 For trust's sake, here are my public SSH keys:
 
 ```
