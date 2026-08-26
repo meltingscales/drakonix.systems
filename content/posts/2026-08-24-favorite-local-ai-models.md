@@ -30,6 +30,10 @@ Can be pulled with `ollama pull <MODEL>`.
 | `qwen3-coder:30b` | tools only, no thinking badge - skip for Hermes reasoning_effort | 19GB | Skip, unless `reasoning_overrides: off` set for it |
 | `qwen3-coder:480b` | tools only, no thinking badge - skip for Hermes reasoning_effort | 290GB | Skip, unless `reasoning_overrides: off` set for it |
 
+## Videos
+
+- <https://www.youtube.com/watch?v=yaMcm3sQswc> - Hermes Agent + Ollama = 100% Private OS
+
 ## Sites
 
 - Hugging Face
