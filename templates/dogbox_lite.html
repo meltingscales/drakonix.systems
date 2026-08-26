@@ -262,6 +262,12 @@
             }
         });
 
+        // Network transfer is done, but the server still has to save the
+        // file before it responds — let the user know it's not frozen.
+        xhr.upload.addEventListener("loadend", () => {
+            statusText.textContent = "Processing…";
+        });
+
         xhr.addEventListener("load", () => {
             if (xhr.status === 200) {
                 progFill.style.width = "100%";
