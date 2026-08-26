@@ -5,7 +5,7 @@ use tokio::fs;
 use tokio::sync::RwLock;
 use uuid::Uuid;
 
-const TTL_SECS: u64 = 3600; // 1 hour
+const TTL_SECS: u64 = 86400; // 24 hours
 
 #[derive(Clone)]
 pub struct DogboxLiteManager {
@@ -120,7 +120,7 @@ impl DogboxLiteManager {
             );
         }
 
-        // Schedule deletion after 1 hour
+        // Schedule deletion after 24 hours
         let id_clone = id;
         let uploads_clone = self.uploads.clone();
         tokio::spawn(async move {

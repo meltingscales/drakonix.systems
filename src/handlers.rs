@@ -1317,7 +1317,7 @@ pub async fn catch_all_honeypot(
 }
 
 // ---------------------------------------------------------------------------
-// Dogbox Lite — temporary file sharing (5 GB max, 1 hour TTL)
+// Dogbox Lite — temporary file sharing (5 GB max, 24 hour TTL)
 // ---------------------------------------------------------------------------
 
 /// Dogbox Lite page handler
