@@ -21,6 +21,7 @@ trivy-report.*
 .DS_Store
 Thumbs.db
 temp_conversions/
+temp_dogbox_lite/
 *.db
 *.log
 
