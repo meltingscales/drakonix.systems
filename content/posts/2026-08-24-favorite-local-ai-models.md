@@ -36,7 +36,8 @@ Can be pulled with `ollama pull <MODEL>`.
 
 ## Sites
 
-- Hugging Face
+- [Hugging Face](http://huggingface.co/)
+- <https://www.canirun.ai/>
 
 ## Tools
 
