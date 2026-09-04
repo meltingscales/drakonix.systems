@@ -170,6 +170,11 @@ Use at your own legal risk.
   - [Resource Automation in Stoneblock 4 is UNIQUE!](https://www.youtube.com/watch?v=mnpHhIp7hd4)
 - [VerityCraft](https://www.curseforge.com/minecraft/modpacks/veritycraft)
 
+### Want to try
+
+- [Beyond Depth](https://www.curseforge.com/minecraft/modpacks/beyond-depth)
+- [Craftoria](https://www.curseforge.com/minecraft/modpacks/craftoria)
+
 ### MSX
 
 - <https://msx.horse/eos/>
