@@ -209,6 +209,7 @@ async fn main() -> anyhow::Result<()> {
         // Bifurcation diagram viewer
         .route("/services/bifurcation-diagram-viewer", get(handlers::bifurcation_diagram_viewer_page))
         .route("/services/riemann-zeta-zeros", get(handlers::riemann_zeta_zeros_page))
+        .route("/services/minecraft-servers", get(handlers::minecraft_servers_page))
         // AA full-text search
         .route("/aa", get(handlers::aa_search_page))
         .route("/api/aa/search", get(handlers::aa_search_query))

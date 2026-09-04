@@ -436,6 +436,19 @@ pub async fn riemann_zeta_zeros_page(State(state): State<Arc<AppState>>) -> Resu
     Ok(Html(html))
 }
 
+/// Minecraft servers page handler
+pub async fn minecraft_servers_page(State(state): State<Arc<AppState>>) -> Result<Html<String>, AppError> {
+    let mut context = Context::new();
+    add_honeypot_urls(&mut context);
+
+    let html = state
+        .tera
+        .render("minecraft_servers.html", &context)
+        .map_err(|e| AppError::TemplateError(e.to_string()))?;
+
+    Ok(Html(html))
+}
+
 /// AA full-text search page handler
 pub async fn aa_search_page(State(state): State<Arc<AppState>>) -> Result<Html<String>, AppError> {
     let html = state
