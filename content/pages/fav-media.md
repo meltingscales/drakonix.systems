@@ -174,6 +174,11 @@ Use at your own legal risk.
 
 - [Beyond Depth](https://www.curseforge.com/minecraft/modpacks/beyond-depth)
 - [Craftoria](https://www.curseforge.com/minecraft/modpacks/craftoria)
+- [Liminal Industries](https://www.curseforge.com/minecraft/modpacks/liminal-industries)
+
+### Tips
+
+- Forge/Neoforge hash-check crash in Prism Launcher: add `-Dforgewrapper.skipHashCheck=true` to instance Java arguments ([source](https://github.com/PrismLauncher/PrismLauncher/issues/3406#issuecomment-3694868251))
 
 ### MSX
 
