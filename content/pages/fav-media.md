@@ -177,6 +177,7 @@ Use at your own legal risk.
 - [Liminal Industries](https://www.curseforge.com/minecraft/modpacks/liminal-industries)
 - [Finality](https://www.curseforge.com/minecraft/modpacks/finality)
 - [Abyssal Ascent](https://www.curseforge.com/minecraft/modpacks/abyssal-ascent)
+- [Escape from Minekov](https://www.curseforge.com/minecraft/modpacks/escape-from-minekov)
 
 ### Tips
 
