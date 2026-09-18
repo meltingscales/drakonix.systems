@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}EXIF Scrubber — drakonix.systems{% endblock %}
+
+{% block content %}
+<style>
+  .exif-page { max-width: 900px; }
+  .exif-page h1 { margin-bottom: 0.25rem; }
+  .exif-page p.sub { color: var(--text-secondary); margin-top: 0; }
+  .exif-drop {
+    border: 2px dashed var(--border-color, #666);
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    margin: 1.5rem 0;
+  }
+  .exif-drop:hover { border-color: var(--accent-color, #5ec8ff); }
+  .exif-drop input { display: none; }
+  .exif-list { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1.5rem; }
+  .exif-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border: 1px solid var(--border-color, #444);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+  }
+  .exif-item img { width: 64px; height: 64px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
+  .exif-item .info { flex: 1; min-width: 0; }
+  .exif-item .info .name { font-weight: 600; word-break: break-all; }
+  .exif-item .info .status { font-size: 0.85rem; color: var(--text-secondary); }
+  .exif-item a.dl {
+    background: var(--accent-color, #5ec8ff);
+    color: #05131c;
+    font-weight: 600;
+    padding: 0.4rem 0.9rem;
+    border-radius: 6px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .exif-actions { margin-top: 1rem; display: flex; gap: 0.75rem; }
+  .exif-actions button {
+    background: var(--accent-color, #5ec8ff);
+    border: none;
+    color: #05131c;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+</style>
+
+<div class="exif-page">
+  <h1>EXIF Scrubber</h1>
+  <p class="sub">
+    Strip EXIF/metadata (camera model, GPS location, timestamps, etc.) from
+    photos. Everything runs in your browser &mdash; images are never
+    uploaded anywhere. Original resolution and quality are preserved.
+  </p>
+
+  <label class="exif-drop" id="dropZone">
+    <div>Click or drop images here (JPEG, PNG, WebP — multiple allowed)</div>
+    <input type="file" id="fileInput" accept="image/*" multiple>
+  </label>
+
+  <div class="exif-actions" id="actions" style="display:none;">
+    <button id="downloadAll">Download all scrubbed images</button>
+  </div>
+
+  <div class="exif-list" id="list"></div>
+</div>
+
+<script>
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const list = document.getElementById('list');
+const actions = document.getElementById('actions');
+const downloadAllBtn = document.getElementById('downloadAll');
+
+let results = [];
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); });
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  handleFiles(e.dataTransfer.files);
+});
+fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+
+function handleFiles(fileList) {
+  const files = Array.from(fileList).filter(f => f.type.startsWith('image/'));
+  files.forEach(scrubFile);
+}
+
+function scrubFile(file) {
+  const item = document.createElement('div');
+  item.className = 'exif-item';
+  const thumb = document.createElement('img');
+  const info = document.createElement('div');
+  info.className = 'info';
+  const name = document.createElement('div');
+  name.className = 'name';
+  name.textContent = file.name;
+  const status = document.createElement('div');
+  status.className = 'status';
+  status.textContent = 'Scrubbing…';
+  info.appendChild(name);
+  info.appendChild(status);
+  item.appendChild(thumb);
+  item.appendChild(info);
+  list.appendChild(item);
+
+  const img = new Image();
+  const objectUrl = URL.createObjectURL(file);
+  img.onload = () => {
+    // Canvas never carries metadata — redrawing here is what strips EXIF.
+    // Full natural dimensions + max quality preserves original resolution/quality.
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+
+    const outType = (file.type === 'image/jpeg' || file.type === 'image/webp') ? file.type : 'image/png';
+    canvas.toBlob(blob => {
+      URL.revokeObjectURL(objectUrl);
+      if (!blob) {
+        status.textContent = 'Failed to process.';
+        return;
+      }
+      const dlUrl = URL.createObjectURL(blob);
+      thumb.src = dlUrl;
+      const dotIdx = file.name.lastIndexOf('.');
+      const ext = outType === 'image/png' ? '.png' : (outType === 'image/webp' ? '.webp' : '.jpg');
+      const base = dotIdx > 0 ? file.name.slice(0, dotIdx) : file.name;
+      const outName = base + '-scrubbed' + ext;
+
+      status.textContent = `Done — ${(blob.size / 1024).toFixed(0)} KB, metadata stripped`;
+
+      const link = document.createElement('a');
+      link.className = 'dl';
+      link.href = dlUrl;
+      link.download = outName;
+      link.textContent = 'Download';
+      item.appendChild(link);
+
+      results.push({ url: dlUrl, name: outName });
+      actions.style.display = 'flex';
+    }, outType, 1.0);
+  };
+  img.onerror = () => { status.textContent = 'Failed to load image.'; };
+  img.src = objectUrl;
+}
+
+downloadAllBtn.addEventListener('click', () => {
+  results.forEach(r => {
+    const a = document.createElement('a');
+    a.href = r.url;
+    a.download = r.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  });
+});
+</script>
+{% endblock %}

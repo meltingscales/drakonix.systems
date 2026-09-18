@@ -436,6 +436,19 @@ pub async fn riemann_zeta_zeros_page(State(state): State<Arc<AppState>>) -> Resu
     Ok(Html(html))
 }
 
+/// EXIF scrubber page handler
+pub async fn exif_scrubber_page(State(state): State<Arc<AppState>>) -> Result<Html<String>, AppError> {
+    let mut context = Context::new();
+    add_honeypot_urls(&mut context);
+
+    let html = state
+        .tera
+        .render("exif_scrubber.html", &context)
+        .map_err(|e| AppError::TemplateError(e.to_string()))?;
+
+    Ok(Html(html))
+}
+
 /// Minecraft servers page handler
 pub async fn minecraft_servers_page(State(state): State<Arc<AppState>>) -> Result<Html<String>, AppError> {
     let mut context = Context::new();
