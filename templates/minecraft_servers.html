@@ -4,6 +4,33 @@
     Minecraft server projects. Source on GitHub.
 </p>
 
+<style>
+    .mc-status-card {
+        display: flex;
+        gap: 1rem;
+        border: 1px solid var(--border-color, #444);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    .mc-status-favicon {
+        width: 64px;
+        height: 64px;
+        image-rendering: pixelated;
+        border-radius: 4px;
+        flex-shrink: 0;
+    }
+    .mc-status-info h3 { margin: 0 0 0.25rem; }
+    .mc-status-info p { margin: 0.15rem 0; color: var(--text-secondary); }
+    .mc-status-address code { color: var(--text-primary, inherit); }
+</style>
+
+<h2>Live status</h2>
+<div data-mc-status="full">
+    <p>Loading server status&hellip;</p>
+</div>
+
+<h2 style="margin-top: 2rem;">All projects</h2>
 <div class="services-grid">
     <a
         href="https://github.com/meltingscales/MinecraftServerSpeedBuizModded"
@@ -42,4 +69,5 @@
         <p>Tech-focused NeoForge 1.21.1 modpack + server, built from a packwiz pack. Join at drakonixtechpack.playit.plus:23387. Source on GitHub.</p>
     </a>
 </div>
+<script src="/static/js/mc_status.js"></script>
 {% endblock %}

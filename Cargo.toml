@@ -83,6 +83,10 @@ reqwest = { version = "0.12", default-features = false, features = ["stream", "r
 ratatui = "0.29"
 crossterm = "0.28"
 
+# Minecraft Server List Ping (server status/banner checker)
+craftping = { version = "0.8", default-features = false, features = ["async-tokio"] }
+base64 = "0.22"
+
 [profile.release]
 opt-level = 3
 lto = true

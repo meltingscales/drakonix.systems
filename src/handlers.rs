@@ -42,6 +42,7 @@ pub async fn index(State(state): State<Arc<AppState>>) -> Result<Html<String>, A
     let mut context = Context::new();
     context.insert("page", &page);
     context.insert("title", &page.title);
+    context.insert("is_home", &true);
     add_honeypot_urls(&mut context);
 
     let html = state.tera.render("page_detail.html", &context).map_err(|e| {
@@ -460,6 +461,11 @@ pub async fn minecraft_servers_page(State(state): State<Arc<AppState>>) -> Resul
         .map_err(|e| AppError::TemplateError(e.to_string()))?;
 
     Ok(Html(html))
+}
+
+/// Minecraft server status API — cached Server List Ping results, refreshed at most once per minute per server.
+pub async fn mc_status_api(State(state): State<Arc<AppState>>) -> Json<Vec<crate::mc_status::ServerStatus>> {
+    Json(state.mc_status_cache.get_all().await)
 }
 
 /// AA full-text search page handler

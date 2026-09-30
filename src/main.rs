@@ -8,6 +8,7 @@ mod handlers;
 mod honeypot_db;
 mod markdown;
 mod markov;
+mod mc_status;
 mod models;
 mod rss;
 mod saa_search;
@@ -177,6 +178,7 @@ async fn main() -> anyhow::Result<()> {
         http_client,
         country_cache,
         org_cache,
+        mc_status_cache: mc_status::McStatusCache::new(),
     });
 
     // Build the application router
@@ -211,6 +213,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/services/riemann-zeta-zeros", get(handlers::riemann_zeta_zeros_page))
         .route("/services/exif-scrubber", get(handlers::exif_scrubber_page))
         .route("/services/minecraft-servers", get(handlers::minecraft_servers_page))
+        .route("/api/mc-status", get(handlers::mc_status_api))
         // AA full-text search
         .route("/aa", get(handlers::aa_search_page))
         .route("/api/aa/search", get(handlers::aa_search_query))
@@ -354,4 +357,5 @@ pub struct AppState {
     pub http_client: reqwest::Client,
     pub country_cache: CountryCache,
     pub org_cache: OrgCache,
+    pub mc_status_cache: mc_status::McStatusCache,
 }
