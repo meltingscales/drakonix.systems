@@ -41,6 +41,11 @@ pub const SERVERS: &[ServerSpec] = &[
         host: "drakonixtechpack.playit.plus",
         port: 23387,
     },
+    ServerSpec {
+        name: "Drakonix Vanilla",
+        host: "pgsql-molecular.tun.ply.gg",
+        port: 20394,
+    },
 ];
 
 /// Caches Server List Ping results per host:port for CACHE_TTL, so a page
