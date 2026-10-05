@@ -36,10 +36,12 @@ WORKDIR /app
 # Copy binary from builder
 COPY --from=builder /app/target/release/rust-blog /app/rust-blog
 
-# Copy static assets and templates (changed frequently, so copy last)
+# Copy static assets, templates, and config (changed frequently, so copy
+# last - editing config/minecraft_servers.json never triggers a Rust rebuild)
 COPY templates /app/templates
 COPY static /app/static
 COPY content /app/content
+COPY config /app/config
 
 # Set environment variables
 ENV RUST_LOG=info

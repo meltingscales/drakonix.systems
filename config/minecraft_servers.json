@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Liminal Industries",
+    "host": "meltyliminalindustries.playit.plus",
+    "port": 44940
+  },
+  {
+    "name": "Drakonix Tech Pack",
+    "host": "drakonixtechpack.playit.plus",
+    "port": 23387
+  },
+  {
+    "name": "Drakonix Vanilla",
+    "host": "pgsql-molecular.tun.ply.gg",
+    "port": 20394
+  }
+]
