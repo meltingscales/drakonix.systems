@@ -169,6 +169,14 @@ Use at your own legal risk.
 - [FTB StoneBlock 4](https://www.feed-the-beast.com/modpacks/130-ftb-stoneblock-4)
   - [Resource Automation in Stoneblock 4 is UNIQUE!](https://www.youtube.com/watch?v=mnpHhIp7hd4)
 - [VerityCraft](https://www.curseforge.com/minecraft/modpacks/veritycraft)
+- [Linggango](https://www.curseforge.com/minecraft/modpacks/linggango)
+- [Craftoria](https://www.curseforge.com/minecraft/modpacks/craftoria)
+- [The Suspect's Journey](https://www.curseforge.com/minecraft/modpacks/the-suspects-journey)
+- [FTB OceanBlock 2](https://www.curseforge.com/minecraft/modpacks/ftb-oceanblock-2)
+- [Agrarian Skies 2](https://www.curseforge.com/minecraft/modpacks/agrarian-skies-2)
+- [Beyond Depth](https://www.curseforge.com/minecraft/modpacks/beyond-depth)
+- [Abyssal Ascent](https://www.curseforge.com/minecraft/modpacks/abyssal-ascent)
+- [FTB Evolution 2](https://www.curseforge.com/minecraft/modpacks/ftb-evolution-2)
 
 ### Want to try
 
