@@ -177,6 +177,7 @@ Use at your own legal risk.
 - [Beyond Depth](https://www.curseforge.com/minecraft/modpacks/beyond-depth)
 - [Abyssal Ascent](https://www.curseforge.com/minecraft/modpacks/abyssal-ascent)
 - [FTB Evolution 2](https://www.curseforge.com/minecraft/modpacks/ftb-evolution-2)
+- [Cube Warper](https://www.curseforge.com/minecraft/modpacks/cube-warper)
 
 ### Want to try
 
