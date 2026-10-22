@@ -88,5 +88,6 @@ Here's a list of fun games or cool media, for fun.
 
 55 animals listed
 🐩🙀🦜🐍𓆉🐜🦘𓃬🐊🐛🕷🪰🐤🐦🐌𓇼🐇🦊🐺🐻‍❄️🧑‍🌾🦍🦋🐛𓃰🐙🐌🐯𓃱🌈🦈🐛)</span></li>
+<li><a href="https://ddstats.live/">ddstats.live</a></li>
 
 </ul>
