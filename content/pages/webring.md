@@ -69,6 +69,7 @@ Here's a list without 88x31 buttons:
     <li><a href="https://tau.dev/2026/08/07/canon">Canon - a modern, web-based take on the classic MUDs of the Old Internet</a></li>
     <li><a href="https://www.iankduncan.com/personal/2026-09-16-sex-ai-and-the-apocalypse/#the-gospel-according-to-harry-potter">Sex, AI, and the Apocalypse</a></li>
     <li><a href="https://www.verysane.ai/p/is-metr-a-meaningful-check-on-anthropic">Is METR a meaningful check on Anthropic?</a></li>
+    <li><a href="https://media.underseamedia.com/">media.underseamedia.com</a></li>
 </ul>
 
 Here's a list of non-personal websites that are just good alternatives to
