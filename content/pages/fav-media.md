@@ -179,6 +179,7 @@ Use at your own legal risk.
 - [FTB Evolution 2](https://www.curseforge.com/minecraft/modpacks/ftb-evolution-2)
 - [Cube Warper](https://www.curseforge.com/minecraft/modpacks/cube-warper)
 - [Secure, Contain, Profit](https://www.curseforge.com/minecraft/modpacks/secure-contain-profit)
+- [TerraFirmaGreg Modern](https://www.curseforge.com/minecraft/modpacks/terrafirmagreg-modern)
 
 ### Want to try
 
