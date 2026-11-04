@@ -180,6 +180,7 @@ Use at your own legal risk.
 - [Cube Warper](https://www.curseforge.com/minecraft/modpacks/cube-warper)
 - [Secure, Contain, Profit](https://www.curseforge.com/minecraft/modpacks/secure-contain-profit)
 - [TerraFirmaGreg Modern](https://www.curseforge.com/minecraft/modpacks/terrafirmagreg-modern)
+- [Finality](https://www.curseforge.com/minecraft/modpacks/finality)
 
 ### Want to try
 
