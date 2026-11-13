@@ -13,6 +13,7 @@
   .hist-row { display: flex; align-items: stretch; margin-bottom: 0.25rem; gap: 0.25rem; }
   #sidebar button.nav { display: block; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; padding: 0.5rem 0.4rem; background: none; border: 1px solid #ccc; border-radius: 3px; cursor: pointer; font-size: 0.85rem; }
   #sidebar button.nav.active { background: #eef; }
+  #sidebar > button.nav { width: 100%; margin-bottom: 0.25rem; }
   button.del { flex: none; width: 2rem; background: none; border: 1px solid #ccc; border-radius: 3px; cursor: pointer; color: #999; font-size: 0.9rem; line-height: 1; }
   button.del:hover { background: #fee; color: #a00; border-color: #a00; }
   #main { flex: 1; height: 100vh; overflow-y: auto; box-sizing: border-box; }
@@ -51,6 +52,7 @@
 <div id="sidebar">
   <h2>Navigate</h2>
   <button class="nav active" id="nav-search">🔍 Search</button>
+  <button class="nav" id="read-book">📖 Reading mode</button>
 
   <h2>Search History</h2>
   <div id="search-history"></div>
@@ -278,7 +280,7 @@ async function loadAdjacent(direction) {
   loadingMore = true;
   let misses = 0;
   let n = direction === 'next' ? maxLoaded + 1 : minLoaded - 1;
-  while (misses < MAX_CONSECUTIVE_MISSES && n > 0) {
+  while (misses < MAX_CONSECUTIVE_MISSES && n >= 0) {
     const page = await fetchPage(n);
     if (page) {
       renderPage(page, direction === 'prev');
@@ -341,6 +343,9 @@ document.getElementById('reset-view').onclick = () => {
   const el = readerPages.querySelector(`[data-page="${openedPageNum}"]`);
   if (el) el.scrollIntoView({ block: 'start' });
 };
+
+// Reading mode: open the book from its first page
+document.getElementById('read-book').onclick = () => openReader(0);
 
 renderSearchHistory();
 renderBrowseHistory();
