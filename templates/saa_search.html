@@ -14,6 +14,10 @@
   #sidebar button.nav { display: block; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; padding: 0.5rem 0.4rem; background: none; border: 1px solid #ccc; border-radius: 3px; cursor: pointer; font-size: 0.85rem; }
   #sidebar button.nav.active { background: #eef; }
   #sidebar > button.nav { width: 100%; margin-bottom: 0.25rem; }
+  .goto-row { display: flex; gap: 0.25rem; margin-bottom: 0.25rem; }
+  .goto-row input, .goto-row select { flex: 1; min-width: 0; padding: 0.4rem; font-size: 0.85rem; box-sizing: border-box; }
+  .goto-row button { flex: none; padding: 0.4rem 0.6rem; font-size: 0.85rem; border: 1px solid #ccc; border-radius: 3px; background: none; cursor: pointer; }
+  #goto-error { color: #a00; font-size: 0.8rem; min-height: 1em; }
   button.del { flex: none; width: 2rem; background: none; border: 1px solid #ccc; border-radius: 3px; cursor: pointer; color: #999; font-size: 0.9rem; line-height: 1; }
   button.del:hover { background: #fee; color: #a00; border-color: #a00; }
   #main { flex: 1; height: 100vh; overflow-y: auto; box-sizing: border-box; }
@@ -53,6 +57,12 @@
   <h2>Navigate</h2>
   <button class="nav active" id="nav-search">🔍 Search</button>
   <button class="nav" id="read-book">📖 Reading mode</button>
+
+  <form id="goto-form"><div class="goto-row">
+    <input id="goto-page" type="number" min="0" inputmode="numeric" placeholder="Go to page #" aria-label="Page number" required>
+    <button type="submit">Go</button>
+  </div></form>
+  <div id="goto-error"></div>
 
   <h2>Search History</h2>
   <div id="search-history"></div>
@@ -315,19 +325,22 @@ async function ensureBuffer(direction) {
   }
 }
 
+// Returns false (leaving the current view untouched) if the page doesn't exist.
 async function openReader(page_num, term = null) {
+  const page = await fetchPage(page_num);
+  if (!page) return false;
   readerTerm = term;
   openedPageNum = page_num;
   minLoaded = page_num;
   maxLoaded = page_num;
   readerPages.innerHTML = '';
-  const page = await fetchPage(page_num);
-  if (!page) { readerStatus.textContent = 'Page not found.'; return; }
+  readerStatus.textContent = '';
   renderPage(page, false);
   showReader();
   pushBrowseHistory(page_num);
   mainEl.scrollTop = 0;
   ensureBuffer('next');
+  return true;
 }
 
 const mainEl = document.getElementById('main');
@@ -346,6 +359,17 @@ document.getElementById('reset-view').onclick = () => {
 
 // Reading mode: open the book from its first page
 document.getElementById('read-book').onclick = () => openReader(0);
+
+// Go to page number
+const gotoPage = document.getElementById('goto-page');
+const gotoError = document.getElementById('goto-error');
+document.getElementById('goto-form').onsubmit = async (e) => {
+  e.preventDefault();
+  const n = parseInt(gotoPage.value, 10);
+  gotoError.textContent = '';
+  if (Number.isNaN(n) || n < 0) return;
+  if (!(await openReader(n))) gotoError.textContent = `No page ${n}.`;
+};
 
 renderSearchHistory();
 renderBrowseHistory();
