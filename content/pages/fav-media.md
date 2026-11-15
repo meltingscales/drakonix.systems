@@ -181,6 +181,7 @@ Use at your own legal risk.
 - [Secure, Contain, Profit](https://www.curseforge.com/minecraft/modpacks/secure-contain-profit)
 - [TerraFirmaGreg Modern](https://www.curseforge.com/minecraft/modpacks/terrafirmagreg-modern)
 - [Finality](https://www.curseforge.com/minecraft/modpacks/finality)
+- [Star Technology](https://www.curseforge.com/minecraft/modpacks/star-technology)
 
 ### Want to try
 
@@ -192,6 +193,28 @@ Use at your own legal risk.
 - [Escape from Minekov](https://www.curseforge.com/minecraft/modpacks/escape-from-minekov)
 - [FTB OceanBlock 2](https://www.feed-the-beast.com/modpacks/128-ftb-oceanblock-2)
 - [Project Ozone 3: A New Way Forward](https://www.curseforge.com/minecraft/modpacks/project-ozone-3-a-new-way-forward)
+- [SevTech: Ages](https://www.curseforge.com/minecraft/modpacks/sevtech-ages) - age-gated progression from flint to space through Twilight Forest, Betweenlands, and the Moon, with AE2 as a late reward.
+- Compact Claustrophobia - you live inside Compact Machines, so every factory is its own sealed cube room.
+- Monifactory - void-world GregTech run by AE2, less grindy than Star Technology.
+- Create: Astral - Create machines plus rockets, building factories on other planets.
+- Create: Above and Beyond - structured Create factory chapters with no AE2.
+- Create: Arcane Engineering - story-driven Create plus Immersive Engineering.
+- Gravitas² - expert tech mixed with exploration and quest gating.
+- Enigmatica 2 Expert - polished expert tech where AE2 autocrafting is central.
+- Enigmatica 9 Expert - Enigmatica's expert formula on a newer version.
+- Divine Journey 2 - long tech and magic expert pack leaning on AE2 autocrafting.
+- FTB Interactions - interlinked tech recipes without full GregTech grind.
+- All the Mods 10 - kitchen sink where AE2 can be rushed early.
+- SkyFactory 4 - skyblock automation with prestige.
+- FTB Infinity Evolved - classic AE2-era tech pack, best in expert mode.
+- DawnCraft - Souls-like RPG overhaul with bosses and dungeons.
+- Prominence II RPG - content-heavy Fabric RPG overhaul.
+- Vault Hunters 3rd Edition - roguelike vault runs plus tech and base building.
+- Craft to Exile 2 - Path of Exile-style loot and leveling.
+- DeceasedCraft - zombie apocalypse survival overhaul.
+- RLCraft - the old hardcore survival classic.
+- Crash Landing - old desert crash survival pack.
+- Hexxit - the original adventure pack.
 
 ### Tips
 
