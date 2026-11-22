@@ -192,6 +192,8 @@ Use at your own legal risk.
 - [Finality](https://www.curseforge.com/minecraft/modpacks/finality)
 - [Abyssal Ascent](https://www.curseforge.com/minecraft/modpacks/abyssal-ascent)
 - [Escape from Minekov](https://www.curseforge.com/minecraft/modpacks/escape-from-minekov)
+- [BM Exosphere 2](https://www.curseforge.com/minecraft/modpacks/bm-exosphere-2) - sequel sky-island pack for 1.21.1.
+- [BM Exosphere 2 + Create](https://www.curseforge.com/minecraft/modpacks/exosphere-2-create-aeronautics) - Exosphere 2 with Create and Create Aeronautics added.
 - [FTB OceanBlock 2](https://www.feed-the-beast.com/modpacks/128-ftb-oceanblock-2)
 - [Project Ozone 3: A New Way Forward](https://www.curseforge.com/minecraft/modpacks/project-ozone-3-a-new-way-forward)
 - [SevTech: Ages](https://www.curseforge.com/minecraft/modpacks/sevtech-ages) - age-gated progression from flint to space through Twilight Forest, Betweenlands, and the Moon, with AE2 as a late reward.
