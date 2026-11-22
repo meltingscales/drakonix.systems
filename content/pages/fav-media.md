@@ -182,6 +182,7 @@ Use at your own legal risk.
 - [TerraFirmaGreg Modern](https://www.curseforge.com/minecraft/modpacks/terrafirmagreg-modern)
 - [Finality](https://www.curseforge.com/minecraft/modpacks/finality)
 - [Star Technology](https://www.curseforge.com/minecraft/modpacks/star-technology)
+- [Project Dreamshift](https://www.curseforge.com/minecraft/modpacks/dreamshift)
 
 ### Want to try
 
