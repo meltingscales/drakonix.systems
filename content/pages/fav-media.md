@@ -210,6 +210,7 @@ Use at your own legal risk.
 - All the Mods 10 - kitchen sink where AE2 can be rushed early.
 - SkyFactory 4 - skyblock automation with prestige.
 - FTB Infinity Evolved - classic AE2-era tech pack, best in expert mode.
+- [Roguelike Adventures and Dungeons 3](https://www.curseforge.com/minecraft/modpacks/roguelike-adventures-and-dungeons-3) - exploration RPG pack on Forge 1.20.1 with character progression, new dimensions, and quests.
 - DawnCraft - Souls-like RPG overhaul with bosses and dungeons.
 - Prominence II RPG - content-heavy Fabric RPG overhaul.
 - Vault Hunters 3rd Edition - roguelike vault runs plus tech and base building.
