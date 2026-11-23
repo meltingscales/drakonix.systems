@@ -24,7 +24,7 @@ use axum::{
     Router,
 };
 use std::net::SocketAddr;
-use tower_http::{compression::CompressionLayer, services::ServeDir, trace::TraceLayer};
+use tower_http::{compression::CompressionLayer, services::{ServeDir, ServeFile}, trace::TraceLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
@@ -211,6 +211,11 @@ async fn main() -> anyhow::Result<()> {
         // Bifurcation diagram viewer
         .route("/services/bifurcation-diagram-viewer", get(handlers::bifurcation_diagram_viewer_page))
         .route("/services/riemann-zeta-zeros", get(handlers::riemann_zeta_zeros_page))
+        // Mandelbrot bulb atlas: standalone page with its own styling, served as-is
+        .route_service(
+            "/services/mandelbrot-bulb-atlas",
+            ServeFile::new("static/mandelbrot-bulb-atlas.html"),
+        )
         .route("/services/exif-scrubber", get(handlers::exif_scrubber_page))
         .route("/services/minecraft-servers", get(handlers::minecraft_servers_page))
         .route("/api/mc-status", get(handlers::mc_status_api))

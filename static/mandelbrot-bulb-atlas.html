@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mandelbrot Bulb Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: a quiet observatory notebook — precise, unhurried, every number computed live.
+   IDEA: an atlas plate of a fractal: the set itself is the map, bulbs coloured by period like terrain.
+   PICTURE: a large live period-map of the Mandelbrot set with Farey labels on the cardioid's bulbs.
+   COLOUR and TYPE: night ground #0a0d1c, starlight ink, one hue per period; Newsreader titles, Inter text.
+   LAYOUT: full-width plate first; then three studies, each a figure beside its explanation and checks. */
+:root{color-scheme:dark;--bg:#0a0d1c;--panel:#111631;--line:#252c52;--ink:#e9ecf5;--dim:#a3abc8;--acc:#f2c14e}
+:root[data-theme=light],:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,sans-serif;overflow-x:clip}
+h1,h2{font-family:Newsreader,Georgia,serif;font-weight:600;line-height:1.08;text-wrap:balance;margin:0 0 .4em}
+h1{font-size:clamp(32px,5vw,52px)}h2{font-size:clamp(26px,3.2vw,36px)}
+p{margin:0 0 1em;max-width:68ch}.dim{color:var(--dim)}small,.small{font-size:13px}
+a{color:var(--acc)}
+.band{padding:clamp(28px,4vw,64px) max(5vw,16px)}.wrap{max-width:1240px;margin:0 auto}
+.hero{padding-bottom:20px}
+.fig{position:relative;min-height:340px;border-radius:14px;overflow:hidden;background:#05070f;border:1px solid var(--line)}
+.fig>canvas,.fig>svg{position:absolute;inset:0;width:100%;height:100%}
+#plate{height:clamp(360px,62vh,720px);cursor:zoom-in}
+#plateLabels{pointer-events:none}
+.readout{position:absolute;left:12px;bottom:12px;background:rgba(10,13,28,.85);border:1px solid var(--line);border-radius:10px;padding:6px 12px;font-size:14px;pointer-events:none;font-variant-numeric:tabular-nums}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:14px 0}
+button,select{font:500 15px Inter,sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:10px;min-height:44px;padding:0 16px;cursor:pointer}
+button:hover{border-color:#4a5490}button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+label.chk{display:flex;gap:8px;align-items:center;min-height:44px;cursor:pointer}
+input[type=range]{width:min(320px,100%);accent-color:var(--acc);height:44px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--dim)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.study{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:clamp(20px,3vw,44px);align-items:start}
+.study .fig{height:clamp(340px,46vw,560px)}
+.strip{height:240px}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:15px;margin:8px 0 16px}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{color:var(--dim);font-weight:500}th:first-child,td:first-child{text-align:left}
+.ok{color:#80ed99}.big{font-family:Newsreader,serif;font-size:clamp(30px,4vw,44px);line-height:1}
+.note{border-left:2px solid var(--line);padding-left:14px;color:var(--dim);font-size:15px}
+hr{border:0;border-top:1px solid var(--line);margin:0}
+pre,.scroll{overflow-x:auto}
+@media(max-width:900px){.study{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){table{font-size:13px}th,td{padding:6px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="band hero"><div class="wrap">
+  <h1>The bulbs of the Mandelbrot set</h1>
+  <p class="dim">Each coloured region is a hyperbolic component: a bulb where z → z² + c settles into a cycle of a fixed period. Everything on this page is computed live in your browser. Click the map to zoom in; hover to read the period of any point.</p>
+  <div class="fig" id="plate"><canvas id="plateCv"></canvas><svg id="plateLabels"></svg><div class="readout" id="readout">hover the map</div></div>
+  <div class="bar">
+    <button id="zoomOut">Zoom out</button><button id="reset">Reset</button>
+    <select id="preset" aria-label="Jump to a region">
+      <option value="">Jump to…</option>
+      <option value="-0.45,0.55,0.75">Between the 1/3 and 1/2 bulbs</option>
+      <option value="-0.745,0.11,0.1">Seahorse valley</option>
+      <option value="-1.7549,0,0.06">Period-3 baby Mandelbrot</option>
+      <option value="0.34,0.09,0.2">Bulbs near the cusp (1/7…1/12)</option>
+    </select>
+    <label class="chk"><input type="checkbox" id="showLabels" checked> Label bulbs p/q</label>
+    <span class="small dim" id="status"></span>
+  </div>
+  <div class="legend" id="legend"></div>
+</div></header>
+
+<section class="band"><div class="wrap">
+  <p><strong>Read the labels as fractions.</strong> The bulb touching the main cardioid at angle p/q (in turns) has period q. Going around the cardioid, the bulbs follow the order of fractions, and between two bulbs the largest one is their <em>mediant</em>. For example, between 1/3 and 1/2 the largest bulb is 2/5 = (1+1)/(3+2). This is the Farey sequence, the same object the Franel–Landau theorem ties to the Riemann hypothesis. Here it shows up just because bulbs are labelled by rational numbers.</p>
+</div></section>
+<hr>
+
+<section class="band" id="centers"><div class="wrap study">
+  <div>
+    <div class="fig" id="cfig"><canvas id="cCv"></canvas></div>
+    <div class="bar"><label for="nSlider">Period <span id="nVal" class="big">8</span></label><input type="range" id="nSlider" min="1" max="11" value="8"><span class="small dim" id="cStatus"></span></div>
+  </div>
+  <div>
+    <h2>Every bulb center of period n</h2>
+    <p>The centers of the period-n bulbs are the roots of the polynomial f<sub>c</sub><sup>n</sup>(0), which has degree 2<sup>n−1</sup>. A Web Worker finds all of its roots at once with the Aberth–Ehrlich method, then sorts each root by its exact period. Dots of lower periods appear because their periods divide n.</p>
+    <table id="cTable"><thead><tr><th>Exact period</th><th>Found</th><th>Predicted</th><th></th></tr></thead><tbody></tbody></table>
+    <p class="note">"Predicted" uses the Möbius-style count: 2<sup>n−1</sup> minus the centers of every smaller period dividing n. When n is prime, only period 1 is removed, leaving 2<sup>n−1</sup> − 1. Whether the polynomial for the exact-period-n centers (the Gleason polynomial) is always irreducible over the integers is still open. Manning checked it for n ≤ 10; Buff, Floyd, Koch and Parry studied it modulo 2; Mihalache and Vigneron have computed centers up to period 41.</p>
+  </div>
+</div></section>
+<hr>
+
+<section class="band" id="real"><div class="wrap">
+  <h2>Periods along the real line</h2>
+  <p>On the real axis, every bulb center up to period 9 appears below: 66 points, with taller ticks for lower periods. Two theorems become visible here.</p>
+  <div class="fig strip" id="sfig"><svg id="strip"></svg></div>
+  <div class="study" style="margin-top:22px">
+    <div>
+      <p><strong>Sharkovsky's order.</strong> Moving left from 0, the order in which each period first appears is:</p>
+      <p class="big" id="shark">…</p>
+      <p class="dim" id="sharkNote"></p>
+    </div>
+    <div>
+      <p><strong>Lavaurs's lemma.</strong> Between any two bulbs of the same period, one behind the other, there is always a bulb of strictly smaller period. Checked on every pair of consecutive same-period centers:</p>
+      <p class="big" id="lav">…</p>
+      <p class="dim small">Reila Zheng's 2025 Toronto thesis extends this kind of period ordering from the real line to the branching veins of the whole set.</p>
+    </div>
+  </div>
+</div></section>
+<hr>
+
+<section class="band" id="feig"><div class="wrap study">
+  <div>
+    <div class="fig" id="ffig"><svg id="fchart"></svg></div>
+  </div>
+  <div>
+    <h2>The road to the Feigenbaum point</h2>
+    <p>The bulbs of period 1, 2, 4, 8, … shrink toward a single point on the real axis. Newton's method finds each center; the ratio of successive gaps converges to Feigenbaum's constant, δ ≈ 4.669201609.</p>
+    <table id="fTable"><thead><tr><th>Period</th><th>Center c</th><th>Gap ratio</th></tr></thead><tbody></tbody></table>
+    <p class="note">This cascade sits at the frontier of current research. Dudko and Lyubich proved the MLC conjecture (local connectivity of the set) at Feigenbaum points, a case that had been open for decades. Their proof also explains why this ratio is universal.</p>
+  </div>
+</div></section>
+
+<footer class="band"><div class="wrap small dim">
+  <p><a href="/services">← back to ~/services</a></p>
+  <p>Sources: <a href="https://arxiv.org/abs/2309.02107">Dudko &amp; Lyubich, MLC at Feigenbaum points</a> · <a href="https://arxiv.org/abs/2512.24171">Dudko, On the MLC conjecture (2025)</a> · <a href="https://www.numdam.org/articles/10.5802/jtnb.1228">Buff–Floyd–Koch–Parry, Factoring Gleason polynomials mod 2</a> · <a href="https://arxiv.org/abs/2402.06083">Mihalache &amp; Vigneron, How to split a tera-polynomial</a> · <a href="https://msp.org/involve/2025/18-5/involve-v18-n5-p01-p.pdf">D'Souza &amp; Tiozzo, Counting hyperbolic components in the main molecule</a> · <a href="https://arxiv.org/pdf/2405.02204">Pseudo-monodromy and the Mandelbrot set (Lavaurs's lemma)</a></p>
+</div></footer>
+
+<script>
+{
+const COL=['#f2c14e','#f78154','#e5446d','#b5179e','#7b5cff','#4895ef','#4cc9f0','#2ec4b6','#80ed99','#c7f464','#ffd6a5','#ff99c8'];
+const colOf=p=>p>=1&&p<=12?COL[p-1]:'#9aa3b8';
+const rgb=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+const RGB=COL.map(rgb),GREY=rgb('#9aa3b8');
+document.getElementById('legend').innerHTML=COL.map((c,i)=>`<span><i style="background:${c}"></i>period ${i+1}</span>`).join('')+`<span><i style="background:#9aa3b8"></i>13+</span><span><i style="background:#1a1f3d"></i>slow / unresolved</span>`;
+
+// ---------- period of a parameter ----------
+function periodAt(cr,ci,maxIt){
+  const x=cr-0.25,q=x*x+ci*ci;
+  if(q*(q+x)<=0.25*ci*ci)return 1;
+  if((cr+1)*(cr+1)+ci*ci<=0.0625)return 2;
+  let zr=0,zi=0,sr=0,si=0,lim=8,cnt=0;
+  for(let i=1;i<=maxIt;i++){
+    const t=zr*zr-zi*zi+cr;zi=2*zr*zi+ci;zr=t;
+    const m=zr*zr+zi*zi;
+    if(m>256)return -(i+1-Math.log2(Math.log2(m)/2));
+    const dr=zr-sr,di=zi-si;cnt++;
+    if(dr*dr+di*di<1e-22)return cnt;
+    if(cnt===lim){sr=zr;si=zi;cnt=0;lim*=2;}
+  }
+  let ar=zr,ai=zi;
+  for(let p=1;p<=96;p++){const t=ar*ar-ai*ai+cr;ai=2*ar*ai+ci;ar=t;const dr=ar-zr,di=ai-zi;if(dr*dr+di*di<1e-12)return p;}
+  return 0;
+}
+
+// ---------- the plate ----------
+const plate=document.getElementById('plate'),cv=document.getElementById('plateCv'),ctx=cv.getContext('2d');
+const svgL=document.getElementById('plateLabels'),readout=document.getElementById('readout'),status=document.getElementById('status');
+const HOME={cx:-0.6,cy:0,w:3.2,h:2.7};let view={...HOME},job=0;
+function maxItFor(){return Math.round(1500+700*Math.max(0,Math.log2(HOME.w/view.w)));}
+const sc=()=>Math.max(view.w/cv.width,view.h/cv.height);
+function toC(px,py){const W=cv.width,H=cv.height,s=sc();return[view.cx+(px-W/2)*s,view.cy-(py-H/2)*s];}
+function toPx(cr,ci){const W=cv.width,H=cv.height,s=sc();return[(cr-view.cx)/s+W/2,-(ci-view.cy)/s+H/2];}
+function render(){
+  const W=plate.clientWidth,H=plate.clientHeight;cv.width=W;cv.height=H;
+  const img=ctx.createImageData(W,H),d=img.data,my=++job,maxIt=maxItFor();let y=0;
+  status.textContent='Rendering…';drawLabels();
+  const step=()=>{
+    if(my!==job)return;const t0=performance.now();
+    while(y<H&&performance.now()-t0<28){
+      for(let x=0;x<W;x++){
+        const [cr,ci]=toC(x,y),p=periodAt(cr,ci,maxIt),o=(y*W+x)*4;let c;
+        if(p<0){const v=Math.min(1,Math.log(-p)/Math.log(maxIt*0.25));c=[10+v*30,13+v*38,28+v*80];}
+        else if(p===0)c=[26,31,61];else c=p<=12?RGB[p-1]:GREY;
+        d[o]=c[0];d[o+1]=c[1];d[o+2]=c[2];d[o+3]=255;
+      }
+      y++;
+    }
+    ctx.putImageData(img,0,0);
+    if(y<H)requestAnimationFrame(step);else status.textContent=`Zoom ×${(HOME.w/view.w).toFixed(view.w<0.1?0:1)} · ${maxIt} iterations`;
+  };
+  requestAnimationFrame(step);
+}
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+function drawLabels(){
+  const W=cv.width,H=cv.height;svgL.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  if(!document.getElementById('showLabels').checked){svgL.innerHTML='';return;}
+  const ppu=1/sc(),out=[];
+  for(let q=2;q<=40;q++)for(let p=1;p<q;p++){
+    if(gcd(p,q)!==1)continue;
+    const th=2*Math.PI*p/q,r=0.95*Math.sin(Math.PI*p/q)/(q*q)*1.0;
+    if(r*ppu<9)continue;
+    const rr=Math.cos(th)/2-Math.cos(2*th)/4,ri=Math.sin(th)/2-Math.sin(2*th)/4;
+    let nr=Math.cos(th)/2-Math.cos(2*th)/2,ni=Math.sin(th)/2-Math.sin(2*th)/2;const nl=Math.hypot(nr,ni)||1;nr/=nl;ni/=nl;
+    const k=2.1*r,[x,y]=toPx(rr+nr*k,ri+ni*k),off=14+Math.min(30,r*ppu*0.15);
+    const lx=x+nr*off,ly=y-ni*off;
+    if(lx<10||ly<10||lx>W-10||ly>H-10)continue;
+    out.push(`<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" fill="${colOf(q)}" font-size="${q<6?15:13}" font-weight="600" text-anchor="middle" dominant-baseline="middle" paint-order="stroke" stroke="#0a0d1c" stroke-width="4">${p}/${q}</text>`);
+  }
+  svgL.innerHTML=out.join('');
+}
+plate.addEventListener('click',e=>{const b=cv.getBoundingClientRect(),[cr,ci]=toC(e.clientX-b.left,e.clientY-b.top);view={cx:cr,cy:ci,w:view.w/3,h:view.h/3};render();});
+plate.addEventListener('mousemove',e=>{
+  const b=cv.getBoundingClientRect(),[cr,ci]=toC(e.clientX-b.left,e.clientY-b.top),p=periodAt(cr,ci,maxItFor());
+  const cs=`c = ${cr.toFixed(6)} ${ci<0?'−':'+'} ${Math.abs(ci).toFixed(6)}i`;
+  readout.innerHTML=p>0?`<b style="color:${colOf(p)}">period ${p}</b> · ${cs}`:p===0?`interior, slow to settle · ${cs}`:`escapes · ${cs}`;
+});
+plate.addEventListener('mouseleave',()=>readout.textContent='hover the map');
+document.getElementById('zoomOut').onclick=()=>{view.w=Math.min(HOME.w*1.5,view.w*3);view.h=Math.min(HOME.h*1.5,view.h*3);render();};
+document.getElementById('reset').onclick=()=>{view={...HOME};render();};
+document.getElementById('preset').onchange=e=>{if(!e.target.value)return;const [a,b,w]=e.target.value.split(',').map(Number);view={cx:a,cy:b,w,h:w*0.75};render();e.target.value='';};
+document.getElementById('showLabels').onchange=drawLabels;
+let rt;const plateRO=new ResizeObserver(()=>{clearTimeout(rt);rt=setTimeout(render,150);});plateRO.observe(plate);
+
+// ---------- worker: Aberth root finder ----------
+const wsrc=`
+function ratio(cr,ci,n){let zr=0,zi=0,dr=0,di=0;for(let k=0;k<n;k++){
+ const ndr=2*(zr*dr-zi*di)+1,ndi=2*(zr*di+zi*dr),nzr=zr*zr-zi*zi+cr,nzi=2*zr*zi+ci;zr=nzr;zi=nzi;dr=ndr;di=ndi;
+ if(zr*zr+zi*zi>1e40){const sc=Math.max(Math.abs(dr),Math.abs(di));zr/=sc;zi/=sc;dr/=sc;di/=sc;const den=dr*dr+di*di;const s=Math.pow(2,-(n-1-k));return[(zr*dr+zi*di)/den*s,(zi*dr-zr*di)/den*s];}}
+ const den=dr*dr+di*di;return[(zr*dr+zi*di)/den,(zi*dr-zr*di)/den];}
+function exact(cr,ci,n){let zr=0,zi=0;for(let k=1;k<=n;k++){const t=zr*zr-zi*zi+cr;zi=2*zr*zi+ci;zr=t;if(zr*zr+zi*zi<1e-14)return k;}return n;}
+function aberth(n){const N=1<<(n-1),R=new Float64Array(N),I=new Float64Array(N);
+ for(let i=0;i<N;i++){const a=2*Math.PI*(i+0.37)/N;R[i]=2.2*Math.cos(a)-0.4;I[i]=2.2*Math.sin(a);}
+ for(let it=0;it<600;it++){let maxd=0;
+  for(let i=0;i<N;i++){const w=ratio(R[i],I[i],n),wr=w[0],wi=w[1];let sr=0,si=0;const xr=R[i],xi=I[i];
+   for(let j=0;j<N;j++){if(j===i)continue;const dr=xr-R[j],di=xi-I[j],d=dr*dr+di*di;sr+=dr/d;si-=di/d;}
+   const tr=1-(wr*sr-wi*si),ti=-(wr*si+wi*sr),td=tr*tr+ti*ti,or=(wr*tr+wi*ti)/td,oi=(wi*tr-wr*ti)/td;
+   R[i]-=or;I[i]-=oi;const m=Math.hypot(or,oi);if(m>maxd)maxd=m;}
+  if(!(maxd>=1e-13))break;}
+ const P=new Int32Array(N);for(let i=0;i<N;i++)P[i]=exact(R[i],I[i],n);return{R,I,P};}
+onmessage=e=>{const m=e.data;
+ if(m.type==='centers'){const r=aberth(m.n);postMessage({type:'centers',n:m.n,R:r.R,I:r.I,P:r.P});}
+ else{const out=[];for(let n=1;n<=m.max;n++){const r=aberth(n);for(let i=0;i<r.R.length;i++)if(Math.abs(r.I[i])<1e-8&&r.P[i]===n)out.push([r.R[i],n]);}postMessage({type:'real',out});}};`;
+let worker=null;
+try{worker=new Worker(URL.createObjectURL(new Blob([wsrc],{type:'text/javascript'})));}catch(err){}
+const predicted=n=>{const N=[0];for(let d=1;d<=n;d++){let v=2**(d-1);for(let e=1;e<d;e++)if(d%e===0)v-=N[e];N[d]=v;}return N;};
+
+// ---------- centers plot ----------
+const cfig=document.getElementById('cfig'),cCv=document.getElementById('cCv'),cctx=cCv.getContext('2d');
+const nSlider=document.getElementById('nSlider'),cStatus=document.getElementById('cStatus');
+let bg=null,bgW=0,lastC=null,cView={cx:-0.75,cy:0,w:2.9};
+function cTo(cr,ci){const W=cCv.width,H=cCv.height,s=Math.max(cView.w/W,2.5/H);return[(cr-cView.cx)/s+W/2,-(ci-cView.cy)/s+H/2];}
+function drawBg(){
+  const W=cfig.clientWidth,H=cfig.clientHeight;cCv.width=W;cCv.height=H;
+  if(bg&&bgW===W*1000+H){cctx.putImageData(bg,0,0);return;}
+  const img=cctx.createImageData(W,H),d=img.data,s=Math.max(cView.w/W,2.5/H);
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+    const cr=cView.cx+(x-W/2)*s,ci=cView.cy-(y-H/2)*s;let zr=0,zi=0,i=0;
+    for(;i<200&&zr*zr+zi*zi<16;i++){const t=zr*zr-zi*zi+cr;zi=2*zr*zi+ci;zr=t;}
+    const o=(y*W+x)*4,inside=i===200,v=inside?0:Math.min(1,i/40);
+    d[o]=inside?24:5+v*20;d[o+1]=inside?29:7+v*24;d[o+2]=inside?56:15+v*50;d[o+3]=255;
+  }
+  bg=img;bgW=W*1000+H;cctx.putImageData(img,0,0);
+}
+function drawCenters(){
+  drawBg();if(!lastC)return;const {n,R,I,P}=lastC;
+  for(let pass=0;pass<2;pass++)for(let i=0;i<R.length;i++){
+    const isN=P[i]===n;if((pass===1)!==isN)continue;
+    const [x,y]=cTo(R[i],I[i]);cctx.fillStyle=colOf(P[i]);cctx.beginPath();cctx.arc(x,y,isN?(n>9?1.8:2.6):3.4,0,7);cctx.fill();
+  }
+}
+function solve(n){
+  document.getElementById('nVal').textContent=n;
+  if(!worker){cStatus.textContent='Web Workers are unavailable in this viewer.';return;}
+  cStatus.textContent=`Solving a degree-${2**(n-1)} polynomial…`;worker.postMessage({type:'centers',n});
+}
+function showCenters(m){
+  lastC=m;drawCenters();const pred=predicted(m.n),found={};for(const p of m.P)found[p]=(found[p]||0)+1;
+  const ds=[];for(let d=1;d<=m.n;d++)if(m.n%d===0)ds.push(d);
+  document.querySelector('#cTable tbody').innerHTML=ds.map(d=>`<tr><td><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${colOf(d)};margin-right:8px"></i>${d}</td><td>${found[d]||0}</td><td>${pred[d]}</td><td class="${(found[d]||0)===pred[d]?'ok':''}">${(found[d]||0)===pred[d]?'✓ match':'≠'}</td></tr>`).join('');
+  cStatus.textContent=`${m.R.length} roots found`;
+}
+let st;nSlider.oninput=()=>{document.getElementById('nVal').textContent=nSlider.value;clearTimeout(st);st=setTimeout(()=>solve(+nSlider.value),250);};
+let ct;const cRO=new ResizeObserver(()=>{clearTimeout(ct);ct=setTimeout(drawCenters,150);});cRO.observe(cfig);
+
+// ---------- real-axis strip ----------
+const sfig=document.getElementById('sfig'),strip=document.getElementById('strip');let realPts=null;
+function drawStrip(){
+  if(!realPts)return;const W=sfig.clientWidth,H=sfig.clientHeight,x0=-2,x1=0.25,pad=24;
+  const X=c=>pad+(c-x0)/(x1-x0)*(W-2*pad),base=H-34,small=W<520;
+  strip.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const ticks=realPts.map(([c,p])=>{const h=(base-24)*(1-(p-1)/9.5);return`<line x1="${X(c).toFixed(1)}" x2="${X(c).toFixed(1)}" y1="${base}" y2="${(base-h).toFixed(1)}" stroke="${colOf(p)}" stroke-width="${p<=3?3:1.5}"><title>period ${p}, c = ${c.toFixed(6)}</title></line>`;}).join('');
+  const lab=realPts.filter(([,p])=>p<=3||(!small&&p===4)).map(([c,p])=>{const h=(base-24)*(1-(p-1)/9.5);return`<text x="${X(c).toFixed(1)}" y="${(base-h-8).toFixed(1)}" fill="${colOf(p)}" font-size="13" font-weight="600" text-anchor="middle">${p}</text>`;}).join('');
+  const axis=[-2,-1.5,-1,-0.5,0].map(v=>`<text x="${X(v)}" y="${H-10}" fill="#a3abc8" font-size="13" text-anchor="middle">${v}</text>`).join('');
+  strip.innerHTML=`<line x1="${pad}" x2="${W-pad}" y1="${base}" y2="${base}" stroke="#3a4374"/>${ticks}${lab}${axis}`;
+}
+function showReal(out){
+  realPts=out.sort((a,b)=>b[0]-a[0]);drawStrip();
+  const seen=[];for(const [,p] of realPts)if(!seen.includes(p))seen.push(p);
+  document.getElementById('shark').textContent=seen.join(', ');
+  const expect='1,2,4,8,6,9,7,5,3';
+  document.getElementById('sharkNote').innerHTML=seen.join(',')===expect?`<span class="ok">✓</span> This is Sharkovsky's ordering 3 ▹ 5 ▹ 7 ▹ 9 ▹ … ▹ 6 ▹ … ▹ 8 ▹ 4 ▹ 2 ▹ 1, read backwards and limited to periods up to 9. Period 3 comes last, which is why "period three implies chaos."`:'The order differs from what was expected; this viewer may be computing in reduced precision.';
+  let pairs=0,bad=0;for(let i=0;i<realPts.length;i++)for(let j=i+1;j<realPts.length;j++)if(realPts[j][1]===realPts[i][1]){pairs++;let ok=false;for(let k=i+1;k<j;k++)if(realPts[k][1]<realPts[i][1]){ok=true;break;}if(!ok)bad++;break;}
+  document.getElementById('lav').innerHTML=bad===0?`<span class="ok">✓</span> ${pairs} of ${pairs} pairs`:`${pairs-bad} of ${pairs} pairs`;
+}
+let sRt;const sRO=new ResizeObserver(()=>{clearTimeout(sRt);sRt=setTimeout(drawStrip,120);});sRO.observe(sfig);
+
+if(worker){
+  worker.onmessage=e=>{if(e.data.type==='centers')showCenters(e.data);else{showReal(e.data.out);solve(+nSlider.value);}};
+  worker.postMessage({type:'real',max:9});cStatus.textContent='Starting…';
+}else{cStatus.textContent='Web Workers are unavailable in this viewer.';}
+
+// ---------- Feigenbaum ----------
+function newt(c,n){for(let i=0;i<60;i++){let z=0,d=0;for(let k=0;k<n;k++){d=2*z*d+1;z=z*z+c;}const s=z/d;c-=s;if(Math.abs(s)<1e-16)break;}return c;}
+const fc=[0,-1];for(let k=2;k<=12;k++)fc.push(newt(fc[k-1]+(fc[k-1]-fc[k-2])/4.6692,2**k));
+const ratios=fc.map((c,k)=>k>=2?(fc[k-2]-fc[k-1])/(fc[k-1]-c):null);
+document.querySelector('#fTable tbody').innerHTML=fc.map((c,k)=>`<tr><td>${2**k}</td><td>${c.toFixed(12)}</td><td>${ratios[k]?ratios[k].toFixed(6):'—'}</td></tr>`).join('');
+const ffig=document.getElementById('ffig'),fsvg=document.getElementById('fchart'),DELTA=4.669201609;
+function drawF(){
+  const W=ffig.clientWidth,H=ffig.clientHeight,L=W<520?40:54,R=20,T=28,B=46,small=W<520;
+  const ks=[];for(let k=2;k<=12;k++)ks.push(k);
+  const X=k=>L+(k-2)/10*(W-L-R),Y=v=>T+(4.8-v)/(4.8-3.1)*(H-T-B);
+  const grid=[3.2,3.6,4.0,4.4,4.8].map(v=>`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" stroke="#1f2548"/><text x="${L-8}" y="${Y(v)+4}" fill="#a3abc8" font-size="13" text-anchor="end">${v.toFixed(1)}</text>`).join('');
+  const xl=ks.filter(k=>!small||k%2===0).map(k=>`<text x="${X(k)}" y="${H-B+20}" fill="#a3abc8" font-size="13" text-anchor="middle">${2**k}</text>`).join('');
+  const pts=ks.map(k=>`${X(k).toFixed(1)},${Y(ratios[k]).toFixed(1)}`).join(' ');
+  const dots=ks.map(k=>`<circle cx="${X(k)}" cy="${Y(ratios[k])}" r="4.5" fill="${colOf(Math.min(13,k))}"><title>period ${2**k}: ${ratios[k].toFixed(6)}</title></circle>`).join('');
+  fsvg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  fsvg.innerHTML=`${grid}<line x1="${L}" x2="${W-R}" y1="${Y(DELTA)}" y2="${Y(DELTA)}" stroke="#f2c14e" stroke-dasharray="6 5"/><text x="${W-R}" y="${Y(DELTA)-10}" fill="#f2c14e" font-size="14" text-anchor="end">δ = 4.669201…</text><polyline points="${pts}" fill="none" stroke="#e9ecf5" stroke-width="2"/>${dots}${xl}<text x="${(L+W-R)/2}" y="${H-8}" fill="#a3abc8" font-size="13" text-anchor="middle">period of the bulb</text><text x="${L}" y="16" fill="#a3abc8" font-size="13">ratio of successive gaps</text>`;
+}
+const fRO=new ResizeObserver(drawF);fRO.observe(ffig);
+}
+</script>
+</body>
+</html>
