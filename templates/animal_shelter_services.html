@@ -1,0 +1,39 @@
+{% extends "base.html" %} {% block title %}~/animal-shelter-services — drakonix.systems{% endblock %} {% block content %}
+<h1>~/animal-shelter-services</h1>
+<p
+    style="
+        color: var(--text-secondary);
+        margin-top: 0.5rem;
+        margin-bottom: 2rem;
+    "
+>
+    Tools built for animal shelters, mostly for C.A.R.E. (Community Animal
+    Rescue Effort) in Skokie.
+</p>
+
+<div class="services-grid">
+    <a href="//meowderall.drakonix.systems/" class="service-card external">
+        <h3>meowderall.drakonix.systems</h3>
+        <p>Meowderall — a cat medication tracker.</p>
+    </a>
+    <a href="//carethermometer.drakonix.systems/" class="service-card external">
+        <h3>carethermometer.drakonix.systems</h3>
+        <p>Care Thermometer — tracking care donation metrics.</p>
+    </a>
+    <a
+        href="//donationaggregator.drakonix.systems/"
+        class="service-card external"
+    >
+        <h3>donationaggregator.drakonix.systems</h3>
+        <p>Donation Aggregator — aggregate donation data.</p>
+    </a>
+    <a href="//carerabiesstats.drakonix.systems/" class="service-card external">
+        <h3>carerabiesstats.drakonix.systems</h3>
+        <p>Care Rabies Stats — rabies statistics dashboard.</p>
+    </a>
+    <a href="//carecatstatus.drakonix.systems/" class="service-card external">
+        <h3>carecatstatus.drakonix.systems</h3>
+        <p>Care Cat Status — Cat food tracker.</p>
+    </a>
+</div>
+{% endblock %}

@@ -247,6 +247,20 @@ impl IntoResponse for AppError {
     }
 }
 
+/// Animal shelter services index page handler
+pub async fn animal_shelter_services_index(State(state): State<Arc<AppState>>) -> Result<Html<String>, AppError> {
+    let mut context = Context::new();
+    context.insert("title", "~/animal-shelter-services — drakonix.systems");
+    add_honeypot_urls(&mut context);
+
+    let html = state
+        .tera
+        .render("animal_shelter_services.html", &context)
+        .map_err(|e| AppError::TemplateError(e.to_string()))?;
+
+    Ok(Html(html))
+}
+
 /// Services index page handler
 pub async fn services_index(State(state): State<Arc<AppState>>) -> Result<Html<String>, AppError> {
     let mut context = Context::new();
